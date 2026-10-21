@@ -1,0 +1,2293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Japarty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Bungee&display=swap" rel="stylesheet">
+<style>
+/* Layout: a single game-show stage. Lobby = team setup beside four game cards; every game screen shares one bar with the team scores. */
+:root{
+  color-scheme:dark;
+  --stage:#120f24; --stage2:#1c1838; --stage3:#29224d; --line:#3b3468; --scrim:rgba(8,6,18,.86);
+  --paper:#f7efe0; --muted:#b4acd2; --ink:#16112a;
+  --gold:#f2b632; --gold-deep:#a8761a; --clay:#d6502a; --leaf:#1f8f5c; --sky:#2a82c6; --glow:#2c2462;
+  --good:#3fd394; --bad:#ff6b5e; --white:#ffffff; --ink-line:rgba(22,17,42,.28); --paper-2:#ece2cf;
+  --display:"Bungee","Impact","Arial Black",system-ui,sans-serif;
+  --body:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:14px;
+  --kente:repeating-linear-gradient(90deg,var(--gold) 0 30px,var(--ink) 30px 36px,var(--clay) 36px 54px,var(--gold) 54px 62px,var(--leaf) 62px 86px,var(--ink) 86px 92px);
+}
+html,body{height:100%}
+body{background:radial-gradient(ellipse 90% 60% at 50% -10%,var(--glow),transparent 70%),var(--stage);background-color:var(--stage);color:var(--paper);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--paper);outline-offset:3px}
+#app{max-width:1180px;margin:0 auto;padding-block:18px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.kente{height:10px;background:var(--kente);border-radius:3px}
+.screen{display:flex;flex-direction:column;gap:20px}
+.label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row.center{justify-content:center}
+h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+
+/* Logo */
+.logo{font-family:var(--display);color:var(--gold);letter-spacing:.02em;line-height:.95;text-shadow:0 .05em 0 var(--clay),0 .1em 0 var(--ink)}
+.hero{display:grid;gap:16px;padding-block:22px 4px}
+.hero .logo{font-size:clamp(58px,13vw,136px);margin:0}
+.hero p{max-width:58ch;color:var(--muted);font-size:clamp(16px,2vw,19px)}
+.hero p b{color:var(--paper)}
+
+/* Buttons */
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;background:var(--gold);color:var(--ink);box-shadow:0 4px 0 var(--gold-deep);transition:transform .08s,box-shadow .08s,filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-deep)}
+.btn:disabled{opacity:.4;cursor:default;transform:none}
+.btn.ghost{background:transparent;color:var(--paper);border:1px solid var(--line);box-shadow:none;font-weight:600}
+.btn.ghost:hover{background:var(--stage3)}
+.btn.small{padding:8px 12px;font-size:14px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--stage);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--stage);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600}
+.toggle[aria-pressed="false"]{color:var(--muted)}
+.toggle .dot{width:10px;height:10px;border-radius:50%;background:var(--good)}
+.toggle[aria-pressed="false"] .dot{background:var(--line)}
+
+/* Lobby */
+.lobby{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:880px){.lobby{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--stage2);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:20px}
+.group{display:grid;gap:10px}
+.team-row{display:flex;gap:8px;align-items:center}
+.swatch{width:14px;height:14px;border-radius:50%;background:var(--tc);flex:none}
+.team-row input{flex:1;min-width:0;background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.icon-btn{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:18px;line-height:1}
+.icon-btn:hover{color:var(--paper);background:var(--stage3)}
+.pack-name{font-weight:800;font-size:18px}
+.now{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.eq{display:inline-flex;gap:2px;align-items:flex-end;height:14px}
+.eq i{width:3px;height:100%;background:var(--gold);border-radius:1px;animation:eq .8s ease-in-out infinite alternate;transform-origin:bottom}
+.eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.55s}.eq i:nth-child(4){animation-delay:-.15s}
+body.music-off .eq i,body.no-audio .eq i{animation:none;transform:scaleY(.25)}
+@keyframes eq{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(max-width:640px){.modes{grid-template-columns:minmax(0,1fr)}}
+.mode{background:var(--stage2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.mode-top{background:var(--mc);color:var(--mc-ink);padding:18px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.mode-top h2{font-family:var(--display);font-weight:400;font-size:clamp(20px,2.4vw,26px);line-height:1}
+.mode-top span{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;white-space:nowrap}
+.m-gold{--mc:var(--gold);--mc-ink:var(--ink)}.m-sky{--mc:var(--sky);--mc-ink:var(--white)}.m-clay{--mc:var(--clay);--mc-ink:var(--white)}.m-leaf{--mc:var(--leaf);--mc-ink:var(--white)}
+.mode-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px;flex:1}
+.mode-body p{color:var(--muted)}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opts label{display:grid;gap:4px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+select{background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:15px;text-transform:none;letter-spacing:0}
+.mode-body .btn{margin-top:auto;align-self:flex-start}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;color:var(--muted);font-size:13px;padding-top:8px}
+.foot b{letter-spacing:.14em;font-weight:600}
+
+/* Game bar */
+.gamebar{display:grid;gap:12px;padding-block:4px 16px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.gb-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.gb-top .logo{font-size:26px;text-shadow:0 2px 0 var(--clay)}
+.gb-mode{font-weight:800}
+.gb-progress{color:var(--muted);font-variant-numeric:tabular-nums}
+.gb-spacer{flex:1}
+.strip{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;background:var(--stage2);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 8px;font-size:15px}
+.chip b{font-variant-numeric:tabular-nums;color:var(--gold);font-family:var(--display);font-weight:400}
+.chip.active{border-color:var(--tc);box-shadow:inset 0 0 0 1px var(--tc);background:var(--stage3)}
+.chip .turn{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tc)}
+button.chip:hover{background:var(--stage3)}
+
+/* Timer */
+.timer{--p:1;width:66px;height:66px;flex:none;border-radius:50%;background:conic-gradient(var(--gold) calc(var(--p)*360deg),var(--stage3) 0);display:grid;place-items:center;transition:background .1s}
+.timer span{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.timer.hot{background:conic-gradient(var(--bad) calc(var(--p)*360deg),var(--stage3) 0)}
+.timer.hot span{color:var(--bad);animation:pulse .5s ease-in-out infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+
+/* Quiz */
+.q-card{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:clamp(20px,4vw,38px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 20px;align-items:start}
+.q-card .eyebrow{color:var(--clay);font-weight:800;letter-spacing:.14em;font-size:13px;text-transform:uppercase}
+.q-text{font-size:clamp(22px,3.6vw,40px);font-weight:800;line-height:1.18;grid-column:1}
+.q-card .timer{grid-row:1/3;grid-column:2}
+.ready{grid-column:1/-1;display:grid;gap:8px}
+.ready .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.ready .bar i{display:block;height:100%;background:var(--clay);transform-origin:left;animation:fill 2.6s linear forwards}
+.ready span{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--clay)}
+@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:600px){.answers:not(.two){grid-template-columns:minmax(0,1fr)}}
+.ans{display:flex;align-items:center;gap:14px;min-height:86px;padding:14px 18px;border-radius:12px;background:var(--ac);color:var(--aink);font-size:clamp(17px,2.2vw,24px);font-weight:800;line-height:1.2;animation:pop .35s both;transition:opacity .35s,transform .35s}
+.ans b{font-family:var(--display);font-weight:400;width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:10px;background:rgba(22,17,42,.2)}
+.ans span{min-width:0}
+.answers.revealed .ans:not(.right){opacity:.25;transform:scale(.97)}
+.ans.right{box-shadow:0 0 0 4px var(--paper);transform:scale(1.02)}
+.ans.right::after{content:"✓";margin-left:8px;font-size:28px}
+.pickers{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.pickers i{width:16px;height:16px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 2px var(--ink)}
+.c0{--ac:var(--gold);--aink:var(--ink)}.c1{--ac:var(--clay);--aink:var(--white)}.c2{--ac:var(--leaf);--aink:var(--white)}.c3{--ac:var(--sky);--aink:var(--white)}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.locks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.lock{background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;align-content:start}
+.lock-name{display:flex;align-items:center;gap:8px;font-weight:800;min-width:0;overflow-wrap:anywhere}
+.lock-name i{width:12px;height:12px;border-radius:50%;background:var(--tc);flex:none}
+.lock-btns{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:6px}
+.pick{height:46px;border:0;border-radius:9px;background:var(--ac);color:var(--aink);font-family:var(--display);font-size:18px;transition:transform .08s}
+.pick:active{transform:scale(.94)}
+.lock-state{font-size:14px;color:var(--muted)}
+.lock.locked{border-color:var(--tc)}
+.lock.locked .lock-btns{display:none}
+.lock.locked .lock-state{color:var(--paper);font-weight:700}
+.gain{font-family:var(--display);font-size:22px;color:var(--good)}
+.gain.zero{color:var(--bad);font-size:16px}
+.streak{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--gold);color:var(--ink);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.fact{background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:14px 18px;display:grid;gap:4px;animation:pop .35s both}
+.fact .label{color:var(--gold)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+
+/* Leaderboard */
+.lb-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.lb-head h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,5vw,44px);color:var(--gold)}
+.lb{display:grid;gap:10px}
+.lb-row{position:relative;overflow:hidden;display:grid;grid-template-columns:42px minmax(0,1fr) auto auto;align-items:center;gap:14px;background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:14px 18px;animation:pop .4s both}
+.lb-bar{position:absolute;inset:0 auto 0 0;width:var(--w);background:var(--tc);opacity:.2;animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{width:0}}
+.lb-row>*:not(.lb-bar){position:relative}
+.lb-rank{font-family:var(--display);font-size:24px;color:var(--muted)}
+.lb-row:first-of-type .lb-rank{color:var(--gold)}
+.lb-name{display:flex;align-items:center;gap:10px;font-weight:800;font-size:clamp(16px,2.2vw,21px);min-width:0;overflow-wrap:anywhere}
+.lb-name i{width:14px;height:14px;border-radius:50%;background:var(--tc);flex:none}
+.up{font-size:12px;color:var(--good);font-weight:800;white-space:nowrap}
+.lb-delta{color:var(--good);font-weight:800;font-variant-numeric:tabular-nums}
+.lb-score{font-family:var(--display);font-size:clamp(18px,2.6vw,26px);font-variant-numeric:tabular-nums}
+@media(max-width:480px){.lb-row{grid-template-columns:30px minmax(0,1fr) auto;padding:12px}.lb-delta{display:none}}
+
+/* Board */
+.board-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+.board-head h2{font-size:20px}
+.board{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:8px}
+.cat{background:var(--stage3);border-radius:10px;padding:10px 4px;display:flex;align-items:center;justify-content:center;text-align:center;min-height:74px;font-weight:800;font-size:clamp(9px,1.35vw,14px);letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere;line-height:1.2}
+.tile{min-height:clamp(54px,9vw,86px);border-radius:10px;border:1px solid var(--line);background:linear-gradient(180deg,var(--stage3),var(--stage2));color:var(--gold);font-family:var(--display);font-size:clamp(15px,3vw,30px);font-variant-numeric:tabular-nums;transition:transform .15s,background .15s,color .15s;animation:pop .3s both}
+.tile:hover:not(:disabled){transform:translateY(-3px);background:var(--sky);color:var(--white)}
+.tile:disabled{opacity:.2;cursor:default}
+.tile.empty{visibility:hidden}
+.pulse{animation:glow 1.2s ease-in-out infinite alternate}
+@keyframes glow{to{box-shadow:0 4px 0 var(--gold-deep),0 0 0 6px rgba(242,182,50,.35)}}
+@media(max-width:520px){.board{gap:4px}.cat{min-height:60px;padding:6px 2px}}
+
+/* Overlays */
+.overlay{position:fixed;inset:0;z-index:30;background:var(--scrim);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.overlay.top{z-index:40}
+.modal{background:var(--stage2);border:1px solid var(--line);border-radius:18px;width:min(800px,100%);max-height:100%;overflow:auto;padding:clamp(18px,4vw,34px);display:grid;gap:20px;animation:pop .25s both}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.modal-head .eyebrow{color:var(--gold);font-weight:800;letter-spacing:.14em;font-size:13px;text-transform:uppercase}
+.clue-val{color:var(--muted);margin-top:4px}
+.clue-q{font-size:clamp(22px,3.6vw,36px);font-weight:800;line-height:1.25;text-align:center;text-wrap:balance}
+.clue-q.small{font-size:clamp(17px,2.2vw,22px);color:var(--muted);font-weight:600}
+.answer{text-align:center;border-top:1px solid var(--line);padding-top:18px;display:grid;gap:8px}
+.answer .label{color:var(--gold)}
+.answer h3{font-size:clamp(24px,3.6vw,34px);color:var(--gold);font-family:var(--display);font-weight:400;line-height:1.1}
+.answer p{color:var(--muted)}
+.dd{font-family:var(--display);font-size:clamp(40px,9vw,84px);color:var(--gold);text-align:center;line-height:1;text-shadow:0 .05em 0 var(--clay);animation:zoom .6s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes zoom{from{transform:scale(.3) rotate(-6deg);opacity:0}}
+.judge{display:grid;gap:8px}
+.judge-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.judge-row i{width:12px;height:12px;border-radius:50%;background:var(--tc);flex:none}
+.judge-row .nm{flex:1;min-width:120px;font-weight:800;overflow-wrap:anywhere}
+.judge-row .nm small{font-weight:600;color:var(--muted);margin-left:6px}
+.judge-row input{width:130px;background:var(--stage2);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-variant-numeric:tabular-nums}
+.jb{border:1px solid var(--line);background:var(--stage2);border-radius:10px;padding:9px 12px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.jb.ok[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:var(--ink)}
+.jb.no[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:var(--ink)}
+.wager{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap}
+.wager input{width:180px;text-align:center;font-family:var(--display);font-size:28px;background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:10px}
+textarea{width:100%;min-height:300px;background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.5;resize:vertical;white-space:pre;overflow-x:auto}
+code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.88em;background:var(--stage);padding:2px 6px;border-radius:6px;overflow-wrap:anywhere}
+.err{color:var(--bad);font-weight:600;display:grid;gap:4px}
+
+/* Timeline */
+.tl-intro{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;align-items:center;background:var(--paper);color:var(--ink);border-radius:var(--r);padding:clamp(18px,3vw,28px)}
+.tl-intro .who{display:flex;align-items:center;gap:10px;font-weight:800;font-size:clamp(20px,3vw,30px);line-height:1.15}
+.tl-intro .who i{width:18px;height:18px;border-radius:50%;background:var(--tc);flex:none;box-shadow:0 0 0 2px var(--ink)}
+.tl-intro p{color:var(--ink);opacity:.75;margin-top:4px}
+.tl-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media(max-width:720px){.tl-grid{grid-template-columns:minmax(0,1fr)}}
+.tl-col{display:grid;gap:10px;align-content:start}
+.tl-card{text-align:left;padding:14px 16px;border-radius:12px;background:var(--stage3);border:1px solid var(--line);font-weight:700;font-size:17px;line-height:1.3;animation:pop .3s both;transition:transform .1s,background .15s}
+.tl-card:hover{background:var(--sky);transform:translateX(4px)}
+.tl-card{display:flex;align-items:center;gap:12px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.grip{width:10px;height:18px;flex:none;opacity:.55;background:radial-gradient(circle,var(--paper) 1.4px,transparent 1.6px) 0 0/5px 6px}
+.slot.filled{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.drag-ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;margin:0;box-shadow:0 14px 34px rgba(8,6,18,.55);opacity:.96;animation:none;cursor:grabbing}
+.drag-src{opacity:.3}
+body.dragging,body.dragging *{cursor:grabbing!important;user-select:none;-webkit-user-select:none}
+.slot.drop-on{border-color:var(--gold);border-style:solid;background:var(--stage3);transform:scale(1.02)}
+#tl-pool{border-radius:14px;padding:4px;transition:background .15s,outline-color .15s;outline:2px dashed transparent;outline-offset:4px}
+body.dragging-slot #tl-pool{outline-color:var(--line)}
+#tl-pool.drop-on{background:var(--stage2);outline-color:var(--gold)}
+.slot{display:flex;gap:12px;align-items:center;min-height:64px;border:2px dashed var(--line);border-radius:12px;background:transparent;color:var(--muted);padding:10px 14px;text-align:left;font-size:16px;line-height:1.3}
+.slot:disabled{cursor:default}
+.slot b{font-family:var(--display);font-weight:400;color:var(--gold);font-size:22px;width:26px;flex:none}
+.slot span{min-width:0;flex:1}
+.slot.filled{border-style:solid;border-color:var(--gold);background:var(--stage2);color:var(--paper);font-weight:700}
+.slot.right{border-color:var(--good)}
+.slot.wrong{border-color:var(--bad)}
+.yr{font-family:var(--display);font-size:16px;padding:4px 8px;border-radius:8px;background:var(--stage);flex:none}
+.slot.right .yr{color:var(--good)}.slot.wrong .yr{color:var(--bad)}
+.tl-answer{margin:0;padding-left:0;list-style:none;display:grid;gap:8px}
+.tl-answer li{display:flex;gap:12px;align-items:baseline;background:var(--stage2);border-radius:10px;padding:10px 14px}
+.tl-answer b{font-family:var(--display);font-weight:400;color:var(--gold);flex:none;font-variant-numeric:tabular-nums}
+.tl-result{font-size:clamp(18px,2.4vw,22px);font-weight:800}
+.tl-result .gain{margin-right:8px}
+
+/* Podium */
+.pod{display:grid;gap:26px;justify-items:center;text-align:center;padding-top:10px}
+.pod h2{font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,68px);color:var(--gold);line-height:1;text-shadow:0 .05em 0 var(--clay)}
+.stands{display:flex;justify-content:center;align-items:flex-end;gap:clamp(8px,2vw,16px);width:100%}
+.stand{display:flex;flex-direction:column;align-items:center;gap:6px;width:min(210px,31%)}
+.stand-name{font-weight:800;font-size:clamp(14px,2.2vw,20px);overflow-wrap:anywhere;line-height:1.2}
+.stand-score{font-family:var(--display);color:var(--gold);font-size:clamp(16px,2.6vw,24px);font-variant-numeric:tabular-nums}
+.stand-block{width:100%;background:var(--tc);border-radius:12px 12px 0 0;display:grid;place-items:start center;padding-top:12px;font-family:var(--display);font-size:clamp(30px,5vw,48px);color:var(--ink);animation:rise .9s cubic-bezier(.2,.9,.3,1.1) both;transform-origin:bottom}
+.p1 .stand-block{height:clamp(150px,24vw,230px);animation-delay:.5s}
+.p2 .stand-block{height:clamp(110px,17vw,165px);animation-delay:.25s}
+.p3 .stand-block{height:clamp(80px,12vw,120px)}
+@keyframes rise{from{transform:scaleY(0)}}
+.rest{width:min(560px,100%);display:grid;gap:8px}
+.rest div{display:flex;justify-content:space-between;gap:12px;background:var(--stage2);border-radius:10px;padding:10px 14px}
+.rest b{font-family:var(--display);font-weight:400;font-variant-numeric:tabular-nums}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+
+/* Live: host card on the lobby */
+.live-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 28px;align-items:center;background:var(--paper);color:var(--ink);border-radius:var(--r);padding:clamp(18px,3vw,30px)}
+@media(max-width:760px){.live-card{grid-template-columns:minmax(0,1fr)}}
+.live-card .label{color:var(--clay)}
+.live-card h2{font-family:var(--display);font-weight:400;font-size:clamp(24px,3.6vw,38px);line-height:1.05;margin-block:6px 10px}
+.live-card p{max-width:62ch;opacity:.82}
+.live-card .btn.ghost{color:var(--ink);border-color:var(--ink-line)}
+.live-card .btn.ghost:hover{background:var(--paper-2)}
+.live-btns{display:grid;gap:10px;justify-items:start}
+.live-note{font-size:14px;font-weight:700;color:var(--ink);opacity:.7;margin-top:10px}
+.sec-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-top:8px}
+.sec-title h2{font-family:var(--display);font-weight:400;font-size:clamp(20px,2.6vw,26px);color:var(--gold)}
+.sec-title p{color:var(--muted)}
+
+/* Live: host screens */
+.live-body{display:flex;flex-direction:column;gap:20px}
+.join{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:820px){.join{grid-template-columns:minmax(0,1fr)}}
+.join-card{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:clamp(20px,3vw,32px);display:grid;gap:12px}
+.join-card .label{color:var(--clay)}
+.join-card h2{font-size:clamp(24px,3.4vw,36px);font-weight:800;line-height:1.15}
+.join-card p{opacity:.8}
+.pin-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.pin-label{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--clay)}
+.pin{font-family:var(--display);font-size:clamp(46px,8vw,92px);line-height:1;letter-spacing:.06em;color:var(--ink)}
+.qr{background:var(--white);padding:10px;border-radius:12px;line-height:0;flex:none}
+.qr img,.qr canvas{width:clamp(148px,18vw,200px);height:auto;max-width:100%;aspect-ratio:1}
+.linkbox{display:flex;gap:8px;align-items:center;min-width:0}
+.linkbox input{flex:1;min-width:0;background:var(--white);color:var(--ink);border:1px solid var(--ink-line);border-radius:10px;padding:10px 12px;font-size:14px}
+.pin-inline{font-family:var(--display);color:var(--gold);letter-spacing:.08em}
+.join-card .linkish{color:var(--ink);opacity:.7}
+.mode.wide{grid-column:1/-1}
+.m-paper{--mc:var(--paper);--mc-ink:var(--ink)}
+.mode-body .row .btn{margin-top:0}
+.tn-row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:10px}
+.tn-fields{flex:1;min-width:0;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;gap:6px;align-items:center}
+@media(max-width:600px){.tn-fields{grid-template-columns:minmax(0,1fr)}}
+.tn-row input{background:var(--stage2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%}
+.tn-start{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
+.tn-start input{width:72px}
+.tn-fixed{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
+.tn-fixed small{display:block;color:var(--muted);font-weight:600}
+.tn-count{font-weight:800}
+.listen{font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:center}
+.steps{margin:0;padding-left:22px;display:grid;gap:8px;line-height:1.45}
+.steps code{font-size:.82em}
+.sv-input{background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:14px}
+.count-big{font-family:var(--display);font-size:clamp(120px,26vw,280px);line-height:1;color:var(--gold);text-align:center;text-shadow:0 .05em 0 var(--clay);animation:zoom .5s cubic-bezier(.2,1.5,.4,1) both}
+.dbl{display:inline-block;background:var(--gold);color:var(--ink);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-left:8px}
+.team-pick{display:grid;gap:10px;width:100%}
+.team-pick button{display:flex;align-items:center;gap:12px;min-height:64px;border-radius:14px;border:2px solid var(--tc);background:var(--stage);font-size:20px;font-weight:800;padding:10px 16px;text-align:left}
+.team-pick button i{width:22px;height:22px;border-radius:50%;background:var(--tc);flex:none}
+.nick.tm{box-shadow:inset 4px 0 0 var(--tc)}
+.team-std{display:grid;gap:8px}
+.gb-players{font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+body.bigtext .q-text{font-size:clamp(28px,5.2vw,62px)}
+body.bigtext .ans{font-size:clamp(20px,3.2vw,36px);min-height:112px}
+body.bigtext .clue-q{font-size:clamp(28px,5vw,52px)}
+body.bigtext .lb-name{font-size:clamp(20px,3vw,32px)}
+body.bigtext .live-count{font-size:clamp(20px,2.8vw,30px)}
+body.bigtext .fact{font-size:20px}
+.auto{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border-radius:999px;padding:8px 8px 8px 18px;box-shadow:0 8px 28px rgba(8,6,18,.45);max-width:calc(100% - 32px);animation:pop .25s both}
+.auto-label{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.auto-track{width:clamp(60px,14vw,140px);height:6px;border-radius:3px;background:var(--paper-2);overflow:hidden;flex:none}
+.auto-track i{display:block;height:100%;background:var(--clay);transform-origin:left;transform:scaleX(0)}
+@keyframes autobar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.auto-btn{border:1px solid var(--ink-line);background:transparent;border-radius:999px;padding:7px 12px;font-weight:700;font-size:14px;white-space:nowrap}
+.auto-btn:hover{background:var(--paper-2)}
+.auto-set{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+.nick.off{background:transparent;color:var(--muted);border-style:dashed;animation:none}
+.roster-list{display:grid;gap:6px;width:100%;max-height:52vh;overflow:auto;padding:2px}
+.roster-list button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--stage);padding:10px 14px;font-size:17px;font-weight:700;text-align:left}
+.roster-list button:hover:not(:disabled){border-color:var(--gold)}
+.roster-list button:disabled{opacity:.45;cursor:default}
+.roster-list small{font-size:13px;font-weight:600;color:var(--muted);flex:none}
+.p-card input[type="search"]{font-size:18px;text-align:left}
+details.more{border:1px solid var(--line);border-radius:12px;background:var(--stage)}
+details.more summary{cursor:pointer;padding:12px 14px;font-weight:800;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:"+";font-family:var(--display);color:var(--gold);font-size:20px;line-height:1}
+details.more[open] summary::after{content:"−"}
+.more-body{display:grid;gap:10px;padding:0 14px 14px}
+ol.more-body{padding-left:34px}
+.tip{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:16px 20px;line-height:1.5;border-left:6px solid var(--clay)}
+.conn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--good);white-space:nowrap}
+.conn i{width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(63,211,148,.2)}
+.conn.bad{color:var(--gold)}
+.conn.bad i{background:var(--gold);box-shadow:0 0 0 3px rgba(242,182,50,.25);animation:pulse .6s ease-in-out infinite alternate}
+.nick.bot{border-style:dashed}
+.nick.bot::after{content:" · test";font-weight:600;opacity:.6}
+.mini-lb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.mini-lb div{display:flex;align-items:center;gap:8px;background:var(--stage2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
+.mini-lb b{font-family:var(--display);font-weight:400;color:var(--muted)}
+.mini-lb span{flex:1;min-width:0;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-lb em{font-style:normal;font-family:var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+.mini-lb .up{color:var(--good)}
+.mx-name{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
+.mx-name small{color:var(--muted);font-weight:600;margin-left:6px;font-variant-numeric:tabular-nums}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:600;line-height:1.35;cursor:pointer}
+.check input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--gold);flex:none}
+.fj-title{font-family:var(--display);font-size:clamp(30px,9vw,46px);color:var(--gold);line-height:1;text-shadow:0 .05em 0 var(--clay)}
+.big-count{font-family:var(--display);font-size:clamp(64px,11vw,128px);color:var(--clay);line-height:.9;font-variant-numeric:tabular-nums}
+.nick-cloud{display:flex;flex-wrap:wrap;gap:8px}
+button.nick{color:var(--paper);cursor:pointer}
+button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)}
+.nick{background:var(--stage3);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:clamp(14px,1.6vw,18px);animation:pop .35s both;max-width:100%;overflow-wrap:anywhere}
+.live-count{text-align:center;font-size:clamp(17px,2vw,21px);font-weight:700;color:var(--muted)}
+.live-count b{font-family:var(--display);font-weight:400;color:var(--gold);font-size:1.6em;font-variant-numeric:tabular-nums}
+.dist{display:flex;align-items:stretch;justify-content:center;gap:clamp(12px,4vw,36px);height:clamp(150px,22vw,220px)}
+.dist>div{display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(52px,11vw,100px)}
+.dist .col{flex:1;width:100%;display:flex;align-items:flex-end}
+.dist i{display:block;width:100%;height:var(--h);min-height:6px;background:var(--ac);border-radius:8px 8px 0 0;animation:rise .7s cubic-bezier(.2,.9,.3,1) both;transform-origin:bottom}
+.dist b{font-family:var(--display);font-weight:400;font-size:clamp(18px,2.6vw,26px);font-variant-numeric:tabular-nums}
+.dist .lt{font-family:var(--display);color:var(--muted)}
+.dist .right i{box-shadow:0 0 0 3px var(--paper)}
+.dist .right .lt{color:var(--paper)}
+
+/* Live: player phone */
+.p-top{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.p-top .logo{font-size:22px;text-shadow:0 2px 0 var(--clay)}
+.p-who{flex:1;min-width:0;font-weight:700;color:var(--muted);overflow-wrap:anywhere}
+.p-body{display:grid;gap:14px;width:min(620px,100%);margin:0 auto}
+.p-card{background:var(--stage2);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,5vw,30px);display:grid;gap:14px;text-align:center;justify-items:center}
+.p-card h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,7vw,40px);line-height:1.05;color:var(--gold)}
+.p-card input{font-size:22px;text-align:center;padding:14px;border-radius:12px;background:var(--stage);border:1px solid var(--line);width:100%}
+.p-card .btn{width:100%;font-size:18px}
+.p-q{font-size:clamp(18px,4.8vw,26px);font-weight:800;line-height:1.25;text-align:center;text-wrap:balance}
+.p-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.p-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.p-btn{min-height:clamp(112px,25vh,220px);border:0;border-radius:16px;background:var(--ac);color:var(--aink);display:grid;place-content:center;justify-items:center;gap:6px;padding:12px;font-weight:800;font-size:clamp(15px,3.8vw,20px);line-height:1.2;transition:transform .08s,opacity .2s}
+.p-btn b{font-family:var(--display);font-size:clamp(30px,8vw,46px);font-weight:400;line-height:1}
+.p-btn span{overflow-wrap:anywhere}
+.p-btn:active{transform:scale(.96)}
+.p-btn:disabled{opacity:.35;cursor:default;transform:none}
+.p-result{border-radius:var(--r);padding:clamp(24px,6vw,36px) 20px;text-align:center;display:grid;gap:8px;justify-items:center;animation:zoom .45s cubic-bezier(.2,1.4,.4,1) both}
+.p-result h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,9vw,54px);line-height:1}
+.p-result p{font-weight:700;overflow-wrap:anywhere}
+.p-result.good{background:var(--good);color:var(--ink)}
+.p-result.bad{background:var(--bad);color:var(--ink)}
+.p-result.pick{background:var(--ac);color:var(--aink)}
+.p-letter{font-family:var(--display);font-size:56px;line-height:1}
+.p-pts{font-family:var(--display);font-size:clamp(34px,10vw,56px);line-height:1}
+.p-big{font-family:var(--display);font-size:clamp(48px,15vw,88px);color:var(--gold);line-height:1}
+.p-top3{display:grid;gap:6px;width:100%;text-align:left}
+.p-top3 div{display:flex;justify-content:space-between;gap:10px;background:var(--stage);border-radius:10px;padding:10px 14px;font-weight:700}
+.p-top3 b{font-family:var(--display);font-weight:400;font-variant-numeric:tabular-nums}
+.p-wait{display:flex;gap:8px}
+.p-wait i{width:14px;height:14px;border-radius:50%;background:var(--gold);animation:bob 1s ease-in-out infinite}
+.p-wait i:nth-child(2){background:var(--clay);animation-delay:.15s}.p-wait i:nth-child(3){background:var(--leaf);animation-delay:.3s}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.linkish{background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px;font-size:14px}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Shared game bar -->
+  <div class="gamebar" id="gamebar" hidden>
+    <div class="gb-top">
+      <span class="logo">JAPARTY!</span>
+      <span class="gb-mode" id="gb-mode"></span>
+      <span class="gb-progress" id="gb-progress"></span>
+      <span class="gb-players" id="gb-players" hidden></span>
+      <span class="conn" id="gb-conn" hidden><i></i><span>Connected</span></span>
+      <span class="gb-spacer"></span>
+      <button class="toggle" data-act="toggle-music" aria-pressed="true"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="tlabel">Music on</span></button>
+      <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
+      <button class="btn ghost small" data-act="open-music">Music</button>
+      <button class="btn ghost small" data-act="bigtext" id="bigtext-btn" aria-pressed="false">Bigger text</button>
+      <button class="btn ghost small" data-act="fullscreen" id="fs-btn">Full screen</button>
+      <button class="btn ghost small" data-act="quit">Quit game</button>
+    </div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <!-- Lobby -->
+  <section class="screen" id="home">
+    <div class="kente" aria-hidden="true"></div>
+    <header class="hero">
+      <h1 class="logo">JAPARTY!</h1>
+      <p><b>The Black History party quiz.</b> Host a live game where everyone answers from their own phone, or play team games together on one shared screen.</p>
+    </header>
+    <article class="live-card">
+      <div>
+        <span class="label">Live game · everyone plays on their phone</span>
+        <h2>Play live with the whole room</h2>
+        <p>Show this page on the big screen. Players scan the QR code, pick their name and answer on their phones. Works for groups of 100 or more, with Quiz Rush, True or False, Name That Tune, teams and Final Japarty.</p>
+        <p class="live-note" id="live-note">Checking for a live connection…</p>
+      </div>
+      <div class="live-btns">
+        <button class="btn" data-act="live-host" id="live-host-btn" disabled>Host a live game</button>
+        <button class="btn ghost" data-act="live-join" id="live-join-btn" disabled>Join as a player</button>
+        <button class="btn ghost" data-act="live-resume" id="live-resume" hidden>Resume game</button>
+        <button class="linkish" data-act="open-server" style="color:var(--ink)">Let anyone join</button>
+      </div>
+    </article>
+    <div class="sec-title"><h2>One-screen team games</h2><p>2 to 6 teams share one screen and a host runs the clicks.</p>
+      <label class="auto-set" for="auto-home">Auto-advance <select id="auto-home" class="auto-sel"></select></label></div>
+    <div class="lobby">
+      <aside class="panel">
+        <div class="group">
+          <div class="label">Teams · 2 to 6</div>
+          <div id="team-list" class="group"></div>
+          <button class="btn ghost small" data-act="add-team" id="add-team" style="justify-self:start">+ Add a team</button>
+        </div>
+        <div class="group">
+          <div class="label">Question pack</div>
+          <div><div class="pack-name" id="pack-name"></div><div class="muted" id="pack-meta"></div></div>
+          <button class="btn ghost small" data-act="edit-pack" style="justify-self:start">Edit questions</button>
+        </div>
+        <div class="group">
+          <div class="label">Lobby music</div>
+          <div class="seg" role="group" aria-label="Lobby music" id="home-music">
+          </div>
+          <div class="now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="now-playing">Starts when you tap anything</span></div>
+          <button class="btn ghost small" data-act="open-music" style="justify-self:start">Add your own music</button>
+          <div class="row">
+            <button class="toggle" data-act="toggle-music" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Music on</span></button>
+            <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="modes">
+        <article class="mode m-gold">
+          <div class="mode-top"><h2>Quiz Rush</h2><span>Fastest wins</span></div>
+          <div class="mode-body">
+            <p>Timed multiple choice. Every team locks in an answer on the shared screen. Faster correct answers score more, up to 1,000 points, plus a bonus for answer streaks.</p>
+            <div class="opts">
+              <label for="quiz-count">Questions<select id="quiz-count"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label>
+              <label for="quiz-time">Timer<select id="quiz-time"><option value="10">10 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select></label>
+            </div>
+            <button class="btn" data-act="start" data-mode="quiz">Play Quiz Rush</button>
+          </div>
+        </article>
+        <article class="mode m-sky">
+          <div class="mode-top"><h2>Japarty Board</h2><span>Classic</span></div>
+          <div class="mode-body">
+            <p>Six categories, five clues each. Teams take turns picking, the host judges answers, and one hidden Daily Double lets a team bet big. Finish with Final Japarty wagers.</p>
+            <div class="opts"><label>Clue timer<select id="board-time"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option></select></label></div>
+            <button class="btn" data-act="start" data-mode="board">Play the Board</button>
+          </div>
+        </article>
+        <article class="mode m-clay">
+          <div class="mode-top"><h2>True or False Blitz</h2><span>Warm-up</span></div>
+          <div class="mode-body">
+            <p>Ten-second rounds of true or false statements. Quick, loud, and good for getting a room going before the main game.</p>
+            <div class="opts"><label for="tf-count">Statements<select id="tf-count"><option value="10" selected>10</option><option value="0">All 16</option></select></label></div>
+            <button class="btn" data-act="start" data-mode="tf">Play the Blitz</button>
+          </div>
+        </article>
+        <article class="mode m-leaf">
+          <div class="mode-top"><h2>Timeline Shuffle</h2><span>Take turns</span></div>
+          <div class="mode-body">
+            <p>Teams take turns putting four historic moments in order, earliest first, before the clock runs out. 250 points per correct spot and a 500-point bonus for a perfect timeline.</p>
+            <div class="opts"><label>Turn timer<select id="tl-time"><option value="30">30 seconds</option><option value="45" selected>45 seconds</option><option value="60">60 seconds</option></select></label></div>
+            <button class="btn" data-act="start" data-mode="timeline">Play Timeline</button>
+          </div>
+        </article>
+        <article class="mode m-paper wide">
+          <div class="mode-top"><h2>Name That Tune</h2><span>Music round</span></div>
+          <div class="mode-body">
+            <p>A short clip plays and teams pick the song title from four choices before time runs out. Add your own song files, or start with the two public-domain starter tunes Japarty plays itself. Also works in live games on phones.</p>
+            <div class="opts">
+              <label for="tune-count">Songs<select id="tune-count"><option value="5">5</option><option value="10" selected>10</option><option value="0">All</option></select></label>
+              <label for="tune-time">Clip and timer<select id="tune-time"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option></select></label>
+            </div>
+            <p class="tn-count" id="tune-meta"></p>
+            <div class="row"><button class="btn" data-act="start" data-mode="tune">Play Name That Tune</button><button class="btn ghost" data-act="open-tunes">Manage songs</button></div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <footer class="foot"><b>HONORING THE PAST · CELEBRATING THE PRESENT · INSPIRING THE FUTURE</b><span>Team names, music choice and custom questions are saved in this browser.</span></footer>
+  </section>
+
+  <!-- Quiz / True-False -->
+  <section class="screen" id="quiz" hidden>
+    <div class="q-card">
+      <div class="eyebrow" id="q-cat"></div>
+      <div class="timer" id="q-timer"><span>20</span></div>
+      <h2 class="q-text" id="q-text"></h2>
+      <div class="ready" id="q-ready"></div>
+    </div>
+    <div class="answers" id="q-answers"></div>
+    <div class="fact" id="q-fact" hidden></div>
+    <div class="locks" id="q-locks"></div>
+    <div class="actions">
+      <button class="btn ghost" data-act="q-replay" id="q-replay" hidden>Play the clip again</button>
+      <button class="btn ghost" data-act="q-skip" id="q-skip" hidden>Reveal answer now</button>
+      <button class="btn" data-act="q-next" id="q-next" hidden>Leaderboard</button>
+    </div>
+  </section>
+
+  <!-- Leaderboard -->
+  <section class="screen" id="leader" hidden>
+    <div class="lb-head"><h2>Leaderboard</h2><button class="btn" data-act="lb-next" id="lb-next">Next question</button></div>
+    <div class="lb" id="lb-list"></div>
+  </section>
+
+  <!-- Board -->
+  <section class="screen" id="board" hidden>
+    <div class="board-head">
+      <div><h2 id="board-turn"></h2><div class="muted" id="board-left"></div></div>
+      <button class="btn" data-act="final" id="final-btn">Final Japarty</button>
+    </div>
+    <div class="kente" aria-hidden="true"></div>
+    <div class="board" id="board-grid"></div>
+    <p class="muted">Tap a team's score above to give them control. A team that answers correctly picks next.</p>
+  </section>
+
+  <!-- Timeline -->
+  <section class="screen" id="timeline" hidden>
+    <div class="tl-intro">
+      <div><div class="who" id="tl-who"></div><p id="tl-title"></p></div>
+      <div class="timer" id="tl-timer"><span>45</span></div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-col" id="tl-pool"></div>
+      <div class="tl-col" id="tl-slots"></div>
+    </div>
+    <div class="tl-result" id="tl-result" hidden></div>
+    <div class="actions">
+      <button class="btn" data-act="tl-submit" id="tl-submit" disabled>Lock in this order</button>
+      <button class="btn" data-act="tl-next" id="tl-next" hidden>Leaderboard</button>
+    </div>
+  </section>
+
+  <!-- Live host (big screen) -->
+  <section class="screen" id="live" hidden><div class="live-body" id="lh-body"></div></section>
+
+  <!-- Live player (phone) -->
+  <section class="screen" id="player" hidden>
+    <div class="p-top">
+      <span class="logo">JAPARTY!</span>
+      <span class="p-who" id="p-who"></span>
+      <span class="conn" id="p-conn" hidden><i></i><span>Connected</span></span>
+      <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
+    </div>
+    <div class="p-body" id="p-body" aria-live="polite"></div>
+    <div class="center"><button class="linkish" data-act="p-leave" id="p-leave">Leave and open the one-screen games</button></div>
+  </section>
+
+  <!-- Podium -->
+  <section class="screen" id="podium" hidden>
+    <div class="pod">
+      <h2 id="pod-title"></h2>
+      <div class="stands" id="stands"></div>
+      <div class="rest" id="pod-rest"></div>
+      <div class="row center">
+        <button class="btn" data-act="pod-again">Play again</button>
+        <button class="btn ghost" data-act="pod-home">Back to lobby</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Board clue / Final Japarty -->
+<div class="overlay" id="clue" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="clue-cat">
+    <div class="modal-head">
+      <div><div class="eyebrow" id="clue-cat"></div><div class="clue-val" id="clue-val"></div></div>
+      <div class="timer" id="clue-timer"><span>30</span></div>
+    </div>
+    <div id="clue-body" style="display:grid;gap:20px"></div>
+  </div>
+</div>
+
+<!-- Pack editor -->
+<div class="overlay" id="pack" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pack-title">
+    <h2 id="pack-title">Edit questions</h2>
+    <p class="muted">One question per line. Paste rows straight from Excel or Google Sheets with these columns, or separate them with bars:<br><code>Category | Question | Correct answer | Wrong 1 | Wrong 2 | Wrong 3 | Fun fact</code><br>A header row starting with "Category" is skipped. You can also load a .csv or .txt file.<br>Quiz Rush and the Japarty Board use this pack. The board takes the first six categories and up to five questions from each. Lines starting with # are ignored.</p>
+    <textarea id="pack-text" spellcheck="false" aria-label="Question pack"></textarea>
+    <div class="err" id="pack-err" hidden></div>
+    <div class="row">
+      <button class="btn" data-act="pack-save">Use these questions</button>
+      <button class="btn ghost" data-act="pack-load">Load a file</button>
+      <button class="btn ghost" data-act="pack-download">Save as a file</button>
+      <button class="btn ghost" data-act="pack-restore">Restore Black History pack</button>
+      <input type="file" id="pack-file" accept=".csv,.tsv,.txt,text/plain,text/csv" hidden>
+      <button class="btn ghost" data-act="pack-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import players -->
+<div class="overlay" id="roster" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="roster-title" style="width:min(640px,100%)">
+    <div class="modal-head"><h2 id="roster-title">Import players</h2><button class="icon-btn" data-act="roster-cancel" aria-label="Close">×</button></div>
+    <p class="muted">Paste one name per line, or copy two columns from Excel or Google Sheets: <b>Name</b> and <b>Team</b>. You can also load a .csv or .txt file. Players then tap their own name on their phone instead of typing a nickname, and a Team column puts them on teams automatically.</p>
+    <textarea id="roster-text" spellcheck="false" aria-label="Player names" placeholder="Ada Lovelace&#10;Mae Jemison&#10;Katherine Johnson" style="min-height:220px"></textarea>
+    <p class="tn-count" id="roster-info"></p>
+    <label class="check" for="roster-other"><input type="checkbox" id="roster-other"><span>Let people who aren't on the list type a nickname</span></label>
+    <div class="row">
+      <button class="btn" data-act="roster-save">Use this list</button>
+      <button class="btn ghost" data-act="roster-load">Load a file</button>
+      <button class="btn ghost" data-act="roster-clear">Remove list</button>
+    </div>
+    <input type="file" id="roster-file" accept=".csv,.tsv,.txt,text/plain,text/csv" hidden>
+    <p class="muted" style="font-size:14px">The list is saved on this computer for your next game. Results downloads include everyone on the list, with who didn't join.</p>
+  </div>
+</div>
+
+<!-- Open games to anyone -->
+<div class="overlay" id="server" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="server-title" style="width:min(680px,100%)">
+    <div class="modal-head"><h2 id="server-title" tabindex="-1">Let anyone join, no account needed</h2><button class="icon-btn" data-act="server-close" aria-label="Close">×</button></div>
+    <p class="muted" id="server-intro"></p>
+    <ol class="steps">
+      <li>Create a free project at <b>supabase.com</b>. No tables or setup inside it are needed.</li>
+      <li>In the project, open <b>Project Settings</b>, then <b>API Keys</b>. Copy the <b>Project URL</b> and the <b>anon</b> or <b>publishable</b> key.</li>
+      <li>Paste both into Japarty.html: either below, or into the line <code>const LIVE_SERVER={url:"",key:""};</code> near the top of the file so every copy is ready.</li>
+      <li>Put Japarty.html on a website, for example by dragging it onto <b>app.netlify.com/drop</b>, or with GitHub Pages or your school or company site.</li>
+      <li>Open the file from that website on the big screen and choose <b>Host a live game</b>. Players scan the QR code. No sign-in, no app.</li>
+    </ol>
+    <div class="group" id="server-form">
+      <label class="label" for="sv-url">Project URL</label><input id="sv-url" class="sv-input" placeholder="https://your-project.supabase.co" autocomplete="off" spellcheck="false">
+      <label class="label" for="sv-key">Anon or publishable key</label><input id="sv-key" class="sv-input" placeholder="eyJ… or sb_publishable_…" autocomplete="off" spellcheck="false">
+      <div class="row"><button class="btn" data-act="server-save">Save and connect</button><button class="btn ghost" data-act="server-clear">Remove server</button></div>
+      <p class="err" id="sv-err" hidden></p>
+    </div>
+    <p class="muted" style="font-size:14px">The free Supabase plan handles about 200 phones at once. The key is designed to be public, and games last only while the host screen is open. Free projects pause after a week without use, so open the Supabase dashboard the day before an event to wake yours up.</p>
+  </div>
+</div>
+
+<!-- Name That Tune songs -->
+<div class="overlay" id="tunes" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tunes-title">
+    <div class="modal-head"><h2 id="tunes-title" tabindex="-1">Name That Tune songs</h2><button class="icon-btn" data-act="tunes-close" aria-label="Close song settings">×</button></div>
+    <p class="muted">Add song files from this computer, then check each title. Players pick the right title from four choices, so short, clear titles work best. Songs are saved in this browser on this computer only, so set them up on the computer that runs the big screen. Only use music you have the right to play at your event.</p>
+    <div class="group" id="tn-list"></div>
+    <div class="row"><button class="btn" data-act="tunes-add">+ Add song files</button><span class="muted" id="tn-status" style="font-size:14px"></span></div>
+    <input type="file" id="tune-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
+    <label class="check" for="tn-random"><input type="checkbox" id="tn-random"><span>Start each clip at a random spot instead of its start time</span></label>
+    <label class="check" for="tn-starters"><input type="checkbox" id="tn-starters"><span>Include the two starter tunes (public-domain melodies Japarty plays itself)</span></label>
+    <p class="tn-count" id="tn-count"></p>
+  </div>
+</div>
+
+<!-- Music -->
+<div class="overlay" id="music" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="music-title" style="width:min(640px,100%)">
+    <div class="modal-head"><h2 id="music-title" tabindex="-1">Music</h2><button class="icon-btn" data-act="music-close" aria-label="Close music settings">×</button></div>
+    <div class="group"><span class="label">Lobby and leaderboard</span><div class="seg" id="mx-lobby"></div></div>
+    <div class="group"><span class="label">While players answer</span><div class="seg" id="mx-think"></div></div>
+    <div class="group"><span class="label">Your music</span><div class="group" id="mx-list"></div>
+      <div class="row"><button class="btn ghost small" data-act="music-add">+ Add music files</button><span class="muted" id="mx-status" style="font-size:14px"></span></div>
+      <input type="file" id="music-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
+      <p class="muted" style="font-size:14px">MP3, M4A, WAV or OGG. Tracks loop and play from this screen only. They stay on this device and aren't uploaded, so add them again after a reload. Use music you have the right to play at your event.</p></div>
+    <div class="group"><label class="label" for="mx-vol">Music volume</label><input type="range" id="mx-vol" min="0" max="100" step="5"></div>
+    <div class="row">
+      <button class="toggle" data-act="toggle-music" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Music on</span></button>
+      <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="overlay top" id="confirm" hidden>
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-msg" style="width:min(460px,100%)">
+    <p id="confirm-msg" style="font-size:18px;font-weight:700"></p>
+    <div class="row"><button class="btn" data-act="confirm-yes">Yes, continue</button><button class="btn ghost" data-act="confirm-no">Cancel</button></div>
+  </div>
+</div>
+
+<div class="auto" id="auto" hidden role="status">
+  <span class="auto-label" id="auto-label"></span>
+  <span class="auto-track" aria-hidden="true"><i id="auto-bar"></i></span>
+  <button class="auto-btn" data-act="auto-now">Go now</button>
+  <button class="auto-btn" data-act="auto-pause">Pause</button>
+</div>
+
+<canvas id="confetti" hidden></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=n=>(n<0?"−":"")+Math.abs(Math.round(n)).toLocaleString("en-US");
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- content ---------- */
+const BUILTIN_RAW=[
+["HISTORY MAKERS","Born into slavery in 1818, which abolitionist escaped and went on to publish the newspaper The North Star?","Frederick Douglass","Booker T. Washington","W.E.B. Du Bois","Nat Turner","Douglass's autobiographies made him one of the most famous Americans of the 19th century."],
+["HISTORY MAKERS","Which formerly enslaved woman became the best-known conductor on the Underground Railroad?","Harriet Tubman","Sojourner Truth","Ida B. Wells","Mary McLeod Bethune","Tubman also served as a scout and spy for the Union Army during the Civil War."],
+["HISTORY MAKERS","Which enslaved man sued for his freedom in the 1857 Supreme Court case that bears his name?","Dred Scott","Homer Plessy","Frederick Douglass","Nat Turner","The Supreme Court ruled against Scott, a decision that deepened the divide before the Civil War."],
+["HISTORY MAKERS","Who delivered the “I Have a Dream” speech at the 1963 March on Washington?","Dr. Martin Luther King Jr.","Malcolm X","John Lewis","Bayard Rustin","About 250,000 people gathered at the Lincoln Memorial for the march."],
+["HISTORY MAKERS","Imprisoned for 27 years, which anti-apartheid leader became South Africa's president in 1994?","Nelson Mandela","Desmond Tutu","Steve Biko","Thabo Mbeki","He was the country's first president elected in a fully representative democratic election."],
+["CIVIL RIGHTS","Which Montgomery seamstress was arrested in December 1955 for refusing to give up her bus seat?","Rosa Parks","Coretta Scott King","Fannie Lou Hamer","Ella Baker","Her arrest helped spark the Montgomery Bus Boycott, which lasted 381 days."],
+["CIVIL RIGHTS","Which 1954 Supreme Court case ruled racial segregation in public schools unconstitutional?","Brown v. Board of Education","Plessy v. Ferguson","Loving v. Virginia","Shelley v. Kraemer","Thurgood Marshall argued the case for the NAACP."],
+["CIVIL RIGHTS","Which group of nine Black students integrated Little Rock Central High School in 1957?","The Little Rock Nine","The Freedom Riders","The Greensboro Four","The Tuskegee Airmen","Federal troops escorted the students into the school."],
+["CIVIL RIGHTS","In which North Carolina city did the 1960 Woolworth lunch counter sit-in begin?","Greensboro","Raleigh","Durham","Charlotte","The protest inspired sit-ins across the South within weeks."],
+["CIVIL RIGHTS","Which 1965 marches helped build support for the Voting Rights Act?","The Selma to Montgomery marches","The March on Washington","The Poor People's Campaign","The Million Man March","The Voting Rights Act became law in August 1965."],
+["INVENTORS & SCIENCE","Which inventor patented a three-position traffic signal and a safety hood used as an early gas mask?","Garrett Morgan","Lewis Latimer","Elijah McCoy","Granville Woods","His 1923 signal added a warning position between stop and go."],
+["INVENTORS & SCIENCE","Which NASA mathematician hand-checked the orbital calculations for John Glenn's 1962 flight?","Katherine Johnson","Dorothy Vaughan","Mary Jackson","Gladys West","Her story is told in the book and film Hidden Figures."],
+["INVENTORS & SCIENCE","Which agricultural scientist promoted crop rotation and developed hundreds of uses for peanuts?","George Washington Carver","Percy Julian","Benjamin Banneker","Charles Drew","Carver taught and researched at the Tuskegee Institute for nearly 50 years."],
+["INVENTORS & SCIENCE","Which surgeon pioneered large-scale blood banking and led the Blood for Britain program during World War II?","Charles Drew","Daniel Hale Williams","Percy Julian","Ben Carson","Drew's methods for storing plasma saved countless lives."],
+["INVENTORS & SCIENCE","Which engineer and physician became the first Black woman in space in 1992?","Mae Jemison","Stephanie Wilson","Joan Higginbotham","Yvonne Cagle","She flew aboard the Space Shuttle Endeavour."],
+["ARTS & ENTERTAINMENT","Known as the “Queen of Soul,” which singer recorded the 1967 hit “Respect”?","Aretha Franklin","Diana Ross","Gladys Knight","Etta James","Her version became an anthem for civil rights and women's rights."],
+["ARTS & ENTERTAINMENT","Which Harlem Renaissance poet wrote “The Negro Speaks of Rivers”?","Langston Hughes","Countee Cullen","Claude McKay","Paul Laurence Dunbar","Hughes wrote the poem at 17, on a train crossing the Mississippi River."],
+["ARTS & ENTERTAINMENT","Which jazz trumpeter was nicknamed “Satchmo” and “Pops”?","Louis Armstrong","Dizzy Gillespie","Miles Davis","Duke Ellington","Armstrong helped turn jazz into a soloist's art form."],
+["ARTS & ENTERTAINMENT","Which author wrote Beloved and won the Nobel Prize in Literature in 1993?","Toni Morrison","Maya Angelou","Alice Walker","Zora Neale Hurston","Beloved also won the Pulitzer Prize for Fiction in 1988."],
+["ARTS & ENTERTAINMENT","Which artist painted The Migration Series, telling the story of the Great Migration in 60 panels?","Jacob Lawrence","Romare Bearden","Aaron Douglas","Kerry James Marshall","He finished the series in 1941, when he was 23."],
+["SPORTS & FIRSTS","In 1947, which baseball player broke MLB's modern color barrier with the Brooklyn Dodgers?","Jackie Robinson","Satchel Paige","Larry Doby","Hank Aaron","He won the first-ever Rookie of the Year award that season."],
+["SPORTS & FIRSTS","Which tennis champion won 23 Grand Slam singles titles in the Open Era?","Serena Williams","Venus Williams","Coco Gauff","Naomi Osaka","She won her 23rd at the 2017 Australian Open while pregnant."],
+["SPORTS & FIRSTS","Which boxer famously promised to “float like a butterfly, sting like a bee”?","Muhammad Ali","Joe Frazier","George Foreman","Sugar Ray Leonard","Ali became a three-time heavyweight world champion."],
+["SPORTS & FIRSTS","Which two American sprinters raised gloved fists on the podium at the 1968 Mexico City Olympics?","Tommie Smith and John Carlos","Jesse Owens and Ralph Metcalfe","Carl Lewis and Edwin Moses","Bob Beamon and Lee Evans","Their gesture protested racial injustice in the United States."],
+["SPORTS & FIRSTS","Which gymnast won four gold medals at the 2016 Rio Olympics?","Simone Biles","Gabby Douglas","Dominique Dawes","Jordan Chiles","She is the most decorated gymnast in history."],
+["CULTURE & LEGACY","Which annual observance began as Negro History Week in 1926?","Black History Month","Juneteenth","Kwanzaa","Martin Luther King Jr. Day","Historian Carter G. Woodson chose February to honor the birthdays of Frederick Douglass and Abraham Lincoln."],
+["CULTURE & LEGACY","Which cultural and intellectual movement flourished in New York during the 1920s?","The Harlem Renaissance","The Black Arts Movement","The Great Migration","The Chicago Black Renaissance","It celebrated Black art, literature, music and intellectual life."],
+["CULTURE & LEGACY","Celebrated December 26 through January 1, which holiday honors African heritage and seven principles?","Kwanzaa","Juneteenth","Emancipation Day","Black History Month","Maulana Karenga established it in 1966."],
+["CULTURE & LEGACY","Which movement brought about six million Black Americans from the rural South to cities in the North and West between 1910 and 1970?","The Great Migration","Reconstruction","The Underground Railroad","The Harlem Renaissance","It reshaped American cities, politics, music and culture."],
+["CULTURE & LEGACY","Which Smithsonian museum opened on the National Mall in 2016?","National Museum of African American History and Culture","Schomburg Center for Research in Black Culture","DuSable Black History Museum","The Studio Museum in Harlem","Its collection holds more than 40,000 objects."]
+];
+const toItem=r=>({cat:r[0],q:r[1],a:r[2],w:r.slice(3,6).filter(Boolean),f:r[6]||""});
+const BUILTIN=BUILTIN_RAW.map(toItem);
+
+const FINAL={cat:"THE FOUNDER",q:"This educator and historian founded Negro History Week in 1926, laying the foundation for Black History Month.",a:"Who was Carter G. Woodson?",f:"He co-founded the Association for the Study of Negro Life and History in 1915 and was the second Black American to earn a PhD from Harvard."};
+
+const TF=[
+["Harriet Tubman was born in Maryland.",true,"She was born into slavery in Dorchester County, Maryland, around 1822."],
+["Rosa Parks was arrested in Birmingham, Alabama.",false,"Her arrest took place in Montgomery, Alabama, in December 1955."],
+["Jackie Robinson's number 42 is retired across all of Major League Baseball.",true,"MLB retired it league-wide in 1997. Every player wears 42 on Jackie Robinson Day."],
+["The Harlem Renaissance was centered in Chicago.",false,"It was centered in Harlem, New York City."],
+["Thurgood Marshall argued Brown v. Board of Education before the Supreme Court.",true,"He later became the first Black Supreme Court justice in 1967."],
+["Juneteenth marks the day the Emancipation Proclamation was signed.",false,"It marks June 19, 1865, when news of freedom reached enslaved people in Galveston, Texas."],
+["Juneteenth became a federal holiday in 2021.",true,"It was the first new federal holiday since Martin Luther King Jr. Day."],
+["Madam C.J. Walker is often cited as America's first female self-made millionaire.",true,"She built her fortune with a line of hair care products for Black women."],
+["Kwanzaa lasts three days.",false,"Kwanzaa lasts seven days, one for each of its seven principles."],
+["Shirley Chisholm was the first Black woman elected to the U.S. Congress.",true,"She won her seat in 1968 and ran for president in 1972."],
+["Mae Jemison flew into space aboard the Space Shuttle Challenger.",false,"She flew aboard Endeavour in 1992."],
+["Muhammad Ali was born in Louisville, Kentucky.",true,"He was born Cassius Clay in Louisville in 1942."],
+["The Montgomery Bus Boycott lasted about one week.",false,"It lasted 381 days, ending after the Supreme Court ruled bus segregation unconstitutional."],
+["Carter G. Woodson earned a PhD from Harvard.",true,"He received it in 1912, the second Black American to do so after W.E.B. Du Bois."],
+["Barack Obama was the first Black U.S. senator.",false,"Hiram Revels of Mississippi became the first in 1870."],
+["Motown Records was founded in Detroit.",true,"Berry Gordy founded it in 1959 with an $800 family loan."]
+];
+
+const TIMELINE=[
+{title:"From slavery to freedom",events:[{t:"Frederick Douglass escapes slavery",y:1838},{t:"The Dred Scott decision",y:1857},{t:"Emancipation Proclamation takes effect",y:1863},{t:"The 13th Amendment abolishes slavery",y:1865}]},
+{title:"Civil rights milestones",events:[{t:"Brown v. Board of Education decision",y:1954},{t:"Montgomery Bus Boycott begins",y:1955},{t:"March on Washington",y:1963},{t:"Voting Rights Act signed",y:1965}]},
+{title:"Breaking barriers in sports",events:[{t:"Jackie Robinson's MLB debut",y:1947},{t:"Althea Gibson wins Wimbledon",y:1957},{t:"Arthur Ashe wins Wimbledon",y:1975},{t:"Tiger Woods wins the Masters",y:1997}]},
+{title:"The sound of Black music",events:[{t:"Louis Armstrong's Hot Five makes its first recordings",y:1925},{t:"Berry Gordy founds Motown Records",y:1959},{t:"Aretha Franklin releases “Respect”",y:1967},{t:"DJ Kool Herc's Bronx party, often called hip-hop's birth",y:1973}]},
+{title:"Science and space",events:[{t:"George Washington Carver joins Tuskegee Institute",y:1896},{t:"Katherine Johnson checks John Glenn's orbit math",y:1962},{t:"Guion Bluford becomes the first Black American in space",y:1983},{t:"Mae Jemison flies aboard Endeavour",y:1992}]},
+{title:"Writers who changed literature",events:[{t:"Phillis Wheatley publishes her poems",y:1773},{t:"Zora Neale Hurston publishes Their Eyes Were Watching God",y:1937},{t:"Gwendolyn Brooks wins the Pulitzer Prize for Poetry",y:1950},{t:"Toni Morrison wins the Nobel Prize",y:1993}]},
+{title:"Firsts in government",events:[{t:"Hiram Revels becomes the first Black U.S. senator",y:1870},{t:"Thurgood Marshall joins the Supreme Court",y:1967},{t:"Shirley Chisholm is elected to Congress",y:1968},{t:"Barack Obama is elected president",y:2008}]},
+{title:"Institutions that endure",events:[{t:"Howard University is founded",y:1867},{t:"The NAACP is founded",y:1909},{t:"The first Negro History Week",y:1926},{t:"The Smithsonian's NMAAHC opens",y:2016}]},
+{title:"Olympic legends",events:[{t:"Jesse Owens wins four golds in Berlin",y:1936},{t:"Wilma Rudolph wins three golds in Rome",y:1960},{t:"Tommie Smith and John Carlos raise their fists",y:1968},{t:"Simone Biles wins four golds in Rio",y:2016}]},
+{title:"Freedom around the world",events:[{t:"Haiti declares independence",y:1804},{t:"Ghana becomes independent",y:1957},{t:"Nelson Mandela is released from prison",y:1990},{t:"Nelson Mandela is elected president",y:1994}]}
+];
+
+/* ---------- state ---------- */
+const TEAM_COLORS=["#f2b632","#ff7a59","#3fd394","#5fb3f5","#c792ff","#ff8fc8"];
+const newTeam=(name,i)=>({name,color:TEAM_COLORS[i],score:0,streak:0,last:0});
+let teams=(store.get("japarty.teams",null)||["Team 1","Team 2","Team 3"]).slice(0,6).map((n,i)=>newTeam(String(n||"Team "+(i+1)),i));
+while(teams.length<2)teams.push(newTeam("Team "+(teams.length+1),teams.length));
+const saveTeams=()=>store.set("japarty.teams",teams.map(t=>t.name));
+const savedPack=store.get("japarty.pack",null);
+let pack=savedPack&&Array.isArray(savedPack.items)&&savedPack.items.length?savedPack.items:BUILTIN;
+let packName=pack===BUILTIN?"Black History":"Custom pack";
+let prefs=Object.assign({lobby:"groove",think:"think",music:true,sfx:true,vol:.8,auto:4},store.get("japarty.prefs",{}));
+if(!["groove","block","storm"].includes(prefs.lobby))prefs.lobby="groove";
+if(!["think","none"].includes(prefs.think))prefs.think="think";
+if(!(prefs.vol>=0&&prefs.vol<=1))prefs.vol=.8;
+if(![0,3,4,5].includes(+prefs.auto))prefs.auto=4;
+const savePrefs=()=>store.set("japarty.prefs",prefs);
+
+let mode="home",lastMode=null,Q=null,B=null,TL=null,J={},prevRank=null,leaderNext=null,readyTO=null,confirmCb=null;
+
+/* ---------- music engine (Web Audio, all synthesized) ---------- */
+const M={ctx:null,master:null,musicBus:null,sfxBus:null,track:prefs.lobby,kind:"lobby",step:0,next:0,urgent:false,noise:null,src:null,srcId:null,cid:0};
+const CUSTOM=[];/* your own music: decoded into memory on this device, never uploaded */
+const isCustom=t=>/^c\d+$/.test(t);
+const musicLevel=()=>prefs.music?.7*prefs.vol:0;
+/* Name That Tune: starter melodies are public domain (1896 hymn, 1902 rag); your own clips live in this browser's IndexedDB */
+const STARTER_TUNES=[
+ {id:"s-saints",title:"When the Saints Go Marching In",artist:"Traditional",fact:"This traditional hymn became a New Orleans jazz standard. Louis Armstrong's 1938 recording made it famous worldwide.",bpm:150,
+  notes:[[60,1],[64,1],[65,1],[67,5],[60,1],[64,1],[65,1],[67,5],[60,1],[64,1],[65,1],[67,2],[64,2],[60,2],[64,2],[62,6],[64,1],[64,1],[62,1],[60,3],[60,1],[64,2],[67,2],[67,1],[65,5],[64,1],[65,1],[67,2],[64,2],[60,2],[62,2],[60,6]]},
+ {id:"s-ent",title:"The Entertainer",artist:"Scott Joplin, 1902",fact:"Scott Joplin, the King of Ragtime, published this rag in 1902. It became a hit again 70 years later.",bpm:84,
+  notes:[[62,.25],[63,.25],[64,.25],[72,.5],[64,.25],[72,.5],[64,.25],[72,1.25],[72,.25],[74,.25],[75,.25],[76,.25],[72,.25],[74,.25],[76,.5],[71,.25],[74,.5],[72,1.5],[0,.5],
+   [62,.25],[63,.25],[64,.25],[72,.5],[64,.25],[72,.5],[64,.25],[72,1.25],[72,.25],[74,.25],[75,.25],[76,.25],[72,.25],[74,.25],[76,.5],[71,.25],[74,.5],[72,1.5]]}];
+const DECOY_TITLES=["Swing Low, Sweet Chariot","Go Down Moses","Maple Leaf Rag","Wade in the Water","Lift Every Voice and Sing","St. Louis Blues","Deep River","Down by the Riverside","Steal Away","Nobody Knows the Trouble I've Seen"];
+const TUNES=[];
+const IDB={db:null,
+  open(){if(this.db)return this.db;return this.db=new Promise((res,rej)=>{try{const r=indexedDB.open("japarty",1);r.onupgradeneeded=()=>r.result.createObjectStore("tunes",{keyPath:"id"});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
+  async all(){const db=await this.open();return new Promise((res,rej)=>{const q=db.transaction("tunes").objectStore("tunes").getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)})},
+  async put(v){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction("tunes","readwrite");t.objectStore("tunes").put(v);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})},
+  async del(id){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction("tunes","readwrite");t.objectStore("tunes").delete(id);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}};
+const tuneRecord=r=>({id:r.id,title:r.title,artist:r.artist,start:r.start,data:r.data});
+const tunePool=()=>[...TUNES.filter(t=>!t.bad&&t.title.trim()),...(prefs.starters!==false?STARTER_TUNES:[])];
+let tuneStopFn=null,tuneTok=0;
+function stopTune(){tuneTok++;if(tuneStopFn){try{tuneStopFn()}catch(e){}tuneStopFn=null}}
+async function tuneBuffer(rec){if(rec.buf)return rec.buf;try{rec.buf=await M.ctx.decodeAudioData(rec.data.slice(0))}catch(e){rec.buf=null;rec.bad=true}return rec.buf}
+async function playTune(item){
+  stopTune();if(!audioInit())return;const tok=tuneTok,c=M.ctx;
+  if(!M.tuneBus){M.tuneBus=c.createGain();M.tuneBus.gain.value=1;M.tuneBus.connect(M.master)}
+  const st=STARTER_TUNES.find(x=>x.id===item.audio);
+  if(st){const g=c.createGain();g.connect(M.tuneBus);const spb=60/st.bpm;let t=c.currentTime+.08;
+    st.notes.forEach(([m,b])=>{if(m){tone(m,t,Math.max(.14,b*spb*.95),{type:"triangle",vol:.22,bus:g});tone(m+12,t,Math.min(.35,b*spb),{vol:.05,bus:g})}t+=b*spb});
+    tuneStopFn=()=>{g.gain.setTargetAtTime(0,c.currentTime,.03);setTimeout(()=>g.disconnect(),500)};return}
+  const rec=TUNES.find(x=>x.id===item.audio);if(!rec)return;const buf=await tuneBuffer(rec);if(!buf||tok!==tuneTok)return;
+  const len=Math.min(item.secs||15,buf.duration);
+  if(item.off==null)item.off=prefs.tuneRandom?Math.random()*Math.max(0,buf.duration-len-1):Math.max(0,Math.min(+rec.start||0,Math.max(0,buf.duration-2)));
+  const t0=c.currentTime+.05,src=c.createBufferSource(),g=c.createGain();src.buffer=buf;src.connect(g);g.connect(M.tuneBus);
+  const playLen=Math.min(len,buf.duration-item.off);
+  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(1,t0+.15);g.gain.setValueAtTime(1,t0+Math.max(.2,playLen-.6));g.gain.linearRampToValueAtTime(0,t0+playLen);
+  src.start(t0,item.off,playLen+.05);
+  tuneStopFn=()=>{g.gain.setTargetAtTime(0,c.currentTime,.05);try{src.stop(c.currentTime+.3)}catch(e){}};
+}
+function renderTuneUI(withList=true){
+  const pool=tunePool(),n=pool.length,mine=TUNES.length;
+  const meta=$("#tune-meta");if(meta)meta.textContent=n>=2?`${n} songs ready (${mine} of yours${prefs.starters!==false?", 2 starter tunes":""}).`:`Add at least 2 songs to play (${n} ready now).`;
+  if($("#tunes").hidden)return;
+  $("#tn-random").checked=!!prefs.tuneRandom;$("#tn-starters").checked=prefs.starters!==false;
+  $("#tn-count").textContent=n>=2?`${n} songs ready to play.`:`Name That Tune needs at least 2 songs. ${n} ready now.`;
+  if(!withList)return;
+  const rows=TUNES.map(t=>`<div class="tn-row"><div class="tn-fields">
+      <input id="tn-title-${t.id}" data-tid="${t.id}" data-f="title" maxlength="80" value="${esc(t.title)}" aria-label="Song title" placeholder="Song title">
+      <input id="tn-artist-${t.id}" data-tid="${t.id}" data-f="artist" maxlength="60" value="${esc(t.artist||"")}" aria-label="Artist" placeholder="Artist (optional)">
+      <label class="tn-start" for="tn-start-${t.id}">Start at<input id="tn-start-${t.id}" data-tid="${t.id}" data-f="start" type="number" min="0" step="1" value="${+t.start||0}">s</label></div>
+      ${t.bad?'<span class="err">This file won’t play</span>':`<button class="btn ghost small" data-act="tune-preview" data-id="${t.id}">Preview</button>`}
+      <button class="icon-btn" data-act="tune-remove" data-id="${t.id}" aria-label="Remove ${esc(t.title)}">×</button></div>`).join("");
+  const starters=prefs.starters!==false?STARTER_TUNES.map(t=>`<div class="tn-row"><span class="tn-fixed">${esc(t.title)}<small>Starter tune · ${esc(t.artist)}</small></span><button class="btn ghost small" data-act="tune-preview" data-id="${t.id}">Preview</button></div>`).join(""):"";
+  $("#tn-list").innerHTML=(rows||'<p class="muted" style="font-size:14px">No songs of yours yet.</p>')+starters;
+}
+async function loadTunes(){try{const rows=await IDB.all();rows.forEach(r=>{if(r&&r.id&&r.data&&!TUNES.find(t=>t.id===r.id))TUNES.push({id:r.id,title:String(r.title||""),artist:String(r.artist||""),start:+r.start||0,data:r.data})})}catch(e){}renderTuneUI()}
+const TRACK_NAMES={groove:"Sunday Groove · 98 BPM",block:"Block Party · 112 BPM",storm:"Quiet Storm · 76 BPM",think:"Thinking music",none:""};
+function audioInit(){
+  if(M.ctx){if(M.ctx.state==="suspended")M.ctx.resume();return true}
+  const AC=window.AudioContext||window.webkitAudioContext; if(!AC){document.body.classList.add("no-audio");return false}
+  try{M.ctx=new AC()}catch(e){document.body.classList.add("no-audio");return false}
+  const c=M.ctx;
+  M.master=c.createGain();M.master.gain.value=.85;
+  const comp=c.createDynamicsCompressor();M.master.connect(comp);comp.connect(c.destination);
+  M.musicBus=c.createGain();M.musicBus.gain.value=musicLevel();M.musicBus.connect(M.master);
+  M.sfxBus=c.createGain();M.sfxBus.gain.value=prefs.sfx?.9:0;M.sfxBus.connect(M.master);
+  const buf=c.createBuffer(1,c.sampleRate,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;M.noise=buf;
+  M.next=c.currentTime+.1;setInterval(schedule,25);playCustom();updateNowPlaying();return true;
+}
+const mf=m=>440*Math.pow(2,(m-69)/12);
+function tone(m,t,dur,o={}){
+  const c=M.ctx,osc=c.createOscillator(),g=c.createGain();
+  osc.type=o.type||"sine";osc.frequency.setValueAtTime(o.hz||mf(m),t);
+  if(o.slide)osc.frequency.exponentialRampToValueAtTime(o.slide,t+dur);
+  const v=o.vol??.15,a=o.a??.006;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  osc.connect(g);let out=g;
+  if(o.lp){const f=c.createBiquadFilter();f.type="lowpass";f.frequency.value=o.lp;g.connect(f);out=f}
+  out.connect(o.bus||M.musicBus);osc.start(t);osc.stop(t+dur+.05);
+}
+function noise(t,dur,o={}){
+  const c=M.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=M.noise;f.type=o.ft||"highpass";f.frequency.value=o.f||7000;if(o.q)f.Q.value=o.q;
+  g.gain.setValueAtTime(o.vol??.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(f);f.connect(g);g.connect(o.bus||M.musicBus);s.start(t,Math.random()*.5);s.stop(t+dur+.02);
+}
+const kick=(t,v=.4,bus)=>tone(0,t,.3,{hz:130,slide:42,vol:v,bus});
+
+const GROOVE=[
+ {r:38,c:[62,65,69,72],m:[74,0,0,72,0,0,69,0,72,0,74,0,0,77,0,0]},
+ {r:43,c:[62,65,67,71],m:[79,0,0,77,0,0,74,0,72,0,74,0,0,0,0,0]},
+ {r:36,c:[60,64,67,71],m:[76,0,0,74,0,0,72,0,67,0,72,0,0,74,0,0]},
+ {r:45,c:[60,64,67,69],m:[72,0,0,69,0,0,67,0,69,0,72,0,0,0,74,0]}];
+function playGroove(step,t,sp){
+  const b=GROOVE[Math.floor(step/16)%4],s=step%16;
+  if(s===0)b.c.forEach(n=>tone(n,t,sp*15,{type:"triangle",vol:.032,a:.09,lp:1800}));
+  if(s===0||s===8||s===11)kick(t,s===11?.22:.36);
+  if(s===4||s===12)noise(t,.13,{ft:"bandpass",f:1800,q:.8,vol:.09});
+  if(s%2===1)noise(t,.04,{vol:.026});
+  const bass={0:[0,3],3:[12,1.4],6:[7,2],10:[0,2],14:[10,1]};
+  if(bass[s])tone(b.r+bass[s][0],t,sp*bass[s][1],{vol:.22});
+  const n=b.m[s];if(n){tone(n,t,sp*2.6,{vol:.07});tone(n+12,t,sp*1.1,{type:"triangle",vol:.018})}
+}
+const BLOCK=[{r:40,c:[64,67,71,74]},{r:45,c:[61,64,67,71]}];
+function playBlock(step,t,sp){
+  const bi=Math.floor(step/16),b=BLOCK[bi%2],s=step%16;
+  if(s===0||s===7||s===10)kick(t,.42);
+  if(s===4||s===12){noise(t,.14,{ft:"bandpass",f:1500,q:.7,vol:.11});noise(t+.014,.1,{ft:"bandpass",f:2300,q:.9,vol:.06})}
+  noise(t,s%2?.05:.025,{vol:s%2?.035:.018});
+  const bl={0:0,3:12,6:0,8:7,10:10,11:12,14:7};
+  if(s in bl)tone(b.r+bl[s],t,sp*(s===0?2.4:1.1),{type:"sawtooth",vol:.075,lp:700});
+  if(s===2||s===10)b.c.forEach(n=>tone(n,t,sp*1.1,{type:"square",vol:.017,lp:2400}));
+  if(s===0&&bi%4===3)[76,79,83,86].forEach((n,i)=>tone(n,t+i*sp,sp*1.6,{type:"triangle",vol:.05}));
+}
+const STORM=[{r:41,c:[64,67,69,72]},{r:40,c:[62,67,71,74]},{r:38,c:[60,65,69,72]},{r:43,c:[62,65,69,71]}];
+function playStorm(step,t,sp){
+  const b=STORM[Math.floor(step/16)%4],s=step%16;
+  if(s===0)b.c.forEach((n,i)=>tone(n,t+i*.03,sp*15,{type:"sine",vol:.045,a:.25,lp:1400}));
+  if(s===0||s===10)kick(t,.26);
+  if(s===8)noise(t,.18,{ft:"bandpass",f:1200,q:.6,vol:.06});
+  if(s%4===2)noise(t,.05,{vol:.02});
+  noise(t,.02,{f:3000,vol:.006});
+  if(s===0)tone(b.r,t,sp*6,{vol:.2});if(s===7)tone(b.r+7,t,sp*2,{vol:.12});if(s===10)tone(b.r+12,t,sp*3,{vol:.1});
+  if(s===4||s===12){const n=b.c[(s/4+Math.floor(step/16))%4]+12;tone(n,t,sp*4,{vol:.045,a:.02})}
+}
+const THINK=[{r:45,c:[69,72,76]},{r:41,c:[65,69,72]},{r:43,c:[67,71,74]},{r:40,c:[64,68,71]}];
+function playThink(step,t,sp){
+  const b=THINK[Math.floor(step/16)%4],s=step%16;
+  if(s%4===0)kick(t,.3);
+  noise(t,s%4===2?.05:.02,{vol:s%4===2?.05:.016});
+  const off=[0,12,0,7,0,12,0,7,0,12,0,7,0,12,3,7][s];
+  tone(b.r+off,t,sp*.85,{type:"sawtooth",vol:.06,lp:650});
+  if(s%2===0)tone(b.c[(s/2)%3]+12,t,sp*.9,{type:"square",vol:.017,lp:3000});
+  if(M.urgent&&s%2===0)noise(t,.03,{f:9000,vol:.03});
+}
+const TRACKS={groove:{bpm:98,play:playGroove},block:{bpm:112,play:playBlock},storm:{bpm:76,play:playStorm},think:{bpm:122,urgent:1.3,play:playThink}};
+function schedule(){
+  const c=M.ctx;if(!c)return;const tr=TRACKS[M.track];
+  if(!tr||!prefs.music){M.next=c.currentTime+.05;return}
+  const sp=60/(tr.bpm*(M.urgent&&tr.urgent?tr.urgent:1))/4;
+  if(M.next<c.currentTime-.2)M.next=c.currentTime+.05;
+  while(M.next<c.currentTime+.12){tr.play(M.step,M.next,sp);M.next+=sp;M.step++}
+}
+function setTrack(name){M.track=name;M.step=0;if(M.ctx)M.next=M.ctx.currentTime+.06;playCustom();updateNowPlaying()}
+function lobbyMusic(){M.kind="lobby";setTrack(prefs.lobby)}
+function thinkMusic(){M.kind="think";setTrack(prefs.think)}
+function silence(){M.kind="none";setTrack("none")}
+function playCustom(){
+  const c=isCustom(M.track)?CUSTOM.find(x=>x.id===M.track):null;
+  if(M.src&&M.srcId!==(c&&c.id)){try{M.src.stop()}catch(e){}M.src=null;M.srcId=null}
+  if(!c||M.src||!M.ctx)return;
+  const s=M.ctx.createBufferSource();s.buffer=c.buf;s.loop=true;s.connect(M.musicBus);s.start();M.src=s;M.srcId=c.id;
+}
+const trackName=t=>isCustom(t)?((CUSTOM.find(x=>x.id===t)||{}).name||""):(TRACK_NAMES[t]||"");
+const setMusicGain=()=>{if(M.musicBus)M.musicBus.gain.setTargetAtTime(musicLevel(),M.ctx.currentTime,.05)};
+function updateNowPlaying(){
+  const el=$("#now-playing");if(!el)return;
+  el.textContent=!M.ctx?"Starts when you tap anything":!prefs.music?"Music is off":(trackName(M.track)||"");
+}
+function sfx(name){
+  if(!audioInit()||!prefs.sfx)return;
+  const t=M.ctx.currentTime+.01,b=M.sfxBus;
+  switch(name){
+    case "tick":tone(0,t,.05,{hz:1700,type:"square",vol:.045,bus:b});break;
+    case "select":tone(84,t,.07,{type:"triangle",vol:.1,bus:b});break;
+    case "lock":tone(76,t,.08,{type:"triangle",vol:.14,bus:b});tone(83,t+.06,.14,{type:"triangle",vol:.14,bus:b});break;
+    case "correct":[72,76,79,84].forEach((n,i)=>tone(n,t+i*.07,.4,{type:"triangle",vol:.16,bus:b}));tone(96,t+.3,.5,{vol:.05,bus:b});break;
+    case "wrong":tone(0,t,.4,{hz:240,slide:120,type:"sawtooth",vol:.08,lp:900,bus:b});tone(0,t+.2,.5,{hz:190,slide:90,type:"sawtooth",vol:.08,lp:900,bus:b});break;
+    case "whoosh":noise(t,.55,{ft:"bandpass",f:900,q:.5,vol:.14,bus:b});break;
+    case "timesup":tone(0,t,.25,{hz:440,type:"square",vol:.06,lp:1800,bus:b});tone(0,t+.25,.5,{hz:330,type:"square",vol:.06,lp:1800,bus:b});break;
+    case "dd":[60,64,67,72,76,79,84,88].forEach((n,i)=>tone(n,t+i*.055,.3,{type:"triangle",vol:.13,bus:b}));noise(t,.9,{ft:"bandpass",f:3000,q:.4,vol:.05,bus:b});break;
+    case "fanfare":{
+      [[60,0],[64,.13],[67,.26],[72,.39],[67,.62],[72,.75],[76,.88]].forEach(([n,d])=>{tone(n,t+d,.32,{type:"sawtooth",vol:.06,lp:2200,bus:b});tone(n-12,t+d,.32,{type:"triangle",vol:.07,bus:b})});
+      [72,76,79,84].forEach(n=>tone(n,t+1.05,1.6,{type:"sawtooth",vol:.035,lp:2600,a:.03,bus:b}));kick(t+1.05,.5,b);noise(t+1.05,1.2,{f:5000,vol:.05,bus:b});break}
+  }
+}
+
+/* ---------- rendering helpers ---------- */
+function show(id){$$(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
+const progress=txt=>$("#gb-progress").textContent=txt;
+const ranked=()=>teams.map((_,i)=>i).sort((a,b)=>teams[b].score-teams[a].score||a-b);
+function activeTeam(){return mode==="board"&&B?B.active:mode==="timeline"&&TL?TL.team:-1}
+function renderStrip(){
+  $("#strip").hidden=mode==="live";if(mode==="live")return;
+  const a=activeTeam();
+  $("#strip").innerHTML=teams.map((tm,i)=>{
+    const inner=`<span class="swatch" style="--tc:${tm.color}"></span><span>${esc(tm.name)}</span><b>${fmt(tm.score)}</b>${i===a?'<span class="turn">'+(mode==="board"?"In control":"Your turn")+'</span>':""}`;
+    return mode==="board"?`<button class="chip${i===a?" active":""}" style="--tc:${tm.color}" data-act="set-active" data-t="${i}" aria-label="Give control to ${esc(tm.name)}">${inner}</button>`:`<div class="chip${i===a?" active":""}" style="--tc:${tm.color}">${inner}</div>`;
+  }).join("");
+}
+function renderSetup(){
+  $("#team-list").innerHTML=teams.map((tm,i)=>`<div class="team-row"><span class="swatch" style="--tc:${tm.color}"></span><input id="team-name-${i}" data-i="${i}" value="${esc(tm.name)}" maxlength="24" aria-label="Team ${i+1} name"><button class="icon-btn" data-act="remove-team" data-i="${i}" aria-label="Remove ${esc(tm.name)}" ${teams.length<=2?"disabled":""}>×</button></div>`).join("");
+  $("#add-team").disabled=teams.length>=6;
+}
+function renderPackLabel(){$("#pack-name").textContent=packName;$("#pack-meta").textContent=`${pack.length} questions · ${new Set(pack.map(i=>i.cat)).size} categories`}
+function renderMusicUI(){
+  const segBtns=(list,act,cur)=>list.map(([id,name])=>`<button data-act="${act}" data-track="${id}" aria-pressed="${id===cur}">${esc(name)}</button>`).join("");
+  const mine=CUSTOM.map(c=>[c.id,c.name]);
+  const lob=[["groove","Sunday Groove"],["block","Block Party"],["storm","Quiet Storm"],...mine];
+  $("#home-music").innerHTML=segBtns(lob,"music",prefs.lobby);
+  $("#mx-lobby").innerHTML=segBtns(lob,"music",prefs.lobby);
+  $("#mx-think").innerHTML=segBtns([["think","Thinking beat"],...mine,["none","Silence"]],"music-think",prefs.think);
+  $("#mx-list").innerHTML=CUSTOM.length?CUSTOM.map(c=>`<div class="team-row"><span class="swatch" style="--tc:var(--gold)"></span><span class="mx-name">${esc(c.name)} <small>${Math.round(c.buf.duration/60)}:${String(Math.round(c.buf.duration%60)).padStart(2,"0")}</small></span><button class="icon-btn" data-act="music-remove" data-id="${c.id}" aria-label="Remove ${esc(c.name)}">×</button></div>`).join(""):'<p class="muted" style="font-size:14px">No music added yet.</p>';
+  $("#mx-vol").value=Math.round(prefs.vol*100);
+  $$('[data-act="toggle-music"]').forEach(b=>{b.setAttribute("aria-pressed",String(prefs.music));b.querySelector(".tlabel").textContent=prefs.music?"Music on":"Music off"});
+  $$('[data-act="toggle-sfx"]').forEach(b=>{b.setAttribute("aria-pressed",String(prefs.sfx));b.querySelector(".tlabel").textContent=prefs.sfx?"Sound effects on":"Sound effects off"});
+  document.body.classList.toggle("music-off",!prefs.music);updateNowPlaying();
+}
+
+/* ---------- auto-advance: wait a few seconds, then run the next step ---------- */
+let autoIv=null,autoFn=null;
+const AUTO_OPTS=[[0,"Off · I'll click Next"],[3,"3 seconds"],[4,"4 seconds"],[5,"5 seconds"]];
+function renderAutoSel(){$$(".auto-sel").forEach(sel=>{sel.innerHTML=AUTO_OPTS.map(([v,l])=>`<option value="${v}"${v===+prefs.auto?" selected":""}>${l}</option>`).join("")})}
+function autoNext(fn,label,secs){
+  cancelAuto();const n=secs||+prefs.auto;if(!n||live.role==="player")return;
+  autoFn=fn;let left=n;const lab=$("#auto-label"),bar=$("#auto-bar");
+  $("#auto").hidden=false;lab.textContent=`${label} in ${left}s`;
+  bar.style.animation="none";void bar.offsetWidth;bar.style.animation=`autobar ${n}s linear forwards`;
+  autoIv=setInterval(()=>{left--;if(left<=0){const f=autoFn;cancelAuto();if(f)f()}else lab.textContent=`${label} in ${left}s`},1000);
+}
+function cancelAuto(){clearInterval(autoIv);autoIv=null;autoFn=null;const a=$("#auto");if(a)a.hidden=true}
+
+/* ---------- clock ---------- */
+let clockIv=null;
+function startClock(T,el,onEnd){
+  stopClock();const t0=performance.now();let last=null;
+  const upd=()=>{
+    const left=Math.max(0,T-(performance.now()-t0)/1000),s=Math.ceil(left);
+    el.style.setProperty("--p",left/T);el.querySelector("span").textContent=s;el.classList.toggle("hot",left<=5);
+    if(s!==last){last=s;if(s<=5&&s>0)sfx("tick");M.urgent=s<=5}
+    if(left<=0){stopClock();onEnd()}
+  };
+  upd();clockIv=setInterval(upd,100);return t0;
+}
+function stopClock(){clearInterval(clockIv);clockIv=null;M.urgent=false}
+function resetClock(el,T){el.style.setProperty("--p",1);el.querySelector("span").textContent=T;el.classList.remove("hot")}
+
+/* ---------- launching ---------- */
+const MODE_NAMES={quiz:"Quiz Rush",tf:"True or False Blitz",board:"Japarty Board",timeline:"Timeline Shuffle",tune:"Name That Tune"};
+function launch(m){
+  lastMode=m;mode=m;prevRank=null;
+  teams.forEach(t=>{t.score=0;t.streak=0;t.last=0});
+  $("#gamebar").hidden=false;$("#gb-mode").textContent=MODE_NAMES[m];
+  ({quiz:()=>startQuiz("quiz"),tf:()=>startQuiz("tf"),tune:()=>startQuiz("tune"),board:startBoard,timeline:startTimeline})[m]();
+  renderStrip();
+}
+function goHome(){cancelAuto();
+  stopTune();stopClock();clearTimeout(readyTO);["#clue","#pack","#confirm"].forEach(s=>$(s).hidden=true);
+  if(live.role==="host"){if(live.H)clearTimeout(live.H.allTO);broadcast({phase:"ended"});live.H=null;live.lastScores=null;live.hs=null;store.del("japarty.host")}
+  if(live.role==="player"){clearInterval(live.pTimer);live.joined=false}
+  if(live.role)disconnectGame();live.bots=[];
+  $("#gb-players").hidden=true;
+  live.role=null;
+  Q=B=TL=null;mode="home";teams.forEach(t=>{t.score=0;t.streak=0;t.last=0});
+  $("#gamebar").hidden=true;show("home");lobbyMusic();
+}
+function askConfirm(msg,cb){$("#confirm-msg").textContent=msg;confirmCb=cb;$("#confirm").hidden=false;$('#confirm [data-act="confirm-yes"]').focus()}
+
+/* ---------- Quiz Rush + True/False ---------- */
+function buildItems(kind,n,secs){
+  if(kind==="tune"){
+    const pool=tunePool(),titles=pool.map(t=>t.title.trim());
+    const items=shuffle(pool).map(t=>{const title=t.title.trim();let opts=[title,...shuffle(titles.filter(x=>x!==title)).slice(0,3)];
+      const dec=shuffle(DECOY_TITLES.filter(x=>!opts.includes(x)));while(opts.length<4&&dec.length)opts.push(dec.pop());opts=shuffle(opts);
+      return{cat:"Name that tune",q:"Which song is this?",opts,correct:opts.indexOf(title),fact:t.fact||(t.artist?`“${title}” by ${t.artist}.`:""),audio:t.id,secs,off:null}});
+    return n>0?items.slice(0,n):items;
+  }
+  const items=kind==="tf"?shuffle(TF).map(([s,v,f])=>({cat:"True or false?",q:s,opts:["True","False"],correct:v?0:1,fact:f}))
+    :shuffle(pack).map(it=>{const opts=shuffle([it.a,...it.w]);return{cat:it.cat,q:it.q,opts,correct:opts.indexOf(it.a),fact:it.f}});
+  return n>0?items.slice(0,n):items;
+}
+function startQuiz(kind){
+  const tf=kind==="tf",tune=kind==="tune";
+  const T=tf?10:tune?+$("#tune-time").value:+$("#quiz-time").value;
+  Q={kind,items:buildItems(kind,+$(tf?"#tf-count":tune?"#tune-count":"#quiz-count").value,T),i:-1,T};
+  nextQ();
+}
+function nextQ(){cancelAuto();
+  Q.i++;if(Q.i>=Q.items.length)return podium();
+  const it=Q.items[Q.i],two=it.opts.length===2;
+  Q.locks={};Q.phase="ready";Q.cls=two?["c2","c1"]:["c0","c1","c2","c3"];Q.letters=two?["T","F"]:["A","B","C","D"];
+  show("quiz");progress(`Question ${Q.i+1} of ${Q.items.length}`);
+  $("#q-cat").textContent=it.cat;$("#q-text").textContent=it.q;
+  $("#q-answers").innerHTML="";$("#q-answers").className="answers"+(two?" two":"");
+  $("#q-locks").innerHTML="";$("#q-fact").hidden=true;$("#q-skip").hidden=true;$("#q-next").hidden=true;$("#q-replay").hidden=true;stopTune();
+  $("#q-ready").hidden=false;$("#q-ready").innerHTML=`<span>${Q.kind==="tune"?"Get ready to listen":"Read the question"}</span><div class="bar"><i></i></div>`;
+  resetClock($("#q-timer"),Q.T);silence();sfx("whoosh");
+  clearTimeout(readyTO);readyTO=setTimeout(openAnswers,reduced?900:2600);
+}
+function openAnswers(){
+  if(!Q)return;const it=Q.items[Q.i];Q.phase="answer";$("#q-ready").hidden=true;
+  $("#q-answers").innerHTML=it.opts.map((o,k)=>`<div class="ans ${Q.cls[k]}" style="animation-delay:${k*70}ms"><b>${Q.letters[k]}</b><span>${esc(o)}</span><em class="pickers" id="pk-${k}"></em></div>`).join("");
+  $("#q-locks").innerHTML=teams.map((tm,t)=>`<div class="lock" id="lk-${t}" style="--tc:${tm.color}"><div class="lock-name"><i></i>${esc(tm.name)}</div><div class="lock-btns" style="--n:${it.opts.length}">${it.opts.map((o,k)=>`<button class="pick ${Q.cls[k]}" data-act="pick" data-t="${t}" data-k="${k}" aria-label="${esc(tm.name)} picks ${Q.letters[k]}, ${esc(o)}">${Q.letters[k]}</button>`).join("")}</div><div class="lock-state">Pick an answer</div></div>`).join("");
+  $("#q-skip").hidden=false;
+  if(Q.kind==="tune"){silence();playTune(it);$("#q-replay").hidden=false}else thinkMusic();
+  Q.t0=startClock(Q.T,$("#q-timer"),()=>{sfx("timesup");reveal()});
+}
+function pick(t,k){
+  if(!Q||Q.phase!=="answer"||Q.locks[t])return;
+  Q.locks[t]={k,s:(performance.now()-Q.t0)/1000};sfx("lock");
+  const card=$("#lk-"+t);card.classList.add("locked");card.querySelector(".lock-state").textContent="Locked in ✓";
+  if(Object.keys(Q.locks).length===teams.length)reveal();
+}
+function reveal(){cancelAuto();
+  if(!Q||Q.phase!=="answer")return;Q.phase="reveal";stopClock();silence();stopTune();$("#q-replay").hidden=true;
+  const it=Q.items[Q.i];let anyRight=false;prevRank=ranked();
+  teams.forEach((tm,t)=>{
+    const L=Q.locks[t];let gain=0;
+    if(L&&L.k===it.correct){tm.streak++;gain=Math.round(1000*(1-Math.min(1,L.s/Q.T)/2))+Math.min(500,(tm.streak-1)*100);anyRight=true}else tm.streak=0;
+    tm.score+=gain;tm.last=gain;
+    if(L)$("#pk-"+L.k).insertAdjacentHTML("beforeend",`<i style="--tc:${tm.color}" title="${esc(tm.name)}"></i>`);
+    const card=$("#lk-"+t);card.classList.add("locked");
+    card.querySelector(".lock-state").innerHTML=gain?`<span class="gain">+${fmt(gain)}</span>${tm.streak>1?`<span class="streak">${tm.streak} in a row</span>`:""}`:`<span class="gain zero">${L?"Wrong answer":"No answer"}</span>`;
+  });
+  $$("#q-answers .ans").forEach((el,k)=>el.classList.toggle("right",k===it.correct));$("#q-answers").classList.add("revealed");
+  if(it.fact){$("#q-fact").innerHTML=`<span class="label">Did you know</span><span>${esc(it.fact)}</span>`;$("#q-fact").hidden=false}
+  sfx(anyRight?"correct":"wrong");renderStrip();
+  $("#q-skip").hidden=true;$("#q-next").hidden=false;$("#q-next").textContent=Q.i+1>=Q.items.length?"See final results":"Leaderboard";$("#q-next").focus();
+  autoNext(ACT["q-next"],Q.i+1>=Q.items.length?"Final results":"Leaderboard");
+}
+
+/* ---------- Leaderboard ---------- */
+function leaderboard(next,label){cancelAuto();
+  show("leader");leaderNext=next;$("#lb-next").textContent=label;lobbyMusic();
+  const r=ranked(),max=Math.max(1,...teams.map(t=>t.score));
+  $("#lb-list").innerHTML=r.map((t,pos)=>{
+    const tm=teams[t],was=prevRank?prevRank.indexOf(t):pos;
+    return `<div class="lb-row" style="--tc:${tm.color};--w:${Math.max(0,tm.score)/max*100}%;animation-delay:${pos*60}ms"><div class="lb-bar"></div><span class="lb-rank">${pos+1}</span><span class="lb-name"><i></i>${esc(tm.name)}${was>pos?` <span class="up">▲ ${was-pos}</span>`:""}</span><span class="lb-delta">${tm.last>0?"+"+fmt(tm.last):""}</span><span class="lb-score">${fmt(tm.score)}</span></div>`;
+  }).join("");
+  $("#lb-next").focus();
+  autoNext(next,label);
+}
+
+/* ---------- Japarty Board ---------- */
+function boardCats(){
+  const map=new Map();pack.forEach(it=>{if(!map.has(it.cat))map.set(it.cat,[]);map.get(it.cat).push(it)});
+  return [...map].slice(0,6).map(([name,items])=>({name,items:items.slice(0,5)}));
+}
+function startBoard(){
+  const cats=boardCats(),ids=[];cats.forEach((c,ci)=>c.items.forEach((_,r)=>{if(r>=1)ids.push(ci+"-"+r)}));
+  const total=cats.reduce((n,c)=>n+c.items.length,0);
+  B={cats,total,used:new Set(),active:0,dd:ids.length?ids[Math.floor(Math.random()*ids.length)]:null,cur:null,finalDone:false,T:+$("#board-time").value};
+  show("board");renderBoard();lobbyMusic();
+}
+function renderBoard(){
+  const g=$("#board-grid");g.style.setProperty("--cols",B.cats.length);
+  let h=B.cats.map(c=>`<div class="cat">${esc(c.name)}</div>`).join("");
+  for(let r=0;r<5;r++)B.cats.forEach((c,ci)=>{
+    const it=c.items[r],id=ci+"-"+r;
+    if(!it){h+='<div class="tile empty" aria-hidden="true"></div>';return}
+    const used=B.used.has(id);
+    h+=`<button class="tile" data-act="tile" data-c="${ci}" data-r="${r}" style="animation-delay:${(r*B.cats.length+ci)*18}ms" ${used?"disabled":""} aria-label="${esc(c.name)}, ${(r+1)*200} points${used?", answered":""}">${used?"":(r+1)*200}</button>`;
+  });
+  g.innerHTML=h;
+  const left=B.total-B.used.size;
+  $("#board-turn").textContent=`${teams[B.active].name} picks the next clue`;
+  $("#board-left").textContent=left?`${left} of ${B.total} clues left`:"Board cleared. Time for Final Japarty.";
+  $("#final-btn").classList.toggle("pulse",!left);$("#final-btn").disabled=B.finalDone;
+  progress(`${B.used.size} of ${B.total} clues played`);
+}
+function setClue(cat,val,timer){$("#clue-cat").textContent=cat;$("#clue-val").textContent=val;$("#clue-timer").hidden=!timer;if(timer)resetClock($("#clue-timer"),B.T)}
+const body=h=>{$("#clue-body").innerHTML=h};
+function openTile(c,r){
+  const id=c+"-"+r;if(B.used.has(id))return;
+  const it=B.cats[c].items[r];B.cur={id,it,value:(r+1)*200,dd:id===B.dd};$("#clue").hidden=false;
+  if(B.cur.dd){
+    const tm=teams[B.active],max=Math.max(tm.score,1000);B.cur.max=max;
+    setClue(it.cat,"Hidden bonus clue",false);silence();sfx("dd");
+    body(`<div class="dd">Daily Double!</div><p class="center">${esc(tm.name)} found it. Wager any amount from 5 to ${fmt(max)}. Only ${esc(tm.name)} answers.</p><div class="wager"><label for="dd-wager" class="label">Wager</label><input id="dd-wager" type="number" inputmode="numeric" min="5" max="${max}" step="100" value="${Math.min(max,1000)}"></div><div class="row center"><button class="btn" data-act="dd-lock">Lock wager</button></div>`);
+    $("#dd-wager").focus();
+  }else{sfx("select");showClue()}
+}
+function showClue(){
+  const it=B.cur.it,tm=teams[B.active];
+  setClue(it.cat,B.cur.dd?`Daily Double · ${fmt(B.cur.value)} wagered by ${tm.name}`:`${fmt(B.cur.value)} points · picked by ${tm.name}`,true);
+  body(`<p class="clue-q">${esc(it.q)}</p><div class="row center"><button class="btn" data-act="clue-reveal">Reveal answer</button></div>`);
+  thinkMusic();startClock(B.T,$("#clue-timer"),()=>{sfx("timesup");clueReveal()});
+}
+function judgeRows(list){
+  return list.map(({t,amt})=>{const tm=teams[t];return `<div class="judge-row" style="--tc:${tm.color}"><i></i><span class="nm">${esc(tm.name)}</span><button class="jb ok" data-act="judge" data-t="${t}" data-v="1" aria-pressed="false">✓ Right +${fmt(amt)}</button><button class="jb no" data-act="judge" data-t="${t}" data-v="-1" aria-pressed="false">✗ Wrong −${fmt(amt)}</button></div>`}).join("");
+}
+function clueReveal(){
+  stopClock();silence();sfx("whoosh");J={};
+  const it=B.cur.it,list=(B.cur.dd?[B.active]:teams.map((_,i)=>i)).map(t=>({t,amt:B.cur.value}));
+  body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">Mark every team that answered</span>${judgeRows(list)}</div><div class="row center"><button class="btn" data-act="judge-apply">Update scores</button><button class="btn ghost" data-act="clue-skip">Nobody answered</button></div>`);
+}
+function finishTile(){B.used.add(B.cur.id);B.cur=null;$("#clue").hidden=true;stopClock();lobbyMusic();renderBoard();renderStrip()}
+function startFinal(){
+  let item=FINAL;
+  if(pack!==BUILTIN){const onBoard=new Set(B.cats.flatMap(c=>c.items));const spare=pack.filter(i=>!onBoard.has(i));const src=spare.length?spare:pack;item=src[Math.floor(Math.random()*src.length)]}
+  B.fin={item,w:[]};$("#clue").hidden=false;silence();sfx("dd");
+  setClue("Final Japarty","Category: "+item.cat,false);
+  body(`<p class="center">Each team secretly decides a wager, from 0 up to its current score. Teams at zero or below can only wager 0.</p><div class="judge">${teams.map((tm,i)=>{const mx=Math.max(0,tm.score);return `<div class="judge-row" style="--tc:${tm.color}"><i></i><label class="nm" for="fj-w-${i}">${esc(tm.name)}<small>up to ${fmt(mx)}</small></label><input id="fj-w-${i}" type="number" inputmode="numeric" min="0" max="${mx}" step="100" value="0" ${mx?"":"disabled"}></div>`}).join("")}</div><div class="row center"><button class="btn" data-act="fj-lock">Lock wagers</button></div>`);
+}
+function fjReveal(){
+  stopClock();silence();sfx("whoosh");J={};const it=B.fin.item;
+  body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">Mark each team's final answer</span>${judgeRows(teams.map((_,t)=>({t,amt:B.fin.w[t]})))}</div><div class="row center"><button class="btn" data-act="fj-apply">Show final scores</button></div>`);
+}
+
+/* ---------- Timeline Shuffle ---------- */
+function startTimeline(){
+  const per=Math.max(1,Math.min(2,Math.floor(TIMELINE.length/teams.length)));
+  TL={sets:shuffle(TIMELINE).slice(0,teams.length*per),i:-1,T:+$("#tl-time").value};nextTL();
+}
+function nextTL(){cancelAuto();
+  TL.i++;if(TL.i>=TL.sets.length)return podium();
+  TL.team=TL.i%teams.length;TL.set=TL.sets[TL.i];TL.cards=shuffle(TL.set.events.map((e,k)=>({...e,k})));TL.seq=[null,null,null,null];TL.phase="play";
+  show("timeline");progress(`Round ${TL.i+1} of ${TL.sets.length}`);renderStrip();renderTL();
+  thinkMusic();startClock(TL.T,$("#tl-timer"),()=>{sfx("timesup");submitTL()});
+}
+function renderTL(){
+  const tm=teams[TL.team],ev=TL.set.events,play=TL.phase==="play";
+  $("#tl-who").innerHTML=`<i style="--tc:${tm.color}"></i>${esc(tm.name)}${play?", it's your turn":""}`;
+  const filled=TL.seq.filter(k=>k!=null).length;
+  $("#tl-title").textContent=`${TL.set.title}. Drag the events into order, earliest first, or tap them one by one.`;
+  if(play){
+    $("#tl-pool").innerHTML='<span class="label">Events · drag or tap</span>'+TL.cards.filter(c=>!TL.seq.includes(c.k)).map((c,i)=>`<button class="tl-card" data-act="tl-card" data-k="${c.k}" style="animation-delay:${i*50}ms"><span class="grip" aria-hidden="true"></span>${esc(c.t)}</button>`).join("")+(filled===4?'<p class="muted">All four placed. Drag to swap, drag one back here to remove it, or lock it in.</p>':"");
+  }else{
+    const sorted=[...ev].sort((a,b)=>a.y-b.y);
+    $("#tl-pool").innerHTML='<span class="label">Correct order</span><ol class="tl-answer">'+sorted.map(e=>`<li><b>${e.y}</b><span>${esc(e.t)}</span></li>`).join("")+"</ol>";
+  }
+  $("#tl-slots").innerHTML='<span class="label">Your timeline · earliest first</span>'+[0,1,2,3].map(j=>{
+    const k=TL.seq[j],e=k!=null?ev[k]:null,res=!play&&TL.res?(TL.res[j]?" right":" wrong"):"";
+    return `<button class="slot${e?" filled":""}${res}" data-act="tl-slot" data-j="${j}" ${!play?"disabled":""} aria-label="Position ${j+1}${e?": "+esc(e.t)+". Tap to take it out":", empty"}"><b>${j+1}</b><span>${e?esc(e.t):"Drop or tap an event here"}</span>${!play&&e?`<span class="yr">${e.y}</span>`:""}</button>`;
+  }).join("");
+  $("#tl-submit").hidden=!play;$("#tl-submit").disabled=filled<4;
+  $("#tl-next").hidden=play;$("#tl-result").hidden=play;
+}
+function submitTL(){cancelAuto();
+  if(!TL||TL.phase!=="play")return;TL.phase="reveal";stopClock();silence();prevRank=ranked();
+  const ev=TL.set.events,sorted=[...ev].sort((a,b)=>a.y-b.y);let right=0;
+  TL.res=[0,1,2,3].map(j=>{const k=TL.seq[j],ok=k!=null&&ev[k].y===sorted[j].y;if(ok)right++;return ok});
+  const pts=right*250+(right===4?500:0),tm=teams[TL.team];
+  teams.forEach(t=>t.last=0);tm.score+=pts;tm.last=pts;
+  $("#tl-result").innerHTML=pts?`<span class="gain">+${fmt(pts)}</span>${esc(tm.name)} placed ${right} of 4 correctly${right===4?". A perfect timeline!":"."}`:`<span class="gain zero">No points</span>${esc(tm.name)} placed none in the right spot.`;
+  $("#tl-next").textContent=TL.i+1>=TL.sets.length?"See final results":"Leaderboard";
+  sfx(right===4?"correct":right>=2?"lock":"wrong");renderTL();renderStrip();$("#tl-next").focus();
+  autoNext(ACT["tl-next"],TL.i+1>=TL.sets.length?"Final results":"Leaderboard",Math.max(5,+prefs.auto+2));
+}
+
+/* ---------- Podium ---------- */
+function podium(){cancelAuto();
+  stopClock();clearTimeout(readyTO);$("#clue").hidden=true;mode="podium";
+  show("podium");progress("Final results");renderStrip();
+  const r=ranked(),top=r.slice(0,3),tie=r.length>1&&teams[r[0]].score===teams[r[1]].score;
+  $("#pod-title").textContent=tie?"It's a tie!":`${teams[r[0]].name} wins!`;
+  $("#stands").innerHTML=[1,0,2].filter(i=>top[i]!==undefined).map(i=>{const tm=teams[top[i]];return `<div class="stand p${i+1}" style="--tc:${tm.color}"><div class="stand-name">${esc(tm.name)}</div><div class="stand-score">${fmt(tm.score)}</div><div class="stand-block">${i+1}</div></div>`}).join("");
+  $("#pod-rest").innerHTML=r.slice(3).map((t,i)=>`<div><span>${i+4}. ${esc(teams[t].name)}</span><b>${fmt(teams[t].score)}</b></div>`).join("");
+  lobbyMusic();sfx("fanfare");confetti();
+}
+function confetti(){
+  if(reduced)return;const cv=$("#confetti"),ctx=cv.getContext&&cv.getContext("2d"),dpr=devicePixelRatio||1;if(!ctx)return;
+  cv.hidden=false;const W=cv.width=innerWidth*dpr,H=cv.height=innerHeight*dpr;
+  const cols=["#f2b632","#d6502a","#1f8f5c","#2a82c6","#f7efe0"];
+  const P=Array.from({length:180},()=>({x:Math.random()*W,y:-Math.random()*H*.6,vx:(Math.random()-.5)*4*dpr,vy:(2+Math.random()*4)*dpr,r:Math.random()*6.3,vr:(Math.random()-.5)*.3,w:(6+Math.random()*8)*dpr,h:(4+Math.random()*6)*dpr,c:cols[Math.random()*cols.length|0]}));
+  const t0=performance.now();
+  (function f(now){ctx.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.04*dpr;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});
+    if(now-t0<5500)requestAnimationFrame(f);else{ctx.clearRect(0,0,W,H);cv.hidden=true}})(t0);
+}
+
+/* ---------- LIVE: host on the big screen, players on their phones ---------- */
+const LIVE={room:null,db:null,user:null,canHost:false,myId:null,myPeer:null,status:"connecting"};
+const live={role:null,cur:null,sc:{gid:null,seq:-1,map:{},players:0},nick:String(store.get("japarty.nick","")||"").slice(0,20),defaultNick:"",pick:null,openAt:0,closeAt:0,H:null,hs:null,rev:0,pTimer:null,lastScores:null,lastRe:0,pendingSfx:false,pin:null,g:null,named:false,subs:[],hashPin:null,pinErr:"",joining:false,kicked:new Set(),bots:[],lobbyAt:0,teamNames:[],team:null,stage:"pin",rk:null,freeNick:false,roster:null,rosterBuf:{},rosterList:null,lastTaken:"",takenTO:null};
+{const r=store.get("japarty.roster",null);if(r&&Array.isArray(r.names)&&r.names.length)live.rosterList={rid:String(r.rid||Date.now().toString(36)),names:r.names.map(String).slice(0,300),teams:Array.isArray(r.teams)?r.teams.map(String):null,other:!!r.other}}
+const READY_MS=2600;
+const JOIN_BASE="";
+/* LIVE SERVER so anyone can join (used by the standalone Japarty.html file).
+   Paste your free Supabase project's URL and anon or publishable key here, or enter them under "Let anyone join". */
+const LIVE_SERVER={url:"",key:""};
+const PIN_CHARS="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const newPin=()=>Array.from({length:6},()=>PIN_CHARS[Math.random()*PIN_CHARS.length|0]).join("");
+const cleanPin=v=>String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);
+function joinLink(pin){
+  if(LIVE.mode!=="supa"&&JOIN_BASE)return JOIN_BASE+"#join-"+pin;
+  if(!/^https?:$/.test(location.protocol))return "";
+  const q=SB.cfg&&SB.cfg.from!=="file"?`?sb=${encodeURIComponent(SB.cfg.url)}&sk=${encodeURIComponent(SB.cfg.key)}`:"";
+  return location.origin+location.pathname+q+"#join-"+pin;
+}
+const SB={client:null,pid:null,cfg:null};
+function sbConfig(){
+  let q;try{q=new URLSearchParams(location.search)}catch(e){q=new URLSearchParams("")}
+  const ok=(u,k)=>/^https:\/\/[^\s/]+\/?$/.test(u||"")&&String(k||"").length>20;
+  if(ok(q.get("sb"),q.get("sk")))return{url:q.get("sb"),key:q.get("sk"),from:"link"};
+  if(ok(LIVE_SERVER.url,LIVE_SERVER.key))return{url:LIVE_SERVER.url,key:LIVE_SERVER.key,from:"file"};
+  const st=store.get("japarty.server",null);if(st&&ok(st.url,st.key))return{url:st.url,key:st.key,from:"settings"};
+  return null;
+}
+function loadScript(src){return new Promise((res,rej)=>{const el=document.createElement("script");el.src=src;el.onload=res;el.onerror=()=>rej(new Error("load"));document.head.appendChild(el)})}
+async function sbInit(cfg){
+  if(!window.supabase)await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js");
+  SB.client=window.supabase.createClient(cfg.url.replace(/\/$/,""),cfg.key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},realtime:{params:{eventsPerSecond:20}}});
+  SB.cfg=cfg;let pid=String(store.get("japarty.pid","")||"");
+  if(!/^p[a-z0-9]{10,24}$/.test(pid)){pid="p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36);store.set("japarty.pid",pid)}
+  SB.pid=pid;
+}
+/* A room for one PIN on Supabase Realtime, shaped like the built-in room so the game code is shared.
+   Host listens on an inbox channel; players send to it over HTTP without subscribing, so 100 answers don't fan out to 100 phones. */
+function supaRoom(pin,role){
+  const sb=SB.client,base="jp-"+pin.toLowerCase(),peers=new Map(),seen=new Map(),peerCbs=new Set(),topicCbs={},timers=[];
+  let pres={},snap=Object.freeze([]),ok=false;
+  const fire=(joined,left,updated)=>{snap=Object.freeze([...peers.values()]);const ch={peers:snap,joined,left,updated};peerCbs.forEach(f=>{try{f(ch)}catch(e){}})};
+  const chan=sb.channel(base,{config:{broadcast:{self:false}}}),inbox=sb.channel(base+"-in",{config:{broadcast:{self:false}}});
+  const hello=()=>role==="player"?inbox.send({type:"broadcast",event:"p",payload:{pid:SB.pid,pres}}).then(()=>{},()=>{}):Promise.resolve();
+  if(role==="player")["state","scores","roster"].forEach(t=>chan.on("broadcast",{event:t},({payload})=>{(topicCbs[t]||new Set()).forEach(f=>{try{f({topic:t,data:payload,sameTab:false,isMe:false,peer:"host",by:null,kind:"viewer",guest:false})}catch(e){}})}));
+  if(role==="host"){
+    inbox.on("broadcast",{event:"p"},({payload})=>{
+      const d=payload||{};if(typeof d.pid!=="string"||d.pid.length>40||!d.pres||typeof d.pres!=="object")return;
+      const old=peers.get(d.pid),nick=d.pres.nick;seen.set(d.pid,Date.now());
+      if(typeof nick!=="string"||!nick.trim()){if(old){peers.delete(d.pid);fire([],[old],[])}return}
+      const peer=Object.freeze({peer:d.pid,by:d.pid,isMe:false,sameTab:false,kind:"viewer",guest:false,presence:Object.freeze({...d.pres}),updatedAt:Date.now()});
+      peers.set(d.pid,peer);old?fire([],[],[peer]):fire([peer],[],[]);
+    });
+    timers.push(setInterval(()=>{const now=Date.now(),gone=[];peers.forEach((v,k)=>{if(now-(seen.get(k)||0)>45000){peers.delete(k);gone.push(v)}});if(gone.length)fire([],gone,[])},5000));
+  }else timers.push(setInterval(hello,12000));
+  const room={
+    peers:()=>snap,
+    onPeers(f){peerCbs.add(f);return()=>peerCbs.delete(f)},
+    on(t,f){(topicCbs[t]||(topicCbs[t]=new Set())).add(f);return()=>topicCbs[t].delete(f)},
+    emit(t,data){return chan.send({type:"broadcast",event:t,payload:data}).then(()=>{},()=>{})},
+    presence(patch){Object.entries(patch).forEach(([k,v])=>{if(v===null)delete pres[k];else pres[k]=v});return hello()},
+    leave(){timers.forEach(clearInterval);const out=role==="player"?inbox.send({type:"broadcast",event:"p",payload:{pid:SB.pid,pres:{}}}).catch(()=>{}):Promise.resolve();
+      return out.finally(()=>{try{sb.removeChannel(chan)}catch(e){}try{sb.removeChannel(inbox)}catch(e){}})},
+    connected:()=>ok&&(!chan.state||chan.state==="joined")};
+  return new Promise(res=>{
+    let done=false;const finish=v=>{if(!done){done=true;res(v)}};
+    const subs=role==="host"?[chan,inbox]:[chan];let n=0;
+    subs.forEach(c=>c.subscribe(st=>{if(st==="SUBSCRIBED"){if(++n===subs.length){ok=true;finish(room);hello()}}else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT")finish(null)}));
+    setTimeout(()=>finish(ok?room:null),10000);
+  });
+}
+{const m=/^#join-([A-Za-z0-9]{6})$/.exec(location.hash||"");if(m)live.hashPin=m[1].toUpperCase()}
+const clsFor=it=>it&&Array.isArray(it.opts)&&it.opts.length===2?{c:["c2","c1"],l:["T","F"]}:{c:["c0","c1","c2","c3"],l:["A","B","C","D"]};
+const ordinal=n=>{const s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
+function players(){
+  if(!live.g||!live.pin)return[];
+  const real=live.g.peers().filter(p=>p.kind==="viewer"&&!p.sameTab&&p.presence&&p.presence.pin===live.pin&&typeof p.presence.nick==="string"&&p.presence.nick.trim()&&!live.kicked.has(p.by||p.peer));
+  return live.role==="host"&&live.bots.length?real.concat(live.bots.filter(b=>!live.kicked.has(b.by))):real;
+}
+const nickOf=p=>String(p.presence.nick).trim().slice(0,30);
+/* player list (roster): players tap their own name; an optional Team column assigns teams */
+const rosterOn=()=>!!(live.rosterList&&live.rosterList.names.length);
+const rosterTeams=()=>{const L=live.rosterList;if(!L||!L.teams)return[];return[...new Set(L.teams.map(t=>t.trim()).filter(Boolean))].slice(0,6)};
+function parseRoster(txt){
+  const names=[],teamsCol=[],seen=new Map();
+  String(txt||"").replace(/^\uFEFF/,"").split(/\r?\n/).forEach((line,n)=>{
+    const l=line.trim();if(!l||l.startsWith("#"))return;
+    const c=(l.includes("\t")?l.split("\t"):l.includes(";")&&!l.includes(",")?l.split(";"):csvSplit(l)).map(x=>x.trim());
+    if(n===0&&/^(name|names|player|players|full name)$/i.test(c[0]))return;
+    let nm=c[0].replace(/\s+/g," ").slice(0,30);if(!nm)return;
+    const k=nm.toLowerCase(),cnt=(seen.get(k)||0)+1;seen.set(k,cnt);if(cnt>1)nm=(nm.slice(0,27)+" "+cnt);
+    names.push(nm);teamsCol.push((c[1]||"").slice(0,24));
+  });
+  const hasTeams=teamsCol.some(Boolean);
+  return{names:names.slice(0,300),teams:hasTeams?teamsCol.slice(0,300):null,cut:names.length>300};
+}
+function computeTaken(){
+  if(!rosterOn())return[];const N=live.rosterList.names,set=new Set();
+  players().forEach(p=>{const r=p.presence.rk;if(Number.isInteger(r)&&r>=0&&r<N.length&&nickOf(p)===N[r])set.add(r)});
+  return[...set];
+}
+function sendRoster(){
+  if(!live.g||!live.pin)return;const L=live.rosterList;
+  if(!rosterOn()){if(LIVE.db)dbWrite("roster/"+live.pin,{pin:live.pin,rid:"",names:[]});return}
+  for(let i=0;i<L.names.length;i+=40)live.g.emit("roster",{pin:live.pin,rid:L.rid,n:L.names.length,part:i,names:L.names.slice(i,i+40),teams:L.teams?L.teams.slice(i,i+40):null}).catch(()=>{});
+  if(LIVE.db)dbWrite("roster/"+live.pin,{pin:live.pin,rid:L.rid,names:L.names,teams:L.teams});
+}
+function applyRoster(d){
+  if(!d||typeof d!=="object"||d.pin!==live.pin||typeof d.rid!=="string")return;
+  const ok=a=>Array.isArray(a)&&a.every(x=>typeof x==="string");
+  if(!ok(d.names)||(d.teams!=null&&!ok(d.teams)))return;
+  if(d.n==null){live.roster=d.rid?{rid:d.rid,names:d.names.map(x=>x.slice(0,30)),teams:d.teams}:null}
+  else{const n=Math.min(300,+d.n||0),part=+d.part||0;let b=live.rosterBuf[d.rid];
+    if(!b)b=live.rosterBuf[d.rid]={names:new Array(n).fill(null),teams:new Array(n).fill("")};
+    d.names.forEach((x,i)=>{if(part+i<n){b.names[part+i]=x.slice(0,30);if(d.teams)b.teams[part+i]=String(d.teams[i]||"")}});
+    if(b.names.every(x=>x!==null))live.roster={rid:d.rid,names:b.names,teams:b.teams.some(Boolean)?b.teams:null};}
+  if(live.role==="player")playerRender();
+}
+
+/* each game gets its own PIN: its own named room plus games/<PIN> and scores/<PIN> docs */
+async function connectGame(pin){
+  if(live.pin===pin&&live.g)return live.g;
+  disconnectGame();live.pin=pin;live.cur=null;live.pick=null;live.team=null;live.roster=null;live.rosterBuf={};live.rk=null;live.freeNick=false;live.sc={gid:null,seq:-1,map:{},players:0};
+  let g=null;
+  if(LIVE.mode==="supa"){g=await supaRoom(pin,live.role==="host"?"host":"player");if(!g){if(live.pin===pin)live.pin=null;return null}}
+  else{try{g=await LIVE.room.join("g-"+pin.toLowerCase())}catch(e){g=null}}
+  if(live.pin!==pin){if(g)g.leave().catch(()=>{});return null}
+  live.g=g||LIVE.room;live.named=!!g;
+  const subs=[live.g.onPeers(onPeersChange,()=>{}),
+    live.g.on("state",m=>{if(!m.sameTab)applyState(m.data)},()=>{}),
+    live.g.on("scores",m=>{if(!m.sameTab)applyScores(m.data)},()=>{})];
+  if(LIVE.db){
+    subs.push(LIVE.db.doc("games/"+pin).onSnapshot(s=>{if(s.exists)applyState(s.data())},()=>{}));
+    subs.push(LIVE.db.doc("scores/"+pin).onSnapshot(s=>{if(s.exists)applyScores(s.data())},()=>{}));
+    subs.push(LIVE.db.doc("roster/"+pin).onSnapshot(s=>{if(s.exists)applyRoster(s.data())},()=>{}));
+  }
+  subs.push(live.g.on("roster",m=>{if(!m.sameTab)applyRoster(m.data)},()=>{}));
+  live.subs=subs;return live.g;
+}
+function disconnectGame(){
+  live.subs.forEach(u=>{try{u()}catch(e){}});live.subs=[];
+  if(live.g){if(live.named)live.g.leave().catch(()=>{});else live.g.presence({pin:null,nick:null,a:null}).catch(()=>{})}
+  live.g=null;live.named=false;live.pin=null;live.cur=null;
+}
+
+async function initLive(){return initSupa()}
+async function initSupa(){
+  const cfg=sbConfig();
+  if(!cfg){LIVE.status="off";renderLiveCard();if(live.hashPin)enterPlayer(live.hashPin);return}
+  try{await sbInit(cfg)}catch(e){LIVE.status="off";LIVE.sbErr="Couldn't load the live server library. Check the internet connection.";renderLiveCard();if(live.hashPin)enterPlayer(live.hashPin);return}
+  LIVE.mode="supa";LIVE.status="on";LIVE.canHost=true;LIVE.myPeer=SB.pid;renderLiveCard();
+  if(live.hashPin&&mode==="home")enterPlayer(live.hashPin);
+}
+function renderLiveCard(){
+  const res=$("#live-resume"),sv=savedHost();
+  res.hidden=!(sv&&LIVE.status==="on"&&LIVE.canHost&&sv.mode===LIVE.mode);if(!res.hidden)res.textContent="Resume game "+sv.pin;
+  const note=$("#live-note"),h=$("#live-host-btn"),j=$("#live-join-btn");
+  if(LIVE.status==="connecting"){note.textContent="Checking for a live connection…";h.disabled=j.disabled=true;return}
+  if(LIVE.status==="off"){
+    note.textContent=LIVE.sbErr||(false?"Live games run on the shared Japarty page. Share it with your group, and players open the shared link while signed in.":"Set up a free live server so anyone can join from their phone, no account needed.");
+    h.disabled=j.disabled=true;return}
+  j.disabled=false;h.disabled=!LIVE.canHost;
+  note.textContent=LIVE.mode==="supa"?"Connected. Anyone with the link or QR code can join, no sign-in needed."
+    :LIVE.canHost?"Players sign in to join. To skip sign-in, use Let anyone join.":"Enter the game PIN from the big screen to join.";
+}
+
+/* host: state goes out on the room for speed and into the db for late joiners */
+const dbQ={};
+function dbWrite(path,data){
+  if(!LIVE.db)return;const q=dbQ[path]||(dbQ[path]={busy:false,next:null});q.next=data;if(q.busy)return;
+  q.busy=true;(async()=>{while(q.next){const d=q.next;q.next=null;try{await LIVE.db.doc(path).set(d)}catch(e){}}q.busy=false})();
+}
+function broadcast(p){
+  if(!live.pin)return;
+  live.rev=Math.max(live.rev+1,Date.now());const s={...p,pin:live.pin,rev:live.rev,at:Date.now(),kicked:[...live.kicked].slice(-200)};
+  if(live.teamNames.length)s.teams=live.teamNames;
+  if(rosterOn()){s.ro={rid:live.rosterList.rid,n:live.rosterList.names.length,other:live.rosterList.other};s.taken=computeTaken();live.lastTaken=s.taken.join(",")}
+  live.hs=s;
+  saveHost();
+  if(live.g)live.g.emit("state",s).catch(()=>{});dbWrite("games/"+live.pin,s);
+}
+function sendScoreChunks(d){
+  if(!live.g)return;
+  for(let i=0;i<d.list.length;i+=40)live.g.emit("scores",{pin:d.pin,gid:d.gid,seq:d.seq,players:d.players,list:d.list.slice(i,i+40)}).catch(()=>{});
+}
+function onPeersChange(ch){
+  const me=ch.peers.find(p=>p.sameTab);if(me)LIVE.myPeer=me.peer;
+  if(live.role!=="host")return;
+  if(live.hs&&ch.joined.some(p=>!p.sameTab)){
+    const now=Date.now();
+    if(now-live.lastRe>1000){live.lastRe=now;live.g.emit("state",live.hs).catch(()=>{});if(live.lastScores)sendScoreChunks(live.lastScores);if(rosterOn())sendRoster()}
+  }
+  hostLiveUpdate();
+}
+const validAns=(a,H)=>a&&typeof a==="object"&&a.g===H.gid&&a.s===H.seq&&Number.isInteger(a.k)&&a.k>=0&&a.k<H.items[H.i].opts.length;
+function teamOf(p){const t=p&&p.presence?p.presence.team:null;return Number.isInteger(t)&&t>=0&&t<live.teamNames.length?t:-1}
+function teamStandings(){
+  const H=live.H;if(!live.teamNames.length||!H||!H.scores)return[];
+  return live.teamNames.map((name,k)=>{const m=Object.values(H.scores).filter(e=>e.t===k);return[name,m.length?Math.round(m.reduce((a,e)=>a+e.s,0)/m.length):0,m.length,k]}).sort((a,b)=>b[1]-a[1]);
+}
+const teamRows=std=>`<div class="team-std">${std.map(([n,avg,cnt,k],pos)=>`<div class="lb-row" style="--tc:${TEAM_COLORS[k]};--w:${Math.max(0,avg)/Math.max(1,...std.map(t=>t[1]))*100}%"><div class="lb-bar"></div><span class="lb-rank">${pos+1}</span><span class="lb-name"><i></i>${esc(n)} <small class="muted">${cnt} player${cnt===1?"":"s"}</small></span><span></span><span class="lb-score">${fmt(avg)}</span></div>`).join("")}</div>`;
+function hostLiveUpdate(){
+  if(live.bots.length)botTeams();
+  const H=live.H,ps=players();
+  if(!H)return;
+  const gp=$("#gb-players");if(gp){gp.hidden=false;gp.textContent=ps.length+" player"+(ps.length===1?"":"s")}
+  if(H.phase==="lobby"){updateCloud(ps);
+    if(rosterOn()&&computeTaken().join(",")!==live.lastTaken&&!live.takenTO)live.takenTO=setTimeout(()=>{live.takenTO=null;if(live.H&&live.H.phase==="lobby"&&live.hs){const{rev,at,pin,kicked,teams:_t,ro,taken,...rest}=live.hs;broadcast(rest)}},800);
+    return}
+  if(H.phase==="question"){
+    const n=ps.filter(p=>validAns(p.presence.a,H)).length,c=$("#lq-count");
+    if(c){c.textContent=n;$("#lq-total").textContent=ps.length}
+    if(H.open&&ps.length&&n>=ps.length&&!H.allTO)H.allTO=setTimeout(hostReveal,700);
+  }
+  if(H.phase==="fjwager"||H.phase==="fjq"){
+    const k=H.phase==="fjwager"?"fw":"fa",n=ps.filter(p=>{const v=p.presence[k];return v&&typeof v==="object"&&v.g===H.gid}).length,c=$("#fj-count");
+    if(c){c.textContent=n;$("#fj-total").textContent=ps.length}
+    if(H.phase==="fjwager"&&+prefs.auto&&ps.length&&n>=ps.length&&!H.allTO)H.allTO=setTimeout(()=>{H.allTO=null;autoNext(hostFJClue,"Everyone's in! Clue")},400);
+    if(H.phase==="fjq"&&H.open&&ps.length&&n>=ps.length&&!H.allTO)H.allTO=setTimeout(hostFJJudge,900);
+  }
+}
+function renderRosterHost(){
+  const info=$("#lh-roster-info");if(!info)return;const L=live.rosterList,rt=rosterTeams(),opt=$("#lh-teams-roster"),sel=$("#lh-teams");
+  info.textContent=rosterOn()?`${L.names.length} names${rt.length?` in ${rt.length} teams`:""}. Players tap their own name to join${L.other?", and others can type a nickname":""}.`:"No list yet. Players type a nickname. Import a list so people pick their own name.";
+  opt.hidden=!rt.length;if(rt.length){opt.textContent=`From the player list (${rt.length} teams)`;sel.value="roster";live.teamNames=rt}
+  else if(sel.value==="roster"){sel.value="0";live.teamNames=[]}
+}
+function updateCloud(ps){
+  const cloud=$("#lh-cloud");if(!cloud)return;
+  $("#lh-count").textContent=ps.length;$("#lh-start").disabled=!ps.length;$("#lh-empty").hidden=ps.length>0;
+  const wg=$("#lh-wait-group");
+  if(rosterOn()){const N=live.rosterList.names,tk=new Set(computeTaken()),wait=N.filter((n,i)=>!tk.has(i));
+    $("#lh-count-label").textContent=`of ${N.length} joined`;wg.hidden=!wait.length;$("#lh-wait-label").textContent=`Not joined yet · ${wait.length}`;
+    const w=$("#lh-wait"),key=wait.join("\n");if(w.dataset.k!==key){w.dataset.k=key;w.innerHTML=wait.map(n=>`<span class="nick off">${esc(n)}</span>`).join("")}}
+  else{$("#lh-count-label").textContent="players in the lobby";wg.hidden=true}
+  const seen=new Set();
+  ps.forEach(p=>{seen.add(p.peer);let el=cloud.querySelector(`[data-peer="${CSS.escape(p.peer)}"]`);const n=nickOf(p);
+    if(!el){el=document.createElement("button");el.className="nick";el.dataset.peer=p.peer;el.dataset.act="kick";cloud.appendChild(el)}
+    el.classList.toggle("bot",!!p.isBot);el.dataset.key=p.by||p.peer;el.dataset.name=n;el.title="Remove "+n;if(el.textContent!==n)el.textContent=n;
+    const t=teamOf(p);el.classList.toggle("tm",t>=0);if(t>=0)el.style.setProperty("--tc",TEAM_COLORS[t]);else el.style.removeProperty("--tc")});
+  [...cloud.children].forEach(el=>{if(!seen.has(el.dataset.peer))el.remove()});
+}
+async function savedHost(){const d=store.get("japarty.host",null);return d&&d.pin&&d.H&&Date.now()-(+d.at||0)<6*3600*1000?d:null}
+function saveHost(){
+  if(live.role!=="host"||!live.H||!live.pin)return;
+  const{allTO,...H}=live.H;
+  store.set("japarty.host",{pin:live.pin,rev:live.rev,H,lastScores:live.lastScores,kicked:[...live.kicked],teamNames:live.teamNames,at:Date.now(),mode:LIVE.mode});
+}
+async function hostResume(){
+  const d=savedHost();if(!d)return;
+  live.role="host";mode="live";$("#gamebar").hidden=false;$("#gb-mode").textContent="Live game";renderStrip();show("live");
+  $("#lh-body").innerHTML=`<p class="muted center">Reconnecting to game ${esc(d.pin)}…</p>`;
+  const g=await connectGame(d.pin);if(!g||live.role!=="host"){$("#lh-body").innerHTML=`<p class="err center">Couldn't reconnect. Try again in a moment.</p>`;return}
+  live.rev=+d.rev||0;live.H=d.H;live.lastScores=d.lastScores;live.kicked=new Set(d.kicked||[]);live.teamNames=Array.isArray(d.teamNames)?d.teamNames:[];const H=live.H;
+  if(H.kind)$("#gb-mode").textContent="Live · "+MODE_NAMES[H.kind];
+  const ph=H.phase;
+  if(!H.items||ph==="lobby"||ph==="starting")return hostLobby();
+  if(ph==="countdown"){H.i=-1;return hostCountdown()}
+  if(ph==="question"){H.i--;return hostBoard()}
+  if(ph==="reveal"||ph==="board")return hostBoard();
+  if(/^fj/.test(ph)&&ph!=="fjreveal"&&!H.fjDone)return hostFJWager();
+  return hostPodium();
+}
+async function hostLobby(fresh){
+  stopClock();clearTimeout(readyTO);if(live.H)clearTimeout(live.H.allTO);
+  const keep=live.role==="host"&&live.pin&&!fresh;
+  if(live.role==="host"&&fresh&&live.pin)broadcast({phase:"ended"});
+  live.role="host";mode="live";live.H={phase:"lobby"};live.lastScores=null;
+  $("#gamebar").hidden=false;$("#gb-mode").textContent="Live game";progress("Setting up");renderStrip();
+  show("live");$("#lh-body").innerHTML=`<p class="muted center">Opening a game room…</p>`;
+  const pin=keep?live.pin:newPin();
+  live.lobbyAt=Date.now();
+  if(!keep){live.kicked=new Set();live.teamNames=[];live.bots=[];await connectGame(pin);if(live.role!=="host"||live.pin!==pin){$("#lh-body").innerHTML=`<p class="err center">Couldn't open a game room. Check the connection and try again.</p>`;return}}
+  const link=joinLink(pin);progress("Game PIN "+pin);
+  $("#lh-body").innerHTML=`<div class="join">
+    <div class="join-card"><span class="label">Join on your phone</span>
+      <div class="pin-row"><div><span class="pin-label">Game PIN</span><div class="pin">${pin}</div></div><div class="qr" id="lh-qr" aria-label="QR code for the join link"></div></div>
+      <p>${LIVE.mode==="supa"?"Scan the code or open the link. No account needed.":"Scan the code, or open the Japarty link and enter the PIN. Players need to be signed in with access to this page."}</p>
+      ${link?"":`<p class="err">Phones can't open a file saved on this computer. Put Japarty.html on a website, open it from there, and the link and QR code will appear.</p>`}
+      ${link?`<div class="linkbox"><input id="lh-link" readonly value="${esc(link)}" aria-label="Join link"><button class="btn small" data-act="copy-link">Copy link</button></div>`:""}
+      <div class="row" style="align-items:baseline;gap:14px"><span class="big-count" id="lh-count">0</span><span style="font-weight:800;font-size:18px" id="lh-count-label">players in the lobby</span><button class="linkish" data-act="new-pin" style="margin-left:auto">New PIN</button></div></div>
+    <div class="panel">
+      <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Name That Tune · song clips</option></select></div>
+      <div class="opts"><label for="lh-n">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label></div>
+      <button class="btn" data-act="lh-start" id="lh-start" disabled>Start the game</button>
+      <p class="muted" style="font-size:13px;margin-top:-6px" id="lh-start-note">Start unlocks when the first player joins.</p>
+      <div class="row"><button class="btn ghost small" data-act="lh-bots">Add 8 test players</button><button class="btn ghost small" data-act="lh-bots-clear" id="lh-bots-clear" hidden>Remove test players</button></div>
+      <details class="more"><summary>More settings</summary><div class="more-body">
+        <button class="btn ghost small" data-act="open-tunes" id="lh-songs" style="justify-self:start" hidden>Manage Name That Tune songs</button>
+        <label for="lh-t" class="label">Answer timer</label><select id="lh-t"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select>
+        <div class="group"><span class="label">Player list</span><p class="muted" id="lh-roster-info" style="font-size:14px"></p><button class="btn ghost small" data-act="open-roster" style="justify-self:start">Import players</button></div>
+        <label for="lh-teams" class="label">Teams</label><select id="lh-teams"><option value="0">Everyone for themselves</option><option value="2">2 teams</option><option value="3">3 teams</option><option value="4">4 teams</option><option value="roster" id="lh-teams-roster" hidden>From the player list</option></select>
+        <p class="muted" style="font-size:13px;margin-top:-4px">Players pick a team on their phone. Team score is the average of its players, so team sizes don't matter.</p>
+        <label for="lh-auto" class="label">Auto-advance</label><select id="lh-auto" class="auto-sel"></select>
+        <label class="check" for="lh-dbl"><input type="checkbox" id="lh-dbl" checked><span>Double points on the final question</span></label>
+        <label class="check" for="lh-fj"><input type="checkbox" id="lh-fj" checked><span>Finish with Final Japarty</span></label>
+      </div></details>
+      <details class="more"><summary>Before your event: 5-minute check</summary><ol class="steps more-body">
+        ${LIVE.mode==="supa"?"<li>Open Japarty from its website link on the big screen, not from a saved file.</li>":"<li>Share this page with your players from the Share menu. Players must be signed in and in your organization; for anyone else, use Let anyone join.</li>"}
+        <li>Join from 2 or 3 phones on the event Wi-Fi and play a short round.</li>
+        <li>Add test players to check teams, auto-advance and Final Japarty.</li>
+        <li>Check the room speakers and the Music volume.</li>
+        <li>Turn on Full screen and Bigger text for the projector, and keep the computer plugged in.</li>
+      </ol></details>
+      <p class="muted" style="font-size:13px">Keyboard: Space or Enter for the next step, R to reveal, P to pause.</p>
+    </div></div>
+  <div class="tip" id="lh-tip" hidden></div>
+  <div class="group"><span class="label">In the lobby · tap a name to remove it</span><div class="nick-cloud" id="lh-cloud"></div><p class="muted" id="lh-empty">Nobody yet. Names show up here the moment people join.</p></div>
+  <div class="group" id="lh-wait-group" hidden><span class="label" id="lh-wait-label">Not joined yet</span><div class="nick-cloud" id="lh-wait"></div></div>`;
+  $("#lh-bots-clear").hidden=!live.bots.length;
+  renderRosterHost();if(live.teamNames.length&&$("#lh-teams").value==="0")$("#lh-teams").value=String(live.teamNames.length);renderAutoSel();
+  broadcast({phase:"lobby"});sendRoster();updateCloud(players());lobbyMusic();keepAwake();
+  try{if(window.QRCode&&link){const big=link.length>140;new QRCode($("#lh-qr"),{text:link,width:big?220:168,height:big?220:168,colorDark:"#16112a",colorLight:"#ffffff",correctLevel:big?QRCode.CorrectLevel.L:QRCode.CorrectLevel.M})}else $("#lh-qr").hidden=true}catch(e){$("#lh-qr").hidden=true}
+}
+function hostStart(){
+  const kind=$("#lh-kind").value;
+  if(kind==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs before starting Name That Tune.";return}
+  live.H={phase:"starting",gid:Math.random().toString(36).slice(2,10),kind,items:buildItems(kind,+$("#lh-n").value,+$("#lh-t").value),i:-1,seq:0,T:kind==="tf"?10:+$("#lh-t").value,scores:{},fj:$("#lh-fj").checked,fjDone:false,dbl:$("#lh-dbl").checked};
+  live.lastScores=null;$("#gb-mode").textContent="Live · "+MODE_NAMES[kind];hostCountdown();
+}
+function hostCountdown(){cancelAuto();
+  const H=live.H;H.phase="countdown";progress("Starting");silence();
+  broadcast({phase:"countdown",gid:H.gid,seq:H.seq,total:H.items.length,kind:H.kind});
+  let n=3;$("#lh-body").innerHTML=`<p class="clue-q">Get ready! ${esc(MODE_NAMES[H.kind])} starts in</p><div class="count-big" id="lh-cd">3</div><p class="live-count">${players().length} players are in</p>`;sfx("tick");
+  const step=()=>{if(live.H!==H||H.phase!=="countdown")return;n--;if(n<=0){sfx("dd");return hostNext()}
+    const el=$("#lh-cd");el.textContent=n;el.style.animation="none";void el.offsetWidth;el.style.animation="";sfx("tick");readyTO=setTimeout(step,1000)};
+  clearTimeout(readyTO);readyTO=setTimeout(step,1000);
+}
+function hostNext(){cancelAuto();
+  const H=live.H;H.i++;if(H.i>=H.items.length)return hostPodium();
+  H.curDbl=!!(H.dbl&&H.i===H.items.length-1&&H.items.length>1);
+  const it=H.items[H.i],c=clsFor(it);H.seq++;H.phase="question";H.open=false;clearTimeout(H.allTO);H.allTO=null;
+  progress(`Question ${H.i+1} of ${H.items.length}`);
+  broadcast({phase:"question",gid:H.gid,seq:H.seq,kind:H.kind,i:H.i,total:H.items.length,cat:it.cat,q:it.q,opts:it.opts,T:H.T,readyMs:READY_MS,dbl:H.curDbl});
+  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">${esc(it.cat)}${H.curDbl?'<span class="dbl">Double points</span>':""}</div><div class="timer" id="lq-timer"><span>${H.T}</span></div><h2 class="q-text">${esc(it.q)}</h2><div class="ready" id="lq-ready"><span>Read the question</span><div class="bar"><i></i></div></div></div>
+    <div class="answers${it.opts.length===2?" two":""}" id="lq-answers"></div>
+    <div class="live-count"><b id="lq-count">0</b> of <span id="lq-total">${players().length}</span> players answered</div>
+    <div class="actions">${H.kind==="tune"?'<button class="btn ghost" data-act="lh-replay" id="lh-replay" hidden>Play the clip again</button>':""}<button class="btn ghost" data-act="lh-reveal" id="lh-reveal" hidden>Reveal answer now</button></div>`;
+  silence();sfx("whoosh");
+  clearTimeout(readyTO);readyTO=setTimeout(()=>{
+    if(live.H!==H||H.phase!=="question")return;H.open=true;$("#lq-ready").hidden=true;
+    $("#lq-answers").innerHTML=it.opts.map((o,k)=>`<div class="ans ${c.c[k]}" style="animation-delay:${k*70}ms"><b>${c.l[k]}</b><span>${esc(o)}</span></div>`).join("");
+    $("#lh-reveal").hidden=false;botsAnswer(H);
+    if(H.kind==="tune"){silence();playTune(it);$("#lh-replay").hidden=false}else thinkMusic();
+    startClock(H.T,$("#lq-timer"),()=>{sfx("timesup");clearTimeout(H.allTO);H.allTO=setTimeout(hostReveal,800)});
+    hostLiveUpdate();
+  },reduced?900:READY_MS);
+}
+function miniBoard(prev){
+  const r=hostRanking().slice(0,5);if(!r.length)return"";
+  return `<div class="group"><span class="label">Top 5 right now</span><div class="mini-lb">${r.map(([k,e],pos)=>{const was=prev?prev.indexOf(k):-1,up=was>pos||was<0&&e.s>0;
+    return `<div><b>${pos+1}</b><span>${esc(e.n)}</span>${up&&prev&&prev.length?'<i class="up" aria-label="moved up">▲</i>':""}<em>${fmt(e.s)}</em></div>`}).join("")}</div></div>`;
+}
+const hostRanking=()=>Object.entries(live.H.scores).sort((a,b)=>b[1].s-a[1].s);
+function hostReveal(){cancelAuto();
+  const H=live.H;if(!H||H.phase!=="question")return;
+  H.phase="reveal";H.open=false;stopClock();clearTimeout(readyTO);clearTimeout(H.allTO);silence();stopTune();
+  const it=H.items[H.i],c=clsFor(it),counts=it.opts.map(()=>0),done=new Set();let right=0,fast=null;
+  const prevTop=hostRanking().map(([k])=>k);
+  Object.values(H.scores).forEach(e=>e.l=0);
+  players().forEach(p=>{
+    const key=p.by||p.peer;if(done.has(key))return;done.add(key);
+    const e=H.scores[key]||(H.scores[key]={n:"",s:0,st:0,l:0});e.n=nickOf(p);e.t=teamOf(p);const a=p.presence.a;
+    if(validAns(a,H)){counts[a.k]++;
+      if(a.k===it.correct){const sec=Math.min(H.T,Math.max(0,(+a.ms||0)/1000));e.st++;e.c=(e.c||0)+1;e.l=(Math.round(1000*(1-(sec/H.T)/2))+Math.min(500,(e.st-1)*100))*(H.curDbl?2:1);e.s+=e.l;right++;
+        if(!fast||sec<fast.sec)fast={n:e.n,sec}}else e.st=0;
+    }else e.st=0;
+  });
+  const list=hostRanking().map(([k,e],r)=>[k,e.s,e.l,r+1,e.st]);
+  live.lastScores={pin:live.pin,gid:H.gid,seq:H.seq,players:list.length,list};sendScoreChunks(live.lastScores);dbWrite("scores/"+live.pin,live.lastScores);
+  broadcast({phase:"reveal",gid:H.gid,seq:H.seq,kind:H.kind,i:H.i,total:H.items.length,cat:it.cat,q:it.q,opts:it.opts,correct:it.correct,counts,right,players:done.size,fact:it.fact||""});
+  const max=Math.max(1,...counts),last=H.i+1>=H.items.length;
+  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">${esc(it.cat)}</div><h2 class="q-text">${esc(it.q)}</h2></div>
+    <div class="dist" role="img" aria-label="Answers: ${it.opts.map((o,k)=>c.l[k]+" "+counts[k]).join(", ")}">${it.opts.map((o,k)=>`<div class="${c.c[k]}${k===it.correct?" right":""}"><b>${counts[k]}</b><span class="col"><i style="--h:${counts[k]/max*100}%"></i></span><span class="lt">${c.l[k]}</span></div>`).join("")}</div>
+    <div class="answers revealed${it.opts.length===2?" two":""}">${it.opts.map((o,k)=>`<div class="ans ${c.c[k]}${k===it.correct?" right":""}"><b>${c.l[k]}</b><span>${esc(o)}</span></div>`).join("")}</div>
+    ${it.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(it.fact)}</span></div>`:""}
+    <div class="live-count"><b>${right}</b> of ${done.size} players got it right${fast?` · fastest: ${esc(fast.n)} in ${fast.sec.toFixed(1)}s`:""}</div>
+    ${miniBoard(prevTop)}
+    <div class="actions"><button class="btn" data-act="lh-next">${last?(H.fj?"Final Japarty":"See final results"):"Leaderboard"}</button></div>`;
+  sfx(right?"correct":"wrong");
+  autoNext(ACT["lh-next"],last?(H.fj?"Final Japarty":"Final results"):"Leaderboard");
+}
+function hostBoard(){cancelAuto();
+  const H=live.H;H.phase="board";const r=hostRanking(),top=r.slice(0,5).map(([,e])=>[e.n,e.s,e.l]);
+  const std=teamStandings();
+  broadcast({phase:"board",gid:H.gid,seq:H.seq,i:H.i,total:H.items.length,top,players:r.length,teamTop:std});lobbyMusic();
+  const max=Math.max(1,...top.map(t=>t[1]));
+  $("#lh-body").innerHTML=`<div class="lb-head"><h2>Top 5</h2><button class="btn" data-act="lh-continue">Next question</button></div>
+    <div class="lb">${top.map(([n,s,l],pos)=>`<div class="lb-row" style="--tc:${TEAM_COLORS[pos]};--w:${Math.max(0,s)/max*100}%;animation-delay:${pos*60}ms"><div class="lb-bar"></div><span class="lb-rank">${pos+1}</span><span class="lb-name"><i></i>${esc(n)}</span><span class="lb-delta">${l>0?"+"+fmt(l):""}</span><span class="lb-score">${fmt(s)}</span></div>`).join("")}</div>
+    ${r.length>5?`<p class="muted center">Plus ${r.length-5} more players. Everyone sees their own place on their phone.</p>`:""}
+    ${std.length?`<span class="label">Team standings · average points per player</span>${teamRows(std)}`:""}`;
+  autoNext(hostNext,H.i+1>=H.items.length?"Final results":"Next question");
+}
+function hostPodium(){cancelAuto();
+  const H=live.H;stopClock();clearTimeout(readyTO);H.phase="podium";progress("Final results");
+  const r=hostRanking(),top=r.slice(0,3).map(([,e])=>[e.n,e.s]);
+  const std=teamStandings();
+  broadcast({phase:"podium",gid:H.gid,seq:H.seq,top,players:r.length,teamTop:std});
+  const col=["var(--gold)","var(--paper)","var(--clay)"];
+  $("#lh-body").innerHTML=`<div class="pod"><h2>${top.length?esc(top[0][0])+" wins!":"Game over"}</h2>
+    <div class="stands">${[1,0,2].filter(i=>top[i]).map(i=>`<div class="stand p${i+1}" style="--tc:${col[i]}"><div class="stand-name">${esc(top[i][0])}</div><div class="stand-score">${fmt(top[i][1])}</div><div class="stand-block">${i+1}</div></div>`).join("")}</div>
+    ${std.length?`<div style="width:min(640px,100%);display:grid;gap:10px;text-align:left"><span class="label">${esc(std[0][0])} wins the team round</span>${teamRows(std)}</div>`:""}
+    <p class="muted">${r.length} player${r.length===1?"":"s"} took part.</p>
+    <div class="row center"><button class="btn" data-act="lh-again">Play again with the same PIN</button><button class="btn ghost" data-act="lh-csv">Download results</button><button class="btn ghost" data-act="lh-end">End live game</button></div><p class="muted" id="lh-csv-note"></p></div>`;
+  lobbyMusic();sfx("fanfare");confetti();
+}
+
+async function downloadResults(){
+  const H=live.H;if(!H||!H.scores)return;const note=$("#lh-csv-note");
+  const cell=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const rows=[["Rank","Nickname","Score","Correct answers",...(live.teamNames.length?["Team"]:[])],...hostRanking().filter(([k])=>!/^bot-/.test(k)).map(([,e],i)=>[i+1,e.n,e.s,e.c||0,...(live.teamNames.length?[live.teamNames[e.t]||""]:[])])];
+  if(rosterOn()){const played=new Set(Object.values(H.scores).map(e=>e.n));rows[0].push("Status");rows.slice(1).forEach(r=>r.push("Played"));
+    live.rosterList.names.forEach((n,i)=>{if(!played.has(n))rows.push(["",n,"","",...(live.teamNames.length?[(live.rosterList.teams&&live.rosterList.teams[i])||""]:[]),"Did not join"])})}
+  const csv=rows.map(r=>r.map(cell).join(",")).join("\r\n"),name=`japarty-results-${live.pin}.csv`;
+  return downloadText(name,csv,"text/csv",note);
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=name;document.body.appendChild(a);a.click();a.remove();if(note)note.textContent="Results downloaded."}
+  catch(e){if(note)note.textContent="This browser couldn't download the file."}
+}
+
+/* test players: pretend phones that join, answer, wager and type answers, so a host can rehearse alone */
+function addBots(n){
+  const start=live.bots.length;
+  for(let i=0;i<n;i++){const id="bot-"+(start+i+1);live.bots.push({peer:id,by:id,kind:"viewer",sameTab:false,isMe:false,guest:false,isBot:true,skill:.45+Math.random()*.4,presence:{pin:live.pin,nick:"Test player "+(start+i+1)}})}
+  botTeams();
+}
+function botTeams(){live.bots.forEach((b,i)=>{if(live.teamNames.length)b.presence.team=i%live.teamNames.length;else delete b.presence.team})}
+function botsAnswer(H){
+  const it=H.items[H.i];
+  live.bots.forEach(b=>{const ms=Math.round((.8+Math.random()*H.T*.7)*1000);setTimeout(()=>{
+    if(live.H!==H||H.phase!=="question"||!H.open||!live.bots.includes(b))return;
+    const others=it.opts.map((_,k)=>k).filter(k=>k!==it.correct),k=Math.random()<b.skill?it.correct:others[Math.random()*others.length|0];
+    b.presence={...b.presence,a:{g:H.gid,s:H.seq,k,ms}};hostLiveUpdate()},ms)});
+}
+function botsWager(H){
+  live.bots.forEach(b=>setTimeout(()=>{if(live.H!==H||H.phase!=="fjwager"||!live.bots.includes(b))return;
+    const sc=Math.max(0,(H.scores[b.by]||{}).s||0);b.presence={...b.presence,fw:{g:H.gid,w:Math.round(Math.random()*sc/100)*100}};hostLiveUpdate()},1000+Math.random()*5000));
+}
+function botsFJ(H){
+  const right=String(H.fjItem.a).replace(/^\s*(who|what|where|when)\s+(is|was|are|were)\s+/i,"").replace(/\?\s*$/,"");
+  live.bots.forEach(b=>setTimeout(()=>{if(live.H!==H||H.phase!=="fjq"||!live.bots.includes(b))return;
+    const t=Math.random()<b.skill?right:["Booker T. Washington","W.E.B. Du Bois","No idea"][Math.random()*3|0];
+    b.presence={...b.presence,fa:{g:H.gid,t}};hostLiveUpdate()},3000+Math.random()*15000));
+}
+
+/* live Final Japarty: phones wager, then type an answer; the host confirms the marking */
+const normAns=t=>String(t||"").toLowerCase().replace(/^\s*(who|what|where|when)\s+(is|was|are|were)\s+/,"").replace(/[^a-z0-9 ]/g," ").replace(/\b(the|a|an|dr|mr|mrs|ms)\b/g," ").replace(/\s+/g," ").trim();
+const fjMatch=(t,acc)=>{const n=normAns(t);return !!n&&acc.some(a=>n===a||(a.length>=4&&n.includes(a)))};
+function fjItem(){
+  if(pack===BUILTIN)return{...FINAL,accept:["carter g woodson","carter woodson","woodson"]};
+  const used=new Set(live.H.items.map(i=>i.q)),spare=pack.filter(i=>!used.has(i.q)),src=spare.length?spare:pack,it=src[Math.random()*src.length|0];
+  const n=normAns(it.a),w=n.split(" "),lastW=w[w.length-1];
+  return{cat:it.cat,q:it.q,a:it.a,f:it.f||"",accept:[n].concat(w.length>1&&lastW.length>=5?[lastW]:[])};
+}
+function hostFJWager(){cancelAuto();
+  const H=live.H;H.fjItem=fjItem();H.phase="fjwager";clearTimeout(H.allTO);H.allTO=null;progress("Final Japarty");silence();sfx("dd");
+  broadcast({phase:"fjwager",gid:H.gid,seq:H.seq,cat:H.fjItem.cat});
+  $("#lh-body").innerHTML=`<div class="dd">Final Japarty</div><p class="clue-q">Category: ${esc(H.fjItem.cat)}</p>
+    <p class="center muted">Players are choosing a wager on their phones, from 0 up to their score. A right answer adds the wager, a wrong one takes it away.</p>
+    <div class="live-count"><b id="fj-count">0</b> of <span id="fj-total">${players().length}</span> wagers locked</div>
+    <div class="actions"><button class="btn" data-act="fj-clue">Show the clue</button></div>`;
+  hostLiveUpdate();botsWager(H);if(+prefs.auto)autoNext(hostFJClue,"Clue",25);
+}
+function hostFJClue(){cancelAuto();
+  const H=live.H,it=H.fjItem;if(H.phase!=="fjwager")return;clearTimeout(H.allTO);H.allTO=null;H.phase="fjq";H.fjT=45;
+  broadcast({phase:"fjq",gid:H.gid,seq:H.seq,cat:it.cat,q:it.q,T:H.fjT,readyMs:0});
+  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">Final Japarty · ${esc(it.cat)}</div><div class="timer" id="fj-timer"><span>${H.fjT}</span></div><h2 class="q-text">${esc(it.q)}</h2></div>
+    <div class="live-count"><b id="fj-count">0</b> of <span id="fj-total">${players().length}</span> players answered</div>
+    <div class="actions"><button class="btn ghost" data-act="fj-judge">Stop and check answers</button></div>`;
+  thinkMusic();H.open=true;botsFJ(H);
+  startClock(H.fjT,$("#fj-timer"),()=>{sfx("timesup");clearTimeout(H.allTO);H.allTO=setTimeout(hostFJJudge,900)});
+  hostLiveUpdate();
+}
+function hostFJJudge(){cancelAuto();
+  const H=live.H;if(!H||H.phase!=="fjq")return;
+  H.phase="fjjudge";H.open=false;stopClock();clearTimeout(H.allTO);H.allTO=null;silence();sfx("whoosh");
+  broadcast({phase:"fjjudge",gid:H.gid,seq:H.seq});
+  const groups=new Map(),done=new Set();
+  players().forEach(p=>{const key=p.by||p.peer;if(done.has(key))return;done.add(key);
+    const fa=p.presence.fa,t=fa&&fa.g===H.gid&&typeof fa.t==="string"?fa.t.slice(0,60):"",n=normAns(t);
+    const g=groups.get(n)||{n,label:t.trim()||"(no answer)",count:0,ok:n?fjMatch(t,H.fjItem.accept):false};g.count++;groups.set(n,g)});
+  H.groups=[...groups.values()].sort((a,b)=>(b.n?1:0)-(a.n?1:0)||b.count-a.count);
+  const it=H.fjItem;
+  $("#lh-body").innerHTML=`<div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div>
+    <div class="judge"><span class="label">Players' answers · answers that match are marked right already. Check the rest.</span>
+    ${H.groups.length?H.groups.map((g,i)=>`<div class="judge-row"><span class="nm">${esc(g.label)}<small>${g.count} player${g.count===1?"":"s"}</small></span>${g.n?`<button class="jb ok" data-act="fj-mark" data-i="${i}" data-v="1" aria-pressed="${g.ok}">✓ Right</button><button class="jb no" data-act="fj-mark" data-i="${i}" data-v="0" aria-pressed="${!g.ok}">✗ Wrong</button>`:'<span class="muted">Counts as wrong</span>'}</div>`).join(""):'<p class="muted">No players answered.</p>'}</div>
+    <div class="actions"><button class="btn" data-act="fj-apply-live">Apply wagers and show results</button></div>`;
+}
+function hostFJApply(){cancelAuto();
+  const H=live.H;if(!H||H.phase!=="fjjudge")return;
+  const okSet=new Set(H.groups.filter(g=>g.ok&&g.n).map(g=>g.n)),done=new Set();let right=0;
+  Object.values(H.scores).forEach(e=>{e.l=0;e.fj=0});
+  players().forEach(p=>{const key=p.by||p.peer;if(done.has(key))return;done.add(key);
+    const e=H.scores[key]||(H.scores[key]={n:"",s:0,st:0,l:0});e.n=nickOf(p);e.t=teamOf(p);
+    const fw=p.presence.fw,fa=p.presence.fa,w=Math.max(0,Math.min(Math.max(0,e.s),Math.round(fw&&fw.g===H.gid?+fw.w||0:0)));
+    const ok=!!(fa&&fa.g===H.gid&&typeof fa.t==="string"&&okSet.has(normAns(fa.t)));if(ok)right++;
+    e.l=ok?w:-w;e.s+=e.l;e.fj=ok?1:0});
+  H.seq++;H.fjDone=true;H.phase="fjreveal";progress("Final Japarty results");
+  const ranking=hostRanking(),list=ranking.map(([k,e],r)=>[k,e.s,e.l,r+1,e.st,e.fj||0]);
+  live.lastScores={pin:live.pin,gid:H.gid,seq:H.seq,players:list.length,list};sendScoreChunks(live.lastScores);dbWrite("scores/"+live.pin,live.lastScores);
+  const top=ranking.slice(0,5).map(([,e])=>[e.n,e.s,e.l]);
+  broadcast({phase:"fjreveal",gid:H.gid,seq:H.seq,answer:H.fjItem.a,right,players:done.size,top});
+  const max=Math.max(1,...top.map(t=>t[1]));
+  $("#lh-body").innerHTML=`<div class="answer"><span class="label">Final Japarty · correct response</span><h3>${esc(H.fjItem.a)}</h3></div>
+    <div class="live-count"><b>${right}</b> of ${done.size} players got it right</div>
+    <div class="lb">${top.map(([n,sc,l],pos)=>`<div class="lb-row" style="--tc:${TEAM_COLORS[pos]};--w:${Math.max(0,sc)/max*100}%;animation-delay:${pos*60}ms"><div class="lb-bar"></div><span class="lb-rank">${pos+1}</span><span class="lb-name"><i></i>${esc(n)}</span><span class="lb-delta">${l?(l>0?"+":"−")+fmt(Math.abs(l)):""}</span><span class="lb-score">${fmt(sc)}</span></div>`).join("")}</div>
+    <div class="actions"><button class="btn" data-act="lh-final">See final results</button></div>`;
+  sfx(right?"correct":"wrong");lobbyMusic();
+  autoNext(hostPodium,"Final results",Math.max(6,+prefs.auto+3));
+}
+
+/* player */
+function enterPlayer(pin){
+  stopClock();clearTimeout(readyTO);live.role="player";mode="player";$("#gamebar").hidden=true;
+  silence();show("player");
+  $("#p-leave").textContent=LIVE.canHost?"Leave and go back to the Japarty lobby":"Leave and open the one-screen games";
+  clearInterval(live.pTimer);live.pTimer=setInterval(playerTick,200);
+  live.joined=false;live.pinErr="";live.stage="pin";live.wantPin=pin||live.wantPin||"";
+  playerRender();
+  if(pin&&LIVE.status==="on")playerConnect(pin);
+}
+async function playerConnect(pin){
+  if(live.joining)return;live.joining=true;live.pinErr="";live.wantPin=pin;playerRender();
+  try{
+    if(LIVE.db){
+      const snap=await LIVE.db.doc("games/"+pin).get(),d=snap.exists?snap.data():null;
+      if(!d){live.pinErr="No game with PIN "+pin+". Check the PIN on the big screen.";return}
+      if(d.phase==="ended"||Date.now()-(+d.at||0)>12*3600*1000){live.pinErr="The game with PIN "+pin+" has ended.";return}
+    }
+    const g=await connectGame(pin);if(!g){live.pinErr="Couldn't reach the live server. Check the connection and try again.";return}
+    await g.presence({pin,a:null}).catch(()=>{});
+    const t0=Date.now();while(!live.cur&&Date.now()-t0<7000)await new Promise(r=>setTimeout(r,200));
+    if(!live.cur){disconnectGame();live.pinErr="Couldn't find game "+pin+". Check the PIN on the big screen.";return}
+    if(live.cur.phase==="ended"){disconnectGame();live.pinErr="The game with PIN "+pin+" has ended.";return}
+    live.stage="name";keepAwake();
+  }catch(e){live.pinErr="Couldn't reach that game. Try again."}
+  finally{live.joining=false;playerRender()}
+}
+function playerSetName(nick,rk){
+  const s=live.cur;if(!live.g||!s)return;
+  live.nick=nick;live.rk=rk;if(rk==null)store.set("japarty.nick",nick);
+  if(rk!=null&&live.roster&&live.roster.teams&&Array.isArray(s.teams)){const t=s.teams.indexOf((live.roster.teams[rk]||"").trim());if(t>=0)live.team=t}
+  live.g.presence({pin:live.pin,nick,rk:rk==null?null:rk,a:null,...(Number.isInteger(live.team)?{team:live.team}:{})}).catch(()=>{});
+  live.joined=true;live.stage="joined";sfx("lock");playerRender();
+}
+function applyState(s){
+  if(!s||typeof s!=="object"||typeof s.rev!=="number"||s.pin!==live.pin)return;
+  if(live.cur&&s.rev<=live.cur.rev)return;
+  if(s.phase==="question"||s.phase==="reveal"){if(!Array.isArray(s.opts)||!s.opts.every(o=>typeof o==="string"))return}
+  const prev=live.cur;live.cur=s;
+  if((s.phase==="question"||s.phase==="fjq")&&!(prev&&prev.phase===s.phase&&prev.gid===s.gid&&prev.seq===s.seq)){
+    const T=Math.min(120,Math.max(3,+s.T||20))*1000,rd=Math.min(10000,Math.max(0,+s.readyMs||READY_MS));
+    let age=Date.now()-(+s.at||Date.now());if(!(age>=0&&age<rd+T+5000))age=0;
+    const now=performance.now();live.openAt=now+Math.max(0,rd-age);live.closeAt=live.openAt+T-Math.max(0,age-rd);
+    if(live.role==="player"&&live.nick)sfx("whoosh");
+  }
+  if(s.phase==="reveal"&&prev&&prev.phase==="question"&&prev.seq===s.seq)live.pendingSfx=true;
+  if(s.phase==="fjreveal"&&!(prev&&prev.phase==="fjreveal"))live.pendingSfx=true;
+  if(live.role==="player")playerRender();
+}
+function applyScores(d){
+  if(!d||typeof d!=="object"||!Array.isArray(d.list)||d.pin!==live.pin)return;
+  const sc=live.sc;
+  if(d.gid!==sc.gid||d.seq!==sc.seq){if(d.gid===sc.gid&&d.seq<sc.seq)return;live.sc={gid:d.gid,seq:d.seq,map:{},players:0}}
+  d.list.forEach(e=>{if(Array.isArray(e)&&typeof e[0]==="string")live.sc.map[e[0]]=e});
+  live.sc.players=+d.players||live.sc.players;
+  if(live.role==="player")playerRender();
+}
+function myEntry(){
+  const s=live.cur,sc=live.sc;if(!s||sc.gid!==s.gid||sc.seq!==s.seq)return null;
+  const e=sc.map[LIVE.myId||""]||sc.map[LIVE.myPeer||""];return e||null;
+}
+const myPick=s=>live.pick&&live.pick.gid===s.gid&&live.pick.seq===s.seq?live.pick.k:null;
+const waitCard=(t,m)=>`<div class="p-card"><div class="p-wait" aria-hidden="true"><i></i><i></i><i></i></div><h2>${t}</h2><p class="muted">${m}</p></div>`;
+function playerRender(){
+  const keep={};["p-find","p-nick","p-pin","p-w","p-fa"].forEach(id=>{const e=$("#"+id);if(e)keep[id]={v:e.value,f:document.activeElement===e}});
+  playerRenderInner();
+  Object.entries(keep).forEach(([id,k])=>{const e=$("#"+id);if(!e)return;e.value=k.v;if(id==="p-find")filterRoster(k.v);if(k.f)e.focus()});
+}
+function filterRoster(q){const t=String(q||"").trim().toLowerCase();$$("#p-roster button").forEach(b=>{b.hidden=!!t&&!b.dataset.n.includes(t)})}
+function playerRenderInner(){
+  const s=live.cur,el=$("#p-body");
+  $("#p-who").textContent=live.joined?`Game ${live.pin} · ${live.nick}`:"";
+  if(LIVE.status==="connecting"){el.innerHTML=waitCard("Connecting","Finding the live game…");return}
+  if(LIVE.status!=="on"){el.innerHTML=false?`<div class="p-card"><h2>Live games need the shared page</h2><p class="muted">Open the Japarty link your host shared while signed in.</p></div>`
+    :`<div class="p-card"><h2>Can't reach the game</h2><p class="muted">${esc(LIVE.sbErr||"This copy of Japarty isn't connected to a live server. Scan the QR code on the big screen, or ask the host for the full join link.")}</p></div>`;return}
+  if(!live.joined){
+    if(live.joining){el.innerHTML=waitCard("Joining…",live.wantPin?"Connecting to game "+esc(live.wantPin):"Connecting");return}
+    if(live.stage==="name"&&s&&live.pin){
+      const ro=s.ro&&typeof s.ro==="object"?s.ro:null;
+      if(ro&&!live.freeNick){
+        if(!live.roster||live.roster.rid!==ro.rid){el.innerHTML=waitCard("Loading the player list","One moment…");return}
+        const taken=new Set(Array.isArray(s.taken)?s.taken:[]),R=live.roster;
+        el.innerHTML=`<div class="p-card"><span class="label">Game ${esc(live.pin)}</span><h2>Find your name</h2>
+          <input id="p-find" type="search" placeholder="Start typing your name" autocomplete="off" aria-label="Search for your name">
+          <div class="roster-list" id="p-roster">${R.names.map((n,i)=>`<button data-act="p-pick-name" data-i="${i}" data-n="${esc(n.toLowerCase())}" ${taken.has(i)?"disabled":""}><span>${esc(n)}</span>${taken.has(i)?"<small>Joined</small>":R.teams&&R.teams[i]?`<small>${esc(R.teams[i])}</small>`:""}</button>`).join("")}</div>
+          ${ro.other?`<button class="linkish" data-act="p-notlisted">My name isn't on the list</button>`:`<p class="muted">Don't see your name? Ask the host to add it.</p>`}</div>`;
+        return;
+      }
+      el.innerHTML=`<form class="p-card" id="p-name"><span class="label">Game ${esc(live.pin)}</span><label for="p-nick" class="p-q">Pick a nickname</label>
+        <input id="p-nick" maxlength="20" autocomplete="off" placeholder="Your nickname" value="${esc(live.nick||live.defaultNick)}">
+        <button class="btn" type="submit">Join</button><p class="muted">Your nickname shows on the big screen.</p>
+        ${ro?`<button class="linkish" type="button" data-act="p-backlist">Back to the player list</button>`:""}</form>`;
+      return;
+    }
+    el.innerHTML=`<form class="p-card" id="p-join"><span class="label">Join a live game</span>
+      <label for="p-pin" class="p-q">Game PIN</label><input id="p-pin" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="From the big screen" value="${esc(live.wantPin||"")}" style="letter-spacing:.2em;text-transform:uppercase">
+      ${live.pinErr?`<p class="err">${esc(live.pinErr)}</p>`:""}
+      <button class="btn" type="submit">Next</button><p class="muted">The PIN is on the big screen. Scanning the QR code fills it in for you.</p></form>`;
+    return;
+  }
+  const mk=LIVE.myId||LIVE.myPeer;
+  if(s&&Array.isArray(s.kicked)&&mk&&s.kicked.includes(mk)){el.innerHTML=`<div class="p-card"><h2>Removed</h2><p class="muted">The host removed you from game ${esc(live.pin)}.</p></div>`;return}
+  if(s&&s.phase==="ended"){el.innerHTML=`<div class="p-card"><h2>Game closed</h2><p class="muted">The host ended game ${esc(live.pin)}. Thanks for playing!</p><button class="btn" data-act="p-other-pin">Join another game</button></div>`;return}
+  const fresh=s&&(s.phase==="lobby"||Date.now()-(+s.at||0)<45*60*1000);
+  const tn=s&&Array.isArray(s.teams)?s.teams.filter(t=>typeof t==="string").slice(0,6):[];
+  if(tn.length&&!(Number.isInteger(live.team)&&live.team<tn.length)&&!(s.phase==="podium")){
+    el.innerHTML=`<div class="p-card"><span class="label">Team game</span><h2>Pick your team</h2><div class="team-pick">${tn.map((t,k)=>`<button data-act="p-team" data-k="${k}" style="--tc:${TEAM_COLORS[k]}"><i></i>${esc(t)}</button>`).join("")}</div></div>`;return}
+  const myTeam=tn.length&&Number.isInteger(live.team)?tn[live.team]:"";
+  if(s&&s.phase==="countdown"){el.innerHTML=`<div class="p-card"><span class="label">${esc(MODE_NAMES[s.kind]||"Japarty")}${myTeam?" · "+esc(myTeam):""}</span><h2>Get ready!</h2><div class="p-big">${s.total} questions</div><p class="muted">Watch the big screen. The first question is coming.</p></div>`;return}
+  if(!s||!fresh||s.phase==="lobby"){if(myTeam)$("#p-who").textContent+=" · "+myTeam;el.innerHTML=waitCard("You're in!","Look for your name on the big screen. The game starts when the host is ready.")+`<div class="center"><button class="linkish" data-act="p-rename">Change nickname</button></div>`;return}
+  const c=clsFor(s),pk=myPick(s),me=myEntry();
+  if(s.phase==="question"){
+    if(pk!=null){el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}</span></div><div class="p-result pick ${c.c[pk]}"><span class="p-letter">${c.l[pk]}</span><h2>Locked in</h2><p>${esc(s.opts[pk])}</p><p>Waiting for everyone else…</p></div>`;return}
+    el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}${s.dbl?'<span class="dbl">Double points</span>':""}</span><span id="p-clock"></span></div>${s.kind==="tune"?'<p class="listen">Listen to the big screen</p>':""}<p class="p-q">${esc(s.q)}</p>
+      <div class="p-answers" id="p-answers">${s.opts.map((o,k)=>`<button class="p-btn ${c.c[k]}" data-act="p-pick" data-k="${k}" disabled><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`;
+    playerTick();return;
+  }
+  if(s.phase==="reveal"){
+    const ok=pk!=null&&pk===s.correct;
+    const head=pk==null?`<div class="p-result bad"><h2>Time's up</h2><p>No answer this round.</p></div>`
+      :ok?`<div class="p-result good"><h2>Correct!</h2><span class="p-pts">${me?"+"+fmt(me[2]):"Nice one"}</span>${me&&me[4]>1?`<span class="streak">${me[4]} in a row</span>`:""}</div>`
+      :`<div class="p-result bad"><h2>Not this time</h2><p>Your streak resets. Keep going!</p></div>`;
+    el.innerHTML=head+`<div class="p-card"><span class="label">Correct answer</span><p class="p-q">${esc(s.opts[s.correct]??"")}</p>${me?`<p>You're in <b>${ordinal(me[3])}</b> place of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:""}${s.fact?`<p class="muted">${esc(String(s.fact))}</p>`:""}</div>`;
+    if(live.pendingSfx){live.pendingSfx=false;sfx(ok?"correct":"wrong")}
+    return;
+  }
+  if(s.phase==="fjwager"){
+    const max=me?Math.max(0,me[1]):0,fw=live.fw&&live.fw.gid===s.gid?live.fw:null;
+    el.innerHTML=fw?`<div class="p-card"><span class="fj-title">Final Japarty</span><span class="label">Wager locked</span><div class="p-big">${fmt(fw.w)}</div><p class="muted">Get ready. The clue is coming.</p></div>`
+      :`<form class="p-card" id="p-wager"><span class="fj-title">Final Japarty</span><p class="p-q">Category: ${esc(String(s.cat||""))}</p>
+        <p>${max?`You have <b>${fmt(max)}</b> points. Wager any amount from 0 to ${fmt(max)}. Right adds it, wrong takes it away.`:"You have no points to wager, so this one is for glory."}</p>
+        <label class="label" for="p-w">Your wager</label><input id="p-w" type="number" inputmode="numeric" min="0" max="${max}" step="100" value="${Math.round(max/200)*100}" ${max?"":"disabled"}>
+        ${max?'<button type="button" class="btn ghost small" data-act="p-allin" style="width:auto">All in</button>':""}<button class="btn" type="submit">Lock wager</button></form>`;
+    return;
+  }
+  if(s.phase==="fjq"){
+    const fa=live.fa&&live.fa.gid===s.gid?live.fa:null,w=live.fw&&live.fw.gid===s.gid?live.fw.w:0;
+    el.innerHTML=fa?`<div class="p-card"><span class="fj-title">Final Japarty</span><span class="label">Answer locked</span><p class="p-q">“${esc(fa.t)}”</p><p class="muted">Wager ${fmt(w)}. Waiting for the host…</p></div>`
+      :`<form class="p-card" id="p-fj"><div class="p-meta" style="width:100%"><span>Final Japarty</span><span id="p-clock"></span></div><p class="p-q">${esc(String(s.q||""))}</p>
+        <label class="label" for="p-fa">Your answer</label><input id="p-fa" maxlength="60" autocomplete="off" autocapitalize="words" placeholder="Type your answer"><button class="btn" type="submit" id="p-fa-btn">Lock in answer</button><p class="muted">Wager ${fmt(w)}</p></form>`;
+    playerTick();return;
+  }
+  if(s.phase==="fjjudge"){el.innerHTML=waitCard("Checking answers","The host is reviewing everyone's Final Japarty answers.");return}
+  if(s.phase==="fjreveal"){
+    const typed=live.fa&&live.fa.gid===s.gid,ok=!!(me&&me[5]===1),w=me?Math.abs(me[2]):0;
+    const head=!me?waitCard("Scoring","Your result is on the way."):ok?`<div class="p-result good"><h2>Correct!</h2><span class="p-pts">+${fmt(w)}</span></div>`
+      :`<div class="p-result bad"><h2>${typed?"Not quite":"No answer"}</h2><span class="p-pts">${w?"−"+fmt(w):"±0"}</span></div>`;
+    el.innerHTML=head+`<div class="p-card"><span class="label">Correct response</span><p class="p-q">${esc(String(s.answer||""))}</p>${me?`<p>You're now <b>${ordinal(me[3])}</b> of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:""}</div>`;
+    if(live.pendingSfx&&me){live.pendingSfx=false;sfx(ok?"correct":"wrong")}
+    return;
+  }
+  const top=Array.isArray(s.top)?s.top.filter(t=>Array.isArray(t)&&typeof t[0]==="string"):[];
+  const tt=Array.isArray(s.teamTop)?s.teamTop.filter(t=>Array.isArray(t)&&typeof t[0]==="string"):[];
+  const myT=Number.isInteger(live.team)?tt.findIndex(t=>t[3]===live.team):-1;
+  const teamLine=myT>=0?`<p>Your team, <b>${esc(tt[myT][0])}</b>, is ${ordinal(myT+1)} of ${tt.length} with an average of ${fmt(+tt[myT][1]||0)}.</p>`:"";
+  const topList=n=>top.length?`<div class="p-top3">${top.slice(0,n).map((t,i)=>`<div><span>${i+1}. ${esc(t[0])}</span><b>${fmt(+t[1]||0)}</b></div>`).join("")}</div>`:"";
+  if(s.phase==="board"){
+    const gap=me&&top.length&&me[3]>1?`${fmt((+top[0][1]||0)-me[1])} points behind ${esc(top[0][0])}`:me&&me[3]===1?"You're leading the game!":"";
+    el.innerHTML=me?`<div class="p-card"><span class="label">Your place</span><div class="p-big">${ordinal(me[3])}</div><p><b>${fmt(me[1])}</b> points${gap?" · "+gap:""}</p>${teamLine}${topList(5)}</div>`:waitCard("Leaderboard","Check the big screen.");
+    return;
+  }
+  if(s.phase==="podium"){
+    el.innerHTML=`<div class="p-card"><span class="label">Final results</span>${me?`<div class="p-big">${ordinal(me[3])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:"<h2>Game over</h2>"}${teamLine}${topList(3)}<p class="muted">Thanks for playing Japarty!</p></div>`;
+    return;
+  }
+  el.innerHTML=waitCard("Hang tight","The host is setting up the next round.");
+}
+function playerTick(){
+  const s=live.cur;if(live.role!=="player"||!s)return;
+  if(s.phase==="fjq"){const c=$("#p-clock"),b=$("#p-fa-btn");if(!c)return;const now=performance.now(),t=now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";
+    if(c.textContent!==t)c.textContent=t;if(b&&now>live.closeAt+1500&&!b.disabled){b.disabled=true;b.textContent="Time's up"}return}
+  if(s.phase!=="question")return;
+  const box=$("#p-answers");if(!box)return;
+  const now=performance.now(),open=now>=live.openAt&&now<live.closeAt+1000;
+  box.querySelectorAll("button").forEach(b=>{if(b.disabled===open)b.disabled=!open});
+  const c=$("#p-clock");if(c){const t=now<live.openAt?"Get ready…":now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";if(c.textContent!==t)c.textContent=t}
+}
+
+function rosterPreview(){const r=parseRoster($("#roster-text").value),t=r.teams?[...new Set(r.teams.filter(Boolean))]:[];
+  $("#roster-info").textContent=r.names.length?`${r.names.length} name${r.names.length===1?"":"s"}${t.length?`, ${t.length} team${t.length===1?"":"s"}: ${t.slice(0,6).join(", ")}${t.length>6?" (only the first 6 teams are used)":""}`:""}.${r.cut?" Only the first 300 names are used.":""}`:"No names yet."}
+function afterRosterChange(){
+  if(live.role==="host"&&live.H&&live.pin){renderRosterHost();sendRoster();if(live.hs){const{rev,at,pin,kicked,teams:_t,ro,taken,...rest}=live.hs;broadcast(rest)}updateCloud(players())}
+}
+
+/* ---------- question pack ---------- */
+const serialize=items=>items.map(it=>[it.cat,it.q,it.a,it.w[0]||"",it.w[1]||"",it.w[2]||"",it.f||""].join(" | ")).join("\n");
+function csvSplit(line){const out=[];let cur="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];
+  if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}else if(ch==='"')q=true;else if(ch===","){out.push(cur);cur=""}else cur+=ch}
+  out.push(cur);return out}
+async function downloadText(name,text,mime,note){
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=name;document.body.appendChild(a);a.click();a.remove();if(note)note.textContent="Downloaded "+name+"."}
+  catch(e){if(note)note.textContent="This browser couldn't download the file."}
+}
+function parsePack(txt){
+  const items=[],errs=[];
+  txt.split(/\r?\n/).forEach((line,n)=>{
+    const s=line.trim();if(!s||s.startsWith("#"))return;
+    const p=(s.includes("\t")?s.split("\t"):s.includes("|")?s.split("|"):csvSplit(s)).map(x=>x.trim());
+    if(n===0&&/^category$/i.test(p[0]))return;
+    if(p.length<4||!p[0]||!p[1]||!p[2]){errs.push(`Line ${n+1} needs a category, question, correct answer and at least one wrong answer.`);return}
+    const w=(p.length>=7?p.slice(3,6):p.slice(3)).filter(Boolean);
+    if(!w.length){errs.push(`Line ${n+1} needs at least one wrong answer.`);return}
+    items.push({cat:p[0].toUpperCase(),q:p[1],a:p[2],w:w.slice(0,3),f:p.length>=7?p.slice(6).join(" | "):""});
+  });
+  return{items,errs};
+}
+
+/* ---------- actions ---------- */
+const ACT={
+  "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Name That Tune.";return}launch(d.mode)},
+  "add-team":()=>{if(teams.length>=6)return;teams.push(newTeam("Team "+(teams.length+1),teams.length));saveTeams();renderSetup();const el=$("#team-name-"+(teams.length-1));el.focus();el.select()},
+  "remove-team":d=>{if(teams.length<=2)return;teams.splice(+d.i,1);teams.forEach((t,i)=>t.color=TEAM_COLORS[i]);saveTeams();renderSetup()},
+  "music":d=>{prefs.lobby=d.track;if(!prefs.music){prefs.music=true;setMusicGain()}savePrefs();if(M.kind==="lobby")lobbyMusic();renderMusicUI()},
+  "music-think":d=>{prefs.think=d.track;savePrefs();if(M.kind==="think")thinkMusic();renderMusicUI()},
+  "toggle-music":()=>{prefs.music=!prefs.music;setMusicGain();savePrefs();renderMusicUI()},
+  "open-music":()=>{renderMusicUI();$("#music").hidden=false;$("#music-title").focus()},
+  "music-close":()=>{$("#music").hidden=true},
+  "music-add":()=>{$("#music-file").click()},
+  "music-remove":d=>{const i=CUSTOM.findIndex(c=>c.id===d.id);if(i<0)return;CUSTOM.splice(i,1);
+    if(prefs.lobby===d.id)prefs.lobby="groove";if(prefs.think===d.id)prefs.think="think";
+    if(M.track===d.id)(M.kind==="think"?thinkMusic:lobbyMusic)();renderMusicUI()},
+  "toggle-sfx":()=>{prefs.sfx=!prefs.sfx;if(M.sfxBus)M.sfxBus.gain.setTargetAtTime(prefs.sfx?.9:0,M.ctx.currentTime,.05);savePrefs();renderMusicUI();sfx("select")},
+  "quit":()=>askConfirm(live.role==="host"?"End the live game for everyone and go back to the Japarty lobby?":"Leave this game and go back to the lobby? Scores for this game will be cleared.",goHome),
+  "live-host":()=>{if(LIVE.canHost&&LIVE.room)hostLobby()},
+  "live-join":()=>{if(LIVE.room)enterPlayer()},
+  "lh-start":()=>{if(players().length)hostStart()},
+  "lh-reveal":()=>hostReveal(),
+  "lh-next":()=>live.H&&(live.H.i+1>=live.H.items.length?(live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):hostBoard()),
+  "fj-clue":()=>hostFJClue(),
+  "lh-bots":()=>{if(live.role!=="host"||!live.pin)return;addBots(8);$("#lh-bots-clear").hidden=false;sfx("lock");hostLiveUpdate()},
+  "lh-bots-clear":()=>{live.bots=[];$("#lh-bots-clear").hidden=true;if(live.H&&live.H.scores)Object.keys(live.H.scores).forEach(k=>{if(/^bot-/.test(k))delete live.H.scores[k]});hostLiveUpdate()},
+  "auto-now":()=>{const f=autoFn;cancelAuto();if(f)f()},
+  "auto-pause":()=>cancelAuto(),
+  "p-team":d=>{const k=+d.k;if(!Number.isInteger(k))return;live.team=k;if(live.g)live.g.presence({team:k}).catch(()=>{});sfx("lock");playerRender()},
+  "bigtext":(d,b)=>{const on=!document.body.classList.contains("bigtext");document.body.classList.toggle("bigtext",on);b.setAttribute("aria-pressed",String(on));prefs.big=on;savePrefs()},
+  "fullscreen":()=>{try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}},
+  "pack-load":()=>{$("#pack-file").click()},
+  "pack-download":()=>{const t=$("#pack-text").value.trim()||serialize(pack);const err=$("#pack-err");err.hidden=false;err.style.color="var(--muted)";downloadText("japarty-questions.txt","# Category | Question | Correct answer | Wrong 1 | Wrong 2 | Wrong 3 | Fun fact\n"+t+"\n","text/plain",err)},
+  "live-resume":()=>{if(LIVE.canHost)hostResume()},
+  "lh-csv":()=>downloadResults(),
+  "kick":(d)=>{const key=d.key,name=d.name||"this player";if(!key||live.role!=="host")return;
+    askConfirm(`Remove “${name}” from this game? They won't be able to rejoin it.`,()=>{live.kicked.add(key);if(live.H&&live.H.scores)delete live.H.scores[key];
+      if(live.hs){const{rev,at,pin,kicked,...rest}=live.hs;broadcast(rest)}hostLiveUpdate()})},
+  "open-server":()=>{const inC=!!(false);
+    $("#server-intro").textContent=inC?"Live games on this page only work for signed-in members of your organization. To open a game to anyone with a phone, use the Japarty.html file and connect it to a free live server:":"Connect this Japarty.html file to a free live server so anyone with a phone can join:";
+    $("#server-form").hidden=inC;if(!inC){const c=sbConfig();$("#sv-url").value=c?c.url:"";$("#sv-key").value=c?c.key:""}
+    $("#sv-err").hidden=true;$("#server").hidden=false;$("#server-title").focus()},
+  "server-close":()=>{$("#server").hidden=true},
+  "server-save":()=>{const u=$("#sv-url").value.trim(),k=$("#sv-key").value.trim(),er=$("#sv-err");
+    if(!/^https:\/\/[^\s/]+\/?$/.test(u)){er.textContent="Paste the Project URL, which starts with https:// and ends in .supabase.co";er.hidden=false;return}
+    if(k.length<20){er.textContent="Paste the full anon or publishable key.";er.hidden=false;return}
+    store.set("japarty.server",{url:u,key:k});location.reload()},
+  "server-clear":()=>{store.del("japarty.server");location.reload()},
+  "q-replay":()=>{if(Q&&Q.phase==="answer")playTune(Q.items[Q.i])},
+  "lh-replay":()=>{const H=live.H;if(H&&H.phase==="question"&&H.open)playTune(H.items[H.i])},
+  "open-tunes":()=>{$("#tunes").hidden=false;$("#tn-status").textContent="";renderTuneUI();$("#tunes-title").focus()},
+  "tunes-close":()=>{stopTune();$("#tunes").hidden=true;renderTuneUI()},
+  "tunes-add":()=>{$("#tune-file").click()},
+  "tune-preview":d=>{playTune({audio:d.id,secs:10,off:null})},
+  "tune-remove":d=>{const i=TUNES.findIndex(t=>t.id===d.id);if(i<0)return;stopTune();TUNES.splice(i,1);IDB.del(d.id).catch(()=>{});renderTuneUI()},
+  "fj-judge":()=>hostFJJudge(),
+  "fj-mark":d=>{const g=live.H&&live.H.groups&&live.H.groups[+d.i];if(!g)return;g.ok=d.v==="1";sfx("select");
+    $$(`[data-act="fj-mark"][data-i="${d.i}"]`).forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.v==="1")===g.ok)))},
+  "fj-apply-live":()=>hostFJApply(),
+  "lh-final":()=>hostPodium(),
+  "p-allin":()=>{const i=$("#p-w");if(i)i.value=i.max},
+  "lh-continue":()=>hostNext(),
+  "lh-again":()=>hostLobby(),
+  "new-pin":()=>askConfirm("Make a new PIN? Players in the lobby will need to join again with the new PIN.",()=>hostLobby(true)),
+  "copy-link":(d,b)=>{const inp=$("#lh-link");const done=()=>{b.textContent="Copied";setTimeout(()=>{b.textContent="Copy link"},1800)};
+    try{navigator.clipboard.writeText(inp.value).then(done,()=>{inp.focus();inp.select()})}catch(e){inp.focus();inp.select()}},
+  "p-other-pin":()=>{disconnectGame();live.joined=false;live.stage="pin";live.wantPin="";live.pinErr="";playerRender()},
+  "p-pick-name":d=>{const i=+d.i,R=live.roster;if(!R||!Number.isInteger(i)||!R.names[i])return;playerSetName(R.names[i],i)},
+  "p-notlisted":()=>{live.freeNick=true;playerRender()},
+  "p-backlist":()=>{live.freeNick=false;playerRender()},
+  "open-roster":()=>{const L=live.rosterList;$("#roster-text").value=L?L.names.map((n,i)=>L.teams&&L.teams[i]?n+"\t"+L.teams[i]:n).join("\n"):"";$("#roster-other").checked=L?L.other:false;
+    rosterPreview();$("#roster").hidden=false;$("#roster-text").focus()},
+  "roster-cancel":()=>{$("#roster").hidden=true},
+  "roster-load":()=>{$("#roster-file").click()},
+  "roster-save":()=>{const r=parseRoster($("#roster-text").value);if(!r.names.length){$("#roster-info").textContent="Add at least one name, or choose Remove list.";return}
+    live.rosterList={rid:Date.now().toString(36),names:r.names,teams:r.teams,other:$("#roster-other").checked};store.set("japarty.roster",live.rosterList);$("#roster").hidden=true;afterRosterChange()},
+  "roster-clear":()=>{live.rosterList=null;store.del("japarty.roster");$("#roster").hidden=true;afterRosterChange()},
+  "lh-end":()=>goHome(),
+  "p-pick":d=>{
+    const s=live.cur;if(!s||s.phase!=="question"||myPick(s)!=null)return;
+    const now=performance.now();if(now<live.openAt)return;
+    const k=+d.k;live.pick={gid:s.gid,seq:s.seq,k};
+    if(live.g)live.g.presence({a:{g:s.gid,s:s.seq,k,ms:Math.round(Math.max(0,now-live.openAt))}}).catch(()=>{});
+    sfx("lock");try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
+    playerRender();
+  },
+  "p-rename":()=>{live.joined=false;live.stage="name";live.pinErr="";live.rk=null;if(live.g)live.g.presence({nick:null,rk:null}).catch(()=>{});playerRender()},
+  "p-leave":()=>goHome(),
+  "confirm-yes":()=>{$("#confirm").hidden=true;const c=confirmCb;confirmCb=null;c&&c()},
+  "confirm-no":()=>{$("#confirm").hidden=true;confirmCb=null},
+  "pick":d=>pick(+d.t,+d.k),
+  "q-skip":()=>reveal(),
+  "q-next":()=>Q.i+1>=Q.items.length?podium():leaderboard(nextQ,"Next question"),
+  "lb-next":()=>leaderNext&&leaderNext(),
+  "set-active":d=>{if(B&&!B.cur){B.active=+d.t;sfx("select");renderBoard();renderStrip()}},
+  "tile":d=>openTile(+d.c,+d.r),
+  "dd-lock":()=>{let v=Math.round(+$("#dd-wager").value||0);B.cur.value=Math.max(5,Math.min(B.cur.max,v));sfx("lock");showClue()},
+  "clue-reveal":()=>clueReveal(),
+  "judge":d=>{const t=+d.t,v=+d.v;J[t]=J[t]===v?0:v;sfx("select");$$(`[data-act="judge"][data-t="${t}"]`).forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.v===J[t])))},
+  "judge-apply":()=>{const v=B.cur.value,rights=[];let wrong=false;Object.entries(J).forEach(([t,m])=>{if(!m)return;teams[+t].score+=m*v;if(m===1)rights.push(+t);else wrong=true});
+    sfx(rights.length?"correct":wrong?"wrong":"select");if(rights.length)B.active=rights[0];finishTile()},
+  "clue-skip":()=>finishTile(),
+  "final":()=>{if(!B||B.finalDone)return;const left=B.total-B.used.size;left?askConfirm(`${left} clue${left>1?"s are":" is"} still on the board. Go to Final Japarty anyway?`,startFinal):startFinal()},
+  "fj-lock":()=>{B.fin.w=teams.map((tm,i)=>Math.max(0,Math.min(Math.max(0,tm.score),Math.round(+$("#fj-w-"+i).value||0))));
+    sfx("lock");setClue("Final Japarty",B.fin.item.cat,true);
+    body(`<p class="clue-q">${esc(B.fin.item.q)}</p><div class="row center"><button class="btn" data-act="fj-reveal">Reveal answer</button></div>`);
+    thinkMusic();startClock(B.T,$("#clue-timer"),()=>{sfx("timesup");fjReveal()})},
+  "fj-reveal":()=>fjReveal(),
+  "fj-apply":()=>{Object.entries(J).forEach(([t,m])=>{if(m)teams[+t].score+=m*B.fin.w[+t]});B.finalDone=true;$("#clue").hidden=true;podium()},
+  "tl-card":d=>{if(TL.phase!=="play")return;const k=+d.k,j=TL.seq.indexOf(null);if(j<0||TL.seq.includes(k))return;TL.seq[j]=k;sfx("select");renderTL()},
+  "tl-slot":d=>{if(TL.phase!=="play")return;const j=+d.j;if(TL.seq[j]==null)return;TL.seq[j]=null;sfx("select");renderTL()},
+  "tl-submit":()=>submitTL(),
+  "tl-next":()=>TL.i+1>=TL.sets.length?podium():leaderboard(nextTL,"Next team"),
+  "pod-again":()=>launch(lastMode),
+  "pod-home":()=>goHome(),
+  "edit-pack":()=>{$("#pack-text").value=serialize(pack);$("#pack-err").hidden=true;$("#pack").hidden=false;$("#pack-text").focus()},
+  "pack-cancel":()=>{$("#pack").hidden=true},
+  "pack-restore":()=>{pack=BUILTIN;packName="Black History";store.del("japarty.pack");$("#pack").hidden=true;renderPackLabel()},
+  "pack-save":()=>{
+    const{items,errs}=parsePack($("#pack-text").value),err=$("#pack-err");err.style.color="";
+    if(errs.length||!items.length){err.innerHTML=(errs.length?errs.slice(0,5).map(e=>`<span>${esc(e)}</span>`).join("")+(errs.length>5?`<span>…and ${errs.length-5} more.</span>`:""):"<span>Add at least one question.</span>");err.hidden=false;return}
+    if(serialize(items)===serialize(BUILTIN)){pack=BUILTIN;packName="Black History";store.del("japarty.pack")}
+    else{pack=items;packName="Custom pack";store.set("japarty.pack",{items})}
+    $("#pack").hidden=true;renderPackLabel();
+  }
+};
+document.addEventListener("click",e=>{if(performance.now()-dragEndAt<400)return;const b=e.target.closest("[data-act]");if(!b||b.disabled)return;audioInit();const f=ACT[b.dataset.act];if(f)f(b.dataset,b)});
+document.addEventListener("pointerdown",()=>audioInit());
+document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||"Team "+(+i+1);saveTeams()}});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
+  if(e.key==="Enter"&&e.target.id==="dd-wager")ACT["dd-lock"]();
+  if(live.role==="host"&&mode==="live"&&!e.target.closest("input,select,textarea,button")&&$$(".overlay").every(o=>o.hidden)){
+    if(e.key===" "||e.key==="Enter"){const b=[...$$("#lh-body .actions .btn")].find(x=>!x.hidden&&!x.disabled&&!x.classList.contains("ghost"))||($("#lh-start")&&!$("#lh-start").disabled?$("#lh-start"):null);if(b){e.preventDefault();b.click()}}
+    else if(e.key==="r"||e.key==="R"){const b=$("#lh-reveal");if(b&&!b.hidden)b.click()}
+    else if(e.key==="p"||e.key==="P")cancelAuto();
+  }
+});
+
+document.addEventListener("change",async e=>{
+  if(e.target.classList&&e.target.classList.contains("auto-sel")){prefs.auto=+e.target.value;savePrefs();renderAutoSel();if(!prefs.auto)cancelAuto();return}
+  if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";return}
+  if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(teams[k]&&teams[k].name)||"Team "+(k+1)):[];
+    if(live.hs){const{rev,at,pin,kicked,teams:_t,...rest}=live.hs;broadcast(rest)}updateCloud(players());return}
+  if(e.target.id==="roster-file"){const f=e.target.files[0];e.target.value="";if(!f)return;try{$("#roster-text").value=(await f.text()).replace(/^\uFEFF/,"");rosterPreview()}catch(err){}return}
+  if(e.target.id==="pack-file"){const f=e.target.files[0];e.target.value="";if(!f)return;
+    try{const t=await f.text();$("#pack-text").value=t.replace(/^\uFEFF/,"");const err=$("#pack-err");err.hidden=false;err.style.color="var(--muted)";err.textContent=`Loaded ${f.name}. Choose "Use these questions" to play with it.`}catch(err){}return}
+  if(e.target.id==="tn-random"){prefs.tuneRandom=e.target.checked;savePrefs();return}
+  if(e.target.id==="tn-starters"){prefs.starters=e.target.checked;savePrefs();renderTuneUI();return}
+  if(e.target.id==="tune-file"){
+    const files=[...e.target.files];e.target.value="";if(!files.length)return;
+    if(!audioInit()){$("#tn-status").textContent="This browser can't play audio here.";return}
+    const st=$("#tn-status"),bad=[];let saveFail=false,added=0;
+    for(const f of files){
+      st.textContent="Loading "+f.name+"…";
+      try{const data=await f.arrayBuffer(),buf=await M.ctx.decodeAudioData(data.slice(0));
+        const r={id:"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:f.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").slice(0,80),artist:"",start:0,data,buf};
+        TUNES.push(r);added++;try{await IDB.put(tuneRecord(r))}catch(err){saveFail=true}}
+      catch(err){bad.push(f.name)}
+    }
+    st.textContent=(added?`Added ${added} song${added===1?"":"s"}. Check the titles below.`:"")+(bad.length?` Couldn't play ${bad.join(", ")}. Try an MP3 or WAV file.`:"")+(saveFail?" This browser couldn't save them, so they'll be gone after a reload.":"");
+    renderTuneUI();return;
+  }
+  if(e.target.id!=="music-file")return;
+  const files=[...e.target.files];e.target.value="";if(!files.length)return;
+  if(!audioInit()){$("#mx-status").textContent="This browser can't play audio here.";return}
+  const st=$("#mx-status"),bad=[];let first=null;
+  for(const f of files){
+    st.textContent="Loading "+f.name+"…";
+    try{const buf=await M.ctx.decodeAudioData(await f.arrayBuffer());const id="c"+(++M.cid);
+      CUSTOM.push({id,name:f.name.replace(/\.[^.]+$/,"").slice(0,40)||"My track",buf});first=first||id}
+    catch(err){bad.push(f.name)}
+  }
+  st.textContent=bad.length?`Couldn't play ${bad.join(", ")}. Try an MP3 or WAV file.`:first?"Added. Now playing in the lobby.":"";
+  if(first){prefs.lobby=first;if(!prefs.music){prefs.music=true;setMusicGain()}if(M.kind==="lobby")lobbyMusic()}
+  renderMusicUI();
+});
+document.addEventListener("input",e=>{
+  const tid=e.target.dataset&&e.target.dataset.tid;
+  if(e.target.id==="roster-text"){rosterPreview();return}
+  if(e.target.id==="p-find"){filterRoster(e.target.value);return}
+  if(tid){const r=TUNES.find(t=>t.id===tid);if(!r)return;const f=e.target.dataset.f;
+    r[f]=f==="start"?Math.max(0,+e.target.value||0):e.target.value.slice(0,f==="title"?80:60);if(f==="start")r.off=null;
+    clearTimeout(r.saveTO);r.saveTO=setTimeout(()=>{IDB.put(tuneRecord(r)).catch(()=>{});renderTuneUI(false)},400);return}
+  if(e.target.id==="tn-random"||e.target.id==="tn-starters")return;
+  if(e.target.id==="mx-vol"){prefs.vol=Math.max(0,Math.min(1,+e.target.value/100));setMusicGain();savePrefs()}});
+document.addEventListener("submit",e=>{
+  const s=live.cur;
+  if(e.target.id==="p-wager"){e.preventDefault();if(!s||s.phase!=="fjwager")return;const me=myEntry(),max=me?Math.max(0,me[1]):0;
+    const w=Math.max(0,Math.min(max,Math.round(+$("#p-w").value||0)));live.fw={gid:s.gid,w};
+    if(live.g)live.g.presence({fw:{g:s.gid,w}}).catch(()=>{});sfx("lock");playerRender();return}
+  if(e.target.id==="p-fj"){e.preventDefault();if(!s||s.phase!=="fjq")return;const t=$("#p-fa").value.trim().slice(0,60);if(!t){$("#p-fa").focus();return}
+    live.fa={gid:s.gid,t};if(live.g)live.g.presence({fa:{g:s.gid,t}}).catch(()=>{});sfx("lock");try{navigator.vibrate&&navigator.vibrate(30)}catch(err){}playerRender();return}
+  if(e.target.id==="p-name"){e.preventDefault();audioInit();const v=$("#p-nick").value.trim().replace(/\s+/g," ").slice(0,20);if(!v){$("#p-nick").focus();return}playerSetName(v,null);return}
+  if(e.target.id!=="p-join")return;e.preventDefault();audioInit();
+  const pin=cleanPin($("#p-pin").value);
+  if(pin.length!==6){live.pinErr="Enter the 6-character PIN from the big screen.";live.wantPin=pin;playerRender();$("#p-pin").focus();return}
+  playerConnect(pin);
+});
+
+/* Timeline Shuffle drag and drop (mouse, pen and touch) */
+let drag=null,dragEndAt=-1e9;
+function dragCleanup(){
+  if(!drag)return;if(drag.ghost)drag.ghost.remove();drag.src.classList.remove("drag-src");
+  if(drag.target)drag.target.classList.remove("drop-on");document.body.classList.remove("dragging","dragging-slot");drag=null;
+}
+document.addEventListener("pointerdown",e=>{
+  if(mode!=="timeline"||!TL||TL.phase!=="play"||e.button>0)return;
+  const src=e.target.closest("#tl-pool .tl-card,#tl-slots .slot.filled");if(!src)return;
+  drag={src,id:e.pointerId,x:e.clientX,y:e.clientY,on:false,ghost:null,target:null};
+});
+document.addEventListener("pointermove",e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  if(!drag.on){
+    if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<6)return;
+    const r=drag.src.getBoundingClientRect(),g=drag.src.cloneNode(true);
+    g.classList.add("drag-ghost");g.removeAttribute("data-act");g.style.width=r.width+"px";document.body.appendChild(g);
+    drag.dx=drag.x-r.left;drag.dy=drag.y-r.top;drag.ghost=g;drag.on=true;drag.src.classList.add("drag-src");
+    document.body.classList.add("dragging");if(drag.src.classList.contains("slot"))document.body.classList.add("dragging-slot");sfx("select");
+  }
+  e.preventDefault();
+  drag.ghost.style.transform=`translate(${e.clientX-drag.dx}px,${e.clientY-drag.dy}px) rotate(-1.5deg)`;
+  const hit=document.elementFromPoint(e.clientX,e.clientY),t=hit&&hit.closest("#tl-slots .slot,#tl-pool");
+  if(t!==drag.target){if(drag.target)drag.target.classList.remove("drop-on");drag.target=t;if(t)t.classList.add("drop-on")}
+},{passive:false});
+document.addEventListener("pointerup",e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  if(drag.on){
+    dragEndAt=performance.now();
+    const src=drag.src,t=drag.target,fromPool=src.classList.contains("tl-card"),from=fromPool?-1:+src.dataset.j,k=fromPool?+src.dataset.k:TL.seq[from];
+    let moved=false;
+    if(t&&t.classList.contains("slot")){const j=+t.dataset.j;if(j!==from){const occ=TL.seq[j];TL.seq[j]=k;if(from>=0)TL.seq[from]=occ==null?null:occ;moved=true}}
+    else if(t&&t.id==="tl-pool"&&from>=0){TL.seq[from]=null;moved=true}
+    dragCleanup();if(moved){sfx("lock");renderTL()}
+    return;
+  }
+  drag=null;
+});
+document.addEventListener("pointercancel",dragCleanup);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drag)dragCleanup()});
+
+/* connection status on both screens, and a tip when no phones show up */
+let connBad=0;
+setInterval(()=>{
+  let st=null;if(live.role&&live.g){try{st=typeof live.g.connected==="function"?!!live.g.connected():true}catch(e){st=true}}
+  connBad=st===false?connBad+1:0;const shown=st==null?null:connBad<2;
+  [["#gb-conn","host"],["#p-conn","player"]].forEach(([sel,role])=>{const el=$(sel);if(!el)return;
+    if(live.role!==role||shown==null){el.hidden=true;return}
+    el.hidden=false;el.classList.toggle("bad",!shown);const t=shown?"Connected":"Reconnecting…";if(el.lastChild.textContent!==t)el.lastChild.textContent=t});
+  const tip=$("#lh-tip");
+  if(tip&&live.role==="host"&&live.H&&live.H.phase==="lobby"){
+    const realN=players().filter(p=>!p.isBot).length,need=!realN&&Date.now()-live.lobbyAt>15000;
+    if(need&&tip.hidden){tip.innerHTML=LIVE.mode==="supa"
+      ?"<b>No phones yet?</b> Make sure players scan the QR code on this screen and their phones are online. Corporate or school Wi-Fi can block live games, so try phone data to check. You can also add test players to try the game alone."
+      :"<b>No phones yet?</b> Players can only open this page if it's shared with them. Open the Share menu and share it with your group or your whole organization. Players must be signed in and in your organization; for anyone else, use Let anyone join from the home screen. You can also add test players to try the game alone.";tip.hidden=false}
+    else if(!need&&!tip.hidden)tip.hidden=true;
+  }
+},1500);
+
+/* keep screens awake during a game (host and phones) */
+let wakeLock=null;
+async function keepAwake(){try{if("wakeLock" in navigator&&!wakeLock&&document.visibilityState==="visible"){wakeLock=await navigator.wakeLock.request("screen");wakeLock.addEventListener("release",()=>{wakeLock=null})}}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&live.role)keepAwake()});
+document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.textContent=document.fullscreenElement?"Exit full screen":"Full screen"});
+
+/* ---------- boot ---------- */
+if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
+if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
+renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();show("home");initLive();loadTunes();
+</script>
+
+</body>
+</html>
