@@ -1340,8 +1340,8 @@ async function sbInit(cfg){
   SB.cfg=cfg;ensurePid();
 }
 function ensurePid(){
-  let pid=String(store.get("japarty.pid","")||"");
-  if(!/^p[a-z0-9]{10,24}$/.test(pid)){pid="p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36);store.set("japarty.pid",pid)}
+  let pid="";try{pid=sessionStorage.getItem("japarty.pid")||""}catch(e){}
+  if(!/^p[a-z0-9]{10,24}$/.test(pid)){pid="p"+Math.random().toString(36).slice(2,10)+Date.now().toString(36);try{sessionStorage.setItem("japarty.pid",pid)}catch(e){}}
   SB.pid=pid;
 }
 /* Free public live server (MQTT over secure WebSockets): works with no setup. A second broker is the backup. */
@@ -1350,7 +1350,7 @@ const MQ={client:null,bi:0,handlers:new Map()};
 function mqConnect(bi){
   return new Promise(res=>{
     let done=false,c=null;const fin=v=>{if(!done){done=true;res(v)}};
-    try{c=mqtt.connect(MQTT_BROKERS[bi],{clientId:"jp_"+SB.pid.slice(0,16)+"_"+Math.random().toString(36).slice(2,6),clean:true,keepalive:30,reconnectPeriod:2000,connectTimeout:8000,protocolVersion:4})}catch(e){return fin(null)}
+    try{c=mqtt.connect(MQTT_BROKERS[bi],{clientId:"jp"+SB.pid.slice(1,13)+Math.random().toString(36).slice(2,6),clean:true,keepalive:30,reconnectPeriod:2000,connectTimeout:8000,protocolVersion:4})}catch(e){return fin(null)}
     c.on("connect",()=>fin(c));
     c.on("message",(topic,buf)=>{const set=MQ.handlers.get(topic);if(!set||!set.size)return;let d;try{d=JSON.parse(typeof buf==="string"?buf:typeof TextDecoder!=="undefined"?new TextDecoder().decode(buf):String(buf))}catch(e){return}set.forEach(f=>{try{f(d)}catch(e){}})});
     setTimeout(()=>{if(!done){try{c.end(true)}catch(e){}fin(null)}},9000);
@@ -1372,6 +1372,7 @@ function mqttRoom(pin,role){
   const pub=(t,d,retain)=>new Promise(r=>{try{c.publish(base+"/"+t,JSON.stringify(d),{qos:1,retain:!!retain},()=>r())}catch(e){r()}});
   const hello=()=>role==="player"?pub("in",{pid:SB.pid,pres}):Promise.resolve();
   if(role==="player")["state","scores","roster"].forEach(t=>unsubs.push(sub(t,d=>{(topicCbs[t]||new Set()).forEach(f=>{try{f({topic:t,data:d,sameTab:false,isMe:false,peer:"host",by:null,kind:"viewer",guest:false})}catch(e){}})})));
+  if(role==="player"){const onc=()=>hello();c.on("connect",onc);unsubs.push(()=>{try{c.removeListener("connect",onc)}catch(e){}})}
   if(role==="host"){
     unsubs.push(sub("in",d=>{
       if(!d||typeof d.pid!=="string"||d.pid.length>40||!d.pres||typeof d.pres!=="object")return;
@@ -1380,7 +1381,7 @@ function mqttRoom(pin,role){
       const peer=Object.freeze({peer:d.pid,by:d.pid,isMe:false,sameTab:false,kind:"viewer",guest:false,presence:Object.freeze({...d.pres}),updatedAt:Date.now()});
       peers.set(d.pid,peer);old?fire([],[],[peer]):fire([peer],[],[]);
     }));
-    timers.push(setInterval(()=>{const now=Date.now(),gone=[];peers.forEach((v,k)=>{if(now-(seen.get(k)||0)>45000){peers.delete(k);gone.push(v)}});if(gone.length)fire([],gone,[])},5000));
+    timers.push(setInterval(()=>{const now=Date.now(),gone=[];peers.forEach((v,k)=>{if(now-(seen.get(k)||0)>180000){peers.delete(k);gone.push(v)}});if(gone.length)fire([],gone,[])},5000));
   }else timers.push(setInterval(hello,12000));
   const room={
     peers:()=>snap,
@@ -1410,7 +1411,7 @@ function supaRoom(pin,role){
       const peer=Object.freeze({peer:d.pid,by:d.pid,isMe:false,sameTab:false,kind:"viewer",guest:false,presence:Object.freeze({...d.pres}),updatedAt:Date.now()});
       peers.set(d.pid,peer);old?fire([],[],[peer]):fire([peer],[],[]);
     });
-    timers.push(setInterval(()=>{const now=Date.now(),gone=[];peers.forEach((v,k)=>{if(now-(seen.get(k)||0)>45000){peers.delete(k);gone.push(v)}});if(gone.length)fire([],gone,[])},5000));
+    timers.push(setInterval(()=>{const now=Date.now(),gone=[];peers.forEach((v,k)=>{if(now-(seen.get(k)||0)>180000){peers.delete(k);gone.push(v)}});if(gone.length)fire([],gone,[])},5000));
   }else timers.push(setInterval(hello,12000));
   const room={
     peers:()=>snap,
@@ -1544,6 +1545,7 @@ function broadcast(p){
   live.rev=Math.max(live.rev+1,Date.now());const s={...p,pin:live.pin,rev:live.rev,at:Date.now(),kicked:[...live.kicked].slice(-200)};
   if(live.teamNames.length)s.teams=live.teamNames;
   if(rosterOn()){s.ro={rid:live.rosterList.rid,n:live.rosterList.names.length,other:live.rosterList.other};s.taken=computeTaken();live.lastTaken=s.taken.join(",")}
+  if(s.phase==="lobby"&&live.role==="host"){const ps=players().filter(x=>!x.isBot);s.pc=ps.length;s.ids=ps.map(x=>String(x.by||x.peer).slice(-6)).slice(0,300);live.lastIds=s.ids.join(",")}
   live.hs=s;
   saveHost();
   if(live.g)live.g.emit("state",s).catch(()=>{});dbWrite("games/"+live.pin,s);
@@ -1575,7 +1577,8 @@ function hostLiveUpdate(){
   if(!H)return;
   const gp=$("#gb-players");if(gp){gp.hidden=false;gp.textContent=ps.length+" player"+(ps.length===1?"":"s")}
   if(H.phase==="lobby"){updateCloud(ps);
-    if(rosterOn()&&computeTaken().join(",")!==live.lastTaken&&!live.takenTO)live.takenTO=setTimeout(()=>{live.takenTO=null;if(live.H&&live.H.phase==="lobby"&&live.hs){const{rev,at,pin,kicked,teams:_t,ro,taken,...rest}=live.hs;broadcast(rest)}},800);
+    const idsNow=ps.filter(x=>!x.isBot).map(x=>String(x.by||x.peer).slice(-6)).join(",");
+    if(((rosterOn()&&computeTaken().join(",")!==live.lastTaken)||idsNow!==live.lastIds)&&!live.takenTO)live.takenTO=setTimeout(()=>{live.takenTO=null;if(live.H&&live.H.phase==="lobby"&&live.hs){const{rev,at,pin,kicked,teams:_t,ro,taken,ids,pc,...rest}=live.hs;broadcast(rest)}},700);
     return}
   if(H.phase==="question"){
     const n=ps.filter(p=>validAns(p.presence.a,H)).length,c=$("#lq-count");
@@ -1989,7 +1992,10 @@ function playerRenderInner(){
     el.innerHTML=`<div class="p-card"><span class="label">Team game</span><h2>Pick your team</h2><div class="team-pick">${tn.map((t,k)=>`<button data-act="p-team" data-k="${k}" style="--tc:${TEAM_COLORS[k]}"><i></i>${esc(t)}</button>`).join("")}</div></div>`;return}
   const myTeam=tn.length&&Number.isInteger(live.team)?tn[live.team]:"";
   if(s&&s.phase==="countdown"){el.innerHTML=`<div class="p-card"><span class="label">${esc(MODE_NAMES[s.kind]||"Japarty")}${myTeam?" · "+esc(myTeam):""}</span><h2>Get ready!</h2><div class="p-big">${s.total} questions</div><p class="muted">Watch the big screen. The first question is coming.</p></div>`;return}
-  if(!s||!fresh||s.phase==="lobby"){if(myTeam)$("#p-who").textContent+=" · "+myTeam;el.innerHTML=waitCard("You're in!","Look for your name on the big screen. The game starts when the host is ready.")+`<div class="center"><button class="linkish" data-act="p-rename">Change nickname</button></div>`;return}
+  if(!s||!fresh||s.phase==="lobby"){if(myTeam)$("#p-who").textContent+=" · "+myTeam;
+    const seen=lobbySeen(s);
+    el.innerHTML=(seen?waitCard("You're in!",`Look for your name on the big screen. ${s&&s.pc>1?s.pc+" players are in the lobby. ":""}The game starts when the host is ready.`)
+      :waitCard("Almost in…","Connecting to the big screen. Keep this page open; it can take a few seconds."))+`<div class="center"><button class="linkish" data-act="p-rename">Change nickname</button></div>`;return}
   const c=clsFor(s),pk=myPick(s),me=myEntry();
   if(s.phase==="question"){
     if(pk!=null){el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}</span></div><div class="p-result pick ${c.c[pk]}"><span class="p-letter">${c.l[pk]}</span><h2>Locked in</h2><p>${esc(s.opts[pk])}</p><p>Waiting for everyone else…</p></div>`;return}
@@ -2047,8 +2053,13 @@ function playerRenderInner(){
   }
   el.innerHTML=waitCard("Hang tight","The host is setting up the next round.");
 }
+function lobbySeen(s){
+  if(!s||s.phase!=="lobby"||!Array.isArray(s.ids))return true;
+  const me=String(LIVE.myId||LIVE.myPeer||"").slice(-6);return!!me&&s.ids.includes(me);
+}
 function playerTick(){
   const s=live.cur;if(live.role!=="player"||!s)return;
+  if(live.joined&&s.phase==="lobby"&&!lobbySeen(s)&&live.g&&performance.now()-(live.lastHello||0)>3000){live.lastHello=performance.now();live.g.presence({pin:live.pin,nick:live.nick}).catch(()=>{})}
   if(s.phase==="fjq"){const c=$("#p-clock"),b=$("#p-fa-btn");if(!c)return;const now=performance.now(),t=now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";
     if(c.textContent!==t)c.textContent=t;if(b&&now>live.closeAt+1500&&!b.disabled){b.disabled=true;b.textContent="Time's up"}return}
   if(s.phase!=="question")return;
@@ -2347,7 +2358,7 @@ setInterval(()=>{
 /* keep screens awake during a game (host and phones) */
 let wakeLock=null;
 async function keepAwake(){try{if("wakeLock" in navigator&&!wakeLock&&document.visibilityState==="visible"){wakeLock=await navigator.wakeLock.request("screen");wakeLock.addEventListener("release",()=>{wakeLock=null})}}catch(e){}}
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&live.role)keepAwake()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&live.role){keepAwake();if(live.role==="player"&&live.joined&&live.g)live.g.presence({pin:live.pin,nick:live.nick}).catch(()=>{})}});
 document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.textContent=document.fullscreenElement?"Exit full screen":"Full screen"});
 
 /* ---------- boot ---------- */
