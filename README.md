@@ -9,6 +9,15 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 - **Japarty Board**: six categories with a Daily Double and Final Japarty (one shared screen).
 - **Timeline Shuffle**: drag four events into order (one shared screen).
 
+## Party playlist
+Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Songs stay on the host computer until the page is closed. Only play music you have the right to play at your event.
+
+## Poster
+In the live lobby, choose **Make a poster** for a printable sign with the QR code, PIN and steps. To print ahead of time, set your own PIN under **More settings** and use **Play again with the same PIN** for every game.
+
+## Updates
+The version number is shown at the bottom of the home screen. When a newer version is published, the site shows a **Refresh now** prompt. Players rejoin their game automatically after refreshing.
+
 ## Live games on phones
 Live games work with no setup. Open the site on the big screen, choose **Host a live game**, and players scan the QR code. No sign-in or app needed.
 

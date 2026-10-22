@@ -358,6 +358,9 @@ ol.more-body{padding-left:34px}
 .conn.bad i{background:var(--gold);box-shadow:0 0 0 3px rgba(242,182,50,.25);animation:pulse .6s ease-in-out infinite alternate}
 .nick.bot{border-style:dashed}
 .nick.bot::after{content:" · test";font-weight:600;opacity:.6}
+.ver{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.update{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top,0px));z-index:45;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 10px;background:var(--gold);color:var(--ink);border-radius:16px;padding:10px 12px 10px 18px;font-weight:800;box-shadow:0 8px 28px rgba(8,6,18,.45);max-width:calc(100% - 32px);animation:pop .25s both}
+.update .auto-btn{border-color:rgba(22,17,42,.35)}
 .mini-lb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .mini-lb div{display:flex;align-items:center;gap:8px;background:var(--stage2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
 .mini-lb b{font-family:var(--display);font-weight:400;color:var(--muted)}
@@ -420,6 +423,62 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 @keyframes bob{50%{transform:translateY(-10px)}}
 .linkish{background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px;font-size:14px}
 
+/* Party playlist */
+.gb-np{display:inline-flex;align-items:center;gap:8px;max-width:min(320px,40vw);font-size:14px;font-weight:700;color:var(--muted);min-width:0}
+.gb-np span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gb-party.has-new{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.pa-now{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:center;background:var(--stage);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.pa-now .eq{grid-row:1/3;height:28px}.pa-now .eq i{width:5px}
+.pa-now b{font-size:clamp(17px,2.2vw,21px);overflow-wrap:anywhere}
+.pa-now small{color:var(--muted);font-weight:600}
+.pa-bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--stage3);overflow:hidden;margin-top:6px}
+.pa-bar i{display:block;height:100%;background:var(--gold);width:0}
+.pa-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.pa-row.cur{border-color:var(--gold);background:var(--stage3)}
+.pa-row .pa-n{font-family:var(--display);color:var(--muted);width:28px;text-align:center;flex:none;font-variant-numeric:tabular-nums}
+.pa-row .mx-name small{display:block;margin-left:0}
+.pa-row .btn{padding:6px 10px;font-size:13px}
+.pa-row.req{border-color:var(--gold);border-style:dashed}
+.p-party{width:min(620px,100%);margin:0 auto;display:grid;gap:10px;background:var(--stage2);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.pp-now{display:flex;align-items:center;gap:12px;min-width:0}
+.pp-now div{min-width:0;display:grid}
+.pp-now b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pp-now small{color:var(--muted);font-weight:600}
+.p-party .btn{width:100%}
+.pp-mine{display:grid;gap:6px}
+.pp-mine div{display:flex;justify-content:space-between;gap:10px;background:var(--stage);border-radius:10px;padding:8px 12px;font-size:14px}
+.pp-mine span:first-child{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.pp-mine span:last-child{color:var(--muted);text-align:right;flex:none;max-width:60%}
+.pp-mine .ok{color:var(--good)!important}.pp-mine .bad{color:var(--bad)!important}
+
+/* Poster: a light, print-friendly sheet in every theme */
+:root{--po-paper:#fffaf0;--po-ink:#16112a;--po-gold:#c98a12;--po-clay:#b8401c;--po-leaf:#1a7a4e}
+.po-wrap{overflow:auto;border-radius:12px;background:var(--stage);padding:12px}
+.po-sheet{width:100%;max-width:560px;margin:0 auto;aspect-ratio:8.5/11;background:var(--po-paper);color:var(--po-ink);display:flex;flex-direction:column;border-radius:6px;overflow:hidden;font-family:var(--body)}
+.po-kente{height:4%;flex:none;background:repeating-linear-gradient(90deg,var(--po-gold) 0 30px,var(--po-ink) 30px 36px,var(--po-clay) 36px 54px,var(--po-gold) 54px 62px,var(--po-leaf) 62px 86px,var(--po-ink) 86px 92px)}
+.po-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;text-align:center;padding:3% 8%;gap:1%}
+.po-event{font-weight:800;letter-spacing:.18em;text-transform:uppercase;font-size:clamp(11px,2.4vw,16px);color:var(--po-clay)}
+.po-logo{font-family:var(--display);font-size:clamp(40px,10vw,76px);line-height:.9;color:var(--po-gold);text-shadow:0 .05em 0 var(--po-ink)}
+.po-sub{font-weight:600;font-size:clamp(12px,2.4vw,17px)}
+.po-qr{background:#fff;padding:3%;border:3px solid var(--po-ink);border-radius:12px;width:48%;line-height:0}
+.po-qr img,.po-qr canvas{width:100%!important;height:auto!important}
+.po-scan{font-family:var(--display);font-size:clamp(22px,5.4vw,40px);line-height:1}
+.po-pin{font-weight:700;font-size:clamp(13px,2.6vw,19px)}
+.po-pin b{font-family:var(--display);font-weight:400;letter-spacing:.12em;margin-left:.3em}
+.po-steps{list-style:none;margin:0;padding:0;display:grid;gap:.4em;font-weight:700;font-size:clamp(11px,2.2vw,16px);text-align:left}
+.po-steps li{display:flex;align-items:center;gap:.6em}
+.po-steps b{display:inline-grid;place-items:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--po-ink);color:var(--po-paper);font-family:var(--display);font-weight:400;flex:none}
+.po-url{font-size:clamp(9px,1.8vw,13px);overflow-wrap:anywhere;opacity:.8}
+.btn.ghost-ink{background:transparent;color:var(--ink);border:1px solid var(--ink-line);box-shadow:none}
+@media print{
+  @page{size:letter portrait;margin:0}
+  body{background:#fff!important}
+  body *{visibility:hidden!important}
+  #po-sheet,#po-sheet *{visibility:visible!important}
+  #po-sheet{position:fixed;left:0;top:0;width:100vw;height:100vh;max-width:none;aspect-ratio:auto;border-radius:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .po-logo{font-size:96px}.po-scan{font-size:54px}.po-event{font-size:20px}.po-sub,.po-pin{font-size:22px}.po-steps{font-size:20px}.po-url{font-size:15px}
+}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
 </style>
 </head>
@@ -434,9 +493,12 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
       <span class="gb-progress" id="gb-progress"></span>
       <span class="gb-players" id="gb-players" hidden></span>
       <span class="conn" id="gb-conn" hidden><i></i><span>Connected</span></span>
+      <span class="ver gb-ver">v<span class="ver-n"></span></span>
       <span class="gb-spacer"></span>
       <button class="toggle" data-act="toggle-music" aria-pressed="true"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="tlabel">Music on</span></button>
       <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
+      <span class="gb-np" id="gb-np" hidden><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="gb-np-t"></span></span>
+      <button class="btn ghost small" data-act="open-party" id="gb-party">Playlist</button>
       <button class="btn ghost small" data-act="open-music">Music</button>
       <button class="btn ghost small" data-act="bigtext" id="bigtext-btn" aria-pressed="false">Bigger text</button>
       <button class="btn ghost small" data-act="fullscreen" id="fs-btn">Full screen</button>
@@ -484,6 +546,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
           <div class="label">Lobby music</div>
           <div class="seg" role="group" aria-label="Lobby music" id="home-music">
           </div>
+          <button class="btn ghost small" data-act="open-party" style="justify-self:start">Party playlist: players add songs</button>
           <div class="now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="now-playing">Starts when you tap anything</span></div>
           <button class="btn ghost small" data-act="open-music" style="justify-self:start">Add your own music</button>
           <div class="row">
@@ -517,7 +580,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
           <div class="mode-top"><h2>True or False Blitz</h2><span>Warm-up</span></div>
           <div class="mode-body">
             <p>Ten-second rounds of true or false statements. Quick, loud, and good for getting a room going before the main game.</p>
-            <div class="opts"><label for="tf-count">Statements<select id="tf-count"><option value="10" selected>10</option><option value="0">All 16</option></select></label></div>
+            <div class="opts"><label for="tf-count">Statements<select id="tf-count"><option value="10" selected>10</option><option value="0">All</option></select></label></div>
             <button class="btn" data-act="start" data-mode="tf">Play the Blitz</button>
           </div>
         </article>
@@ -543,7 +606,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
         </article>
       </div>
     </div>
-    <footer class="foot"><b>HONORING THE PAST · CELEBRATING THE PRESENT · INSPIRING THE FUTURE</b><span>Team names, music choice and custom questions are saved in this browser.</span></footer>
+    <footer class="foot"><b>HONORING THE PAST · CELEBRATING THE PRESENT · INSPIRING THE FUTURE</b><span>Team names, music choice and custom questions are saved in this browser. <span class="ver">Japarty v<span class="ver-n"></span></span></span></footer>
   </section>
 
   <!-- Quiz / True-False -->
@@ -610,7 +673,10 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
       <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
     </div>
     <div class="p-body" id="p-body" aria-live="polite"></div>
+    <div class="p-party" id="p-party" hidden></div>
+    <input type="file" id="p-song-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm" hidden>
     <div class="center"><button class="linkish" data-act="p-leave" id="p-leave">Leave and open the one-screen games</button></div>
+    <p class="center ver">Japarty v<span class="ver-n"></span></p>
   </section>
 
   <!-- Podium -->
@@ -653,6 +719,59 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
       <input type="file" id="pack-file" accept=".csv,.tsv,.txt,text/plain,text/csv" hidden>
       <button class="btn ghost" data-act="pack-cancel">Cancel</button>
     </div>
+  </div>
+</div>
+
+<div class="update" id="update" hidden role="status">
+  <span id="update-msg">A new version of Japarty is ready.</span>
+  <button class="auto-btn" data-act="update-now">Refresh now</button>
+  <button class="auto-btn" data-act="update-later">Later</button>
+</div>
+
+<!-- Party playlist -->
+<div class="overlay" id="party" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="party-title" style="width:min(760px,100%)">
+    <div class="modal-head"><h2 id="party-title" tabindex="-1">Party playlist</h2><button class="icon-btn" data-act="party-close" aria-label="Close">×</button></div>
+    <div class="pa-now" id="pa-now"></div>
+    <div class="row">
+      <button class="btn" data-act="party-play" id="pa-play">Play</button>
+      <button class="btn ghost" data-act="party-skip" id="pa-skip">Skip song</button>
+      <button class="btn ghost" data-act="party-add">+ Add songs from this computer</button>
+      <input type="file" id="party-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm" multiple hidden>
+      <span class="muted" id="pa-status" style="font-size:14px"></span>
+    </div>
+    <div class="group" id="pa-pend-wrap" hidden><span class="label" id="pa-pend-label">Requests from players</span><div class="group" id="pa-pend"></div></div>
+    <div class="group"><span class="label" id="pa-q-label">Playlist</span><div class="group" id="pa-queue"></div></div>
+    <details class="more"><summary>Playlist settings</summary><div class="more-body">
+      <label class="check" for="pa-up"><input type="checkbox" id="pa-up"><span>Let players add songs from their phones</span></label>
+      <label class="check" for="pa-appr"><input type="checkbox" id="pa-appr"><span>Approve each song before it plays</span></label>
+      <label class="label" for="pa-q">While players answer</label><select id="pa-q"><option value="quiet">Keep playing quietly</option><option value="pause">Pause the playlist</option></select>
+    </div></details>
+    <p class="muted" id="pa-note" style="font-size:14px"></p>
+  </div>
+</div>
+
+<!-- Poster -->
+<div class="overlay" id="poster" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="poster-title" style="width:min(760px,100%)">
+    <div class="modal-head"><h2 id="poster-title" tabindex="-1">Poster</h2><button class="icon-btn" data-act="poster-close" aria-label="Close">×</button></div>
+    <div class="linkbox"><label class="label" for="po-event" style="white-space:nowrap">Event name</label><input id="po-event" class="sv-input" maxlength="48"></div>
+    <div class="po-wrap"><div class="po-sheet" id="po-sheet">
+      <div class="po-kente"></div>
+      <div class="po-body">
+        <div class="po-event" id="po-event-out"></div>
+        <div class="po-logo">JAPARTY!</div>
+        <div class="po-sub">The Black History party quiz</div>
+        <div class="po-qr" id="po-qr"></div>
+        <div class="po-scan">Scan to play</div>
+        <div class="po-pin">Game PIN <b id="po-pin"></b></div>
+        <ol class="po-steps"><li><b>1</b>Scan the code with your phone camera</li><li><b>2</b>Pick your name</li><li><b>3</b>Answer on your phone</li></ol>
+        <div class="po-url" id="po-url"></div>
+      </div>
+      <div class="po-kente"></div>
+    </div></div>
+    <p class="muted" style="font-size:14px" id="po-note"></p>
+    <div class="row"><button class="btn" data-act="poster-print" id="po-print">Print</button><button class="btn ghost" data-act="poster-save" id="po-save">Save as image</button><span class="muted" id="po-status" style="font-size:14px"></span></div>
   </div>
 </div>
 
@@ -716,6 +835,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
     <div class="modal-head"><h2 id="music-title" tabindex="-1">Music</h2><button class="icon-btn" data-act="music-close" aria-label="Close music settings">×</button></div>
     <div class="group"><span class="label">Lobby and leaderboard</span><div class="seg" id="mx-lobby"></div></div>
     <div class="group"><span class="label">While players answer</span><div class="seg" id="mx-think"></div></div>
+    <div class="group"><span class="label">Party playlist</span><p class="muted" style="font-size:14px">Plays songs one after another, and players can add songs from their phones.</p><button class="btn ghost small" data-act="open-party" style="justify-self:start">Open the party playlist</button></div>
     <div class="group"><span class="label">Your music</span><div class="group" id="mx-list"></div>
       <div class="row"><button class="btn ghost small" data-act="music-add">+ Add music files</button><span class="muted" id="mx-status" style="font-size:14px"></span></div>
       <input type="file" id="music-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
@@ -747,6 +867,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+const APP_VERSION="2.0";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -786,12 +907,77 @@ const BUILTIN_RAW=[
 ["CULTURE & LEGACY","Which cultural and intellectual movement flourished in New York during the 1920s?","The Harlem Renaissance","The Black Arts Movement","The Great Migration","The Chicago Black Renaissance","It celebrated Black art, literature, music and intellectual life."],
 ["CULTURE & LEGACY","Celebrated December 26 through January 1, which holiday honors African heritage and seven principles?","Kwanzaa","Juneteenth","Emancipation Day","Black History Month","Maulana Karenga established it in 1966."],
 ["CULTURE & LEGACY","Which movement brought about six million Black Americans from the rural South to cities in the North and West between 1910 and 1970?","The Great Migration","Reconstruction","The Underground Railroad","The Harlem Renaissance","It reshaped American cities, politics, music and culture."],
-["CULTURE & LEGACY","Which Smithsonian museum opened on the National Mall in 2016?","National Museum of African American History and Culture","Schomburg Center for Research in Black Culture","DuSable Black History Museum","The Studio Museum in Harlem","Its collection holds more than 40,000 objects."]
+["CULTURE & LEGACY","Which Smithsonian museum opened on the National Mall in 2016?","National Museum of African American History and Culture","Schomburg Center for Research in Black Culture","DuSable Black History Museum","The Studio Museum in Harlem","Its collection holds more than 40,000 objects."],
+["HISTORY MAKERS","Which journalist led a national campaign against lynching in the 1890s?","Ida B. Wells","Mary Church Terrell","Sojourner Truth","Fannie Lou Hamer","Her 1892 pamphlet Southern Horrors documented lynching in the South."],
+["HISTORY MAKERS","Which educator founded the Tuskegee Institute in Alabama in 1881?","Booker T. Washington","W.E.B. Du Bois","George Washington Carver","Carter G. Woodson","His autobiography Up from Slavery was published in 1901."],
+["HISTORY MAKERS","In 1895, who became the first Black American to earn a PhD from Harvard?","W.E.B. Du Bois","Carter G. Woodson","Booker T. Washington","Alain Locke","He co-founded the NAACP in 1909 and edited its magazine, The Crisis."],
+["HISTORY MAKERS","Which abolitionist gave the 1851 speech known as “Ain't I a Woman?”","Sojourner Truth","Harriet Tubman","Frances Harper","Ida B. Wells","She gave the speech at a women's rights convention in Akron, Ohio."],
+["HISTORY MAKERS","In 1967, who became the first Black justice of the U.S. Supreme Court?","Thurgood Marshall","Clarence Thomas","Charles Hamilton Houston","Ketanji Brown Jackson","He served on the Court for 24 years, until 1991."],
+["HISTORY MAKERS","In 1968, who became the first Black woman elected to the U.S. Congress?","Shirley Chisholm","Barbara Jordan","Fannie Lou Hamer","Carol Moseley Braun","In 1972 she also ran for the Democratic nomination for president."],
+["HISTORY MAKERS","Who became the first Black president of the United States in 2009?","Barack Obama","Colin Powell","Jesse Jackson","Cory Booker","He served two terms, from 2009 to 2017."],
+["HISTORY MAKERS","Which leader gave the 1964 speech “The Ballot or the Bullet”?","Malcolm X","Stokely Carmichael","Elijah Muhammad","Dr. Martin Luther King Jr.","His autobiography, written with Alex Haley, was published in 1965."],
+["CIVIL RIGHTS","Which 1961 activists rode interstate buses into the South to challenge segregation?","The Freedom Riders","The Little Rock Nine","The Greensboro Four","The Tuskegee Airmen","They tested a Supreme Court ruling that banned segregation in interstate bus terminals."],
+["CIVIL RIGHTS","Which 1964 law outlawed discrimination based on race, color, religion, sex or national origin?","The Civil Rights Act of 1964","The Voting Rights Act of 1965","The Fair Housing Act of 1968","The 15th Amendment","President Lyndon B. Johnson signed it on July 2, 1964."],
+["CIVIL RIGHTS","Which NAACP leader in Mississippi was assassinated outside his home in 1963?","Medgar Evers","Vernon Dahmer","James Meredith","Emmett Till","He was the NAACP's first field secretary in Mississippi."],
+["CIVIL RIGHTS","Which Mississippi activist said she was “sick and tired of being sick and tired”?","Fannie Lou Hamer","Ella Baker","Septima Clark","Rosa Parks","She co-founded the Mississippi Freedom Democratic Party in 1964."],
+["CIVIL RIGHTS","Which 1968 law banned discrimination in the sale and rental of housing?","The Fair Housing Act","The Civil Rights Act of 1964","The Voting Rights Act","Brown v. Board of Education","It became law one week after Dr. King's assassination."],
+["CIVIL RIGHTS","Which future congressman was beaten on Selma's Edmund Pettus Bridge in 1965 and later urged people to get into “good trouble”?","John Lewis","Andrew Young","Julian Bond","Hosea Williams","He represented Georgia in Congress from 1987 until his death in 2020."],
+["CIVIL RIGHTS","In 1960, which 6-year-old integrated William Frantz Elementary School in New Orleans?","Ruby Bridges","Elizabeth Eckford","Linda Brown","Dorothy Counts","Norman Rockwell painted her walk to school in The Problem We All Live With."],
+["CIVIL RIGHTS","Whose murder in Mississippi in 1955, and his mother's open-casket funeral, shocked the nation?","Emmett Till","Medgar Evers","James Chaney","Jimmie Lee Jackson","His mother, Mamie Till-Mobley, wanted the world to see what had been done to her son."],
+["INVENTORS & SCIENCE","Which mathematician and astronomer published popular almanacs in the 1790s?","Benjamin Banneker","Lewis Latimer","Elijah McCoy","Granville Woods","He also helped survey the original boundaries of Washington, D.C."],
+["INVENTORS & SCIENCE","Which inventor improved the carbon filament for light bulbs and drew the patent drawings for Bell's telephone?","Lewis Latimer","Granville Woods","Garrett Morgan","Elijah McCoy","He later worked for Thomas Edison's electric company."],
+["INVENTORS & SCIENCE","Which inventor's oil-drip cup for train engines may have inspired the phrase “the real McCoy”?","Elijah McCoy","Granville Woods","Lewis Latimer","Jan Matzeliger","He received more than 50 patents."],
+["INVENTORS & SCIENCE","Which surgeon performed one of the first successful open-heart surgeries, in Chicago in 1893?","Daniel Hale Williams","Charles Drew","Vivien Thomas","Ben Carson","He founded Chicago's Provident Hospital in 1891."],
+["INVENTORS & SCIENCE","In 1983, who became the first Black American in space?","Guion Bluford","Ronald McNair","Charles Bolden","Mae Jemison","He flew aboard the Space Shuttle Challenger."],
+["INVENTORS & SCIENCE","Who became NASA's first Black female engineer in 1958?","Mary Jackson","Katherine Johnson","Dorothy Vaughan","Christine Darden","NASA's headquarters in Washington, D.C. is named after her."],
+["INVENTORS & SCIENCE","Which mathematician's model of the Earth's shape helped make GPS possible?","Gladys West","Annie Easley","Katherine Johnson","Evelyn Boyd Granville","She was inducted into the Air Force Space and Missile Pioneers Hall of Fame in 2018."],
+["INVENTORS & SCIENCE","Whose cells, taken without her consent in 1951, became the first human cell line to keep growing in a lab?","Henrietta Lacks","Alice Ball","Jane Wright","Rebecca Lee Crumpler","Her HeLa cells helped develop the polio vaccine."],
+["INVENTORS & SCIENCE","Which chemist developed an injectable treatment for leprosy in 1915?","Alice Ball","Marie Maynard Daly","Henrietta Lacks","Percy Julian","Her technique, known as the Ball Method, was used for decades."],
+["ARTS & ENTERTAINMENT","Which writer published the 1969 memoir I Know Why the Caged Bird Sings?","Maya Angelou","Toni Morrison","Nikki Giovanni","Gwendolyn Brooks","She read her poem “On the Pulse of Morning” at the 1993 presidential inauguration."],
+["ARTS & ENTERTAINMENT","Which author wrote the 1937 novel Their Eyes Were Watching God?","Zora Neale Hurston","Nella Larsen","Alice Walker","Ann Petry","She was also a folklorist who collected Black Southern stories and songs."],
+["ARTS & ENTERTAINMENT","Which jazz singer recorded the protest song “Strange Fruit” in 1939?","Billie Holiday","Ella Fitzgerald","Bessie Smith","Sarah Vaughan","The song protested the lynching of Black Americans."],
+["ARTS & ENTERTAINMENT","Which bandleader led his orchestra at Harlem's Cotton Club starting in 1927?","Duke Ellington","Count Basie","Cab Calloway","Fletcher Henderson","He wrote more than 1,000 compositions."],
+["ARTS & ENTERTAINMENT","In 2002, who became the first Black woman to win the Oscar for Best Actress?","Halle Berry","Viola Davis","Whoopi Goldberg","Angela Bassett","She won for the film Monster's Ball."],
+["ARTS & ENTERTAINMENT","Who won an Oscar in 1940 for Gone with the Wind, the first for a Black performer?","Hattie McDaniel","Dorothy Dandridge","Ethel Waters","Lena Horne","She won Best Supporting Actress."],
+["ARTS & ENTERTAINMENT","Which “King of Pop” released the album Thriller in 1982?","Michael Jackson","Prince","Stevie Wonder","Lionel Richie","Thriller became the best-selling album of all time."],
+["ARTS & ENTERTAINMENT","Whose play A Raisin in the Sun was the first by a Black woman produced on Broadway?","Lorraine Hansberry","Ntozake Shange","Suzan-Lori Parks","Alice Childress","The title comes from Langston Hughes's poem “Harlem.”"],
+["ARTS & ENTERTAINMENT","Which playwright wrote a cycle of ten plays about Black life, one for each decade of the 1900s, including Fences?","August Wilson","Lorraine Hansberry","Amiri Baraka","James Baldwin","Fences won the Pulitzer Prize for Drama in 1987."],
+["ARTS & ENTERTAINMENT","Who wrote the 1953 novel Go Tell It on the Mountain?","James Baldwin","Richard Wright","Ralph Ellison","Langston Hughes","His 1963 book The Fire Next Time shaped the national debate on race."],
+["SPORTS & FIRSTS","Which track star won four gold medals at the 1936 Berlin Olympics?","Jesse Owens","Ralph Metcalfe","Eddie Tolan","Carl Lewis","He won the 100m, 200m, long jump and 4x100m relay."],
+["SPORTS & FIRSTS","In 1957, who became the first Black player to win Wimbledon?","Althea Gibson","Arthur Ashe","Zina Garrison","Venus Williams","She also won the U.S. Nationals that same year."],
+["SPORTS & FIRSTS","Which runner overcame childhood polio to win three gold medals at the 1960 Rome Olympics?","Wilma Rudolph","Wyomia Tyus","Florence Griffith Joyner","Jackie Joyner-Kersee","She was called the fastest woman in the world."],
+["SPORTS & FIRSTS","Who broke Babe Ruth's career home run record in 1974?","Hank Aaron","Willie Mays","Ernie Banks","Barry Bonds","He finished his career with 755 home runs."],
+["SPORTS & FIRSTS","In 1975, who became the first Black man to win Wimbledon?","Arthur Ashe","Yannick Noah","James Blake","MaliVai Washington","The main stadium at the U.S. Open is named after him."],
+["SPORTS & FIRSTS","Which golfer won the Masters in 1997 at age 21?","Tiger Woods","Lee Elder","Charlie Sifford","Vijay Singh","He won by a record 12 strokes."],
+["SPORTS & FIRSTS","Who became the first Black head coach to win the Super Bowl, in 2007?","Tony Dungy","Mike Tomlin","Lovie Smith","Art Shell","His Colts beat Lovie Smith's Bears in the first Super Bowl with two Black head coaches."],
+["SPORTS & FIRSTS","Which sprinter, nicknamed “Flo-Jo,” set world records in the 100m and 200m in 1988?","Florence Griffith Joyner","Gail Devers","Evelyn Ashford","Marion Jones","She won three gold medals at the 1988 Seoul Olympics."],
+["SPORTS & FIRSTS","In 1950, who became the first Black player to appear in an NBA game?","Earl Lloyd","Chuck Cooper","Nat Clifton","Bill Russell","Chuck Cooper and Nat “Sweetwater” Clifton also broke the NBA's color line that season."],
+["CULTURE & LEGACY","Juneteenth marks the day in 1865 when news of freedom reached enslaved people in which Texas city?","Galveston","Houston","Austin","San Antonio","Juneteenth became a federal holiday in 2021."],
+["CULTURE & LEGACY","Which song, written by James Weldon Johnson and his brother, is often called the Black national anthem?","“Lift Every Voice and Sing”","“We Shall Overcome”","“Wade in the Water”","“A Change Is Gonna Come”","Schoolchildren in Jacksonville, Florida first performed it in 1900."],
+["CULTURE & LEGACY","Which Tulsa district, known as Black Wall Street, was destroyed in a 1921 massacre?","Greenwood","Bronzeville","Sweet Auburn","Harlem","The attack destroyed about 35 blocks of Black homes and businesses."],
+["CULTURE & LEGACY","Which historically Black university was founded in Washington, D.C. in 1867?","Howard University","Spelman College","Morehouse College","Hampton University","Its graduates include Thurgood Marshall and Toni Morrison."],
+["CULTURE & LEGACY","What does HBCU stand for?","Historically Black Colleges and Universities","Higher Black Colleges and Universities","Historic Black Community Unions","Honored Black College Union","There are about 100 HBCUs in the United States."],
+["CULTURE & LEGACY","Which Atlanta street, where Dr. King was born, was once called the richest Black street in the world?","Auburn Avenue","Peachtree Street","Beale Street","Lenox Avenue","Ebenezer Baptist Church, where Dr. King preached, is on Auburn Avenue."],
+["CULTURE & LEGACY","Which Memphis street is known as the Home of the Blues?","Beale Street","Bourbon Street","Auburn Avenue","125th Street","W.C. Handy, the Father of the Blues, helped make it famous."],
+["CULTURE & LEGACY","Which national holiday, first observed in 1986, honors a civil rights leader?","Martin Luther King Jr. Day","Juneteenth","Emancipation Day","Black History Month","It falls on the third Monday of January."],
+["CULTURE & LEGACY","Which magazine, founded by John H. Johnson in 1945, covered Black American life for decades?","Ebony","Essence","The Crisis","Black Enterprise","Johnson also started Jet magazine in 1951."]
 ];
 const toItem=r=>({cat:r[0],q:r[1],a:r[2],w:r.slice(3,6).filter(Boolean),f:r[6]||""});
 const BUILTIN=BUILTIN_RAW.map(toItem);
 
-const FINAL={cat:"THE FOUNDER",q:"This educator and historian founded Negro History Week in 1926, laying the foundation for Black History Month.",a:"Who was Carter G. Woodson?",f:"He co-founded the Association for the Study of Negro Life and History in 1915 and was the second Black American to earn a PhD from Harvard."};
+const FINALS=[
+{cat:"THE FOUNDER",q:"This educator and historian founded Negro History Week in 1926, laying the foundation for Black History Month.",a:"Who was Carter G. Woodson?",f:"He co-founded the Association for the Study of Negro Life and History in 1915.",accept:["carter g woodson","carter woodson","woodson"]},
+{cat:"THE CONSTITUTION",q:"Ratified in 1865, this amendment abolished slavery in the United States.",a:"What is the 13th Amendment?",f:"Congress passed it in January 1865, and it was ratified that December.",accept:["13th amendment","thirteenth amendment","13th","thirteenth"]},
+{cat:"PIONEERS",q:"In 1992, this physician and engineer became the first Black woman to travel into space.",a:"Who is Mae Jemison?",f:"She flew aboard the Space Shuttle Endeavour.",accept:["mae jemison","jemison"]},
+{cat:"LITERATURE",q:"This author of Beloved became the first Black woman to win the Nobel Prize in Literature.",a:"Who was Toni Morrison?",f:"She won the Nobel Prize in 1993.",accept:["toni morrison","morrison"]},
+{cat:"BASEBALL",q:"On April 15, 1947, this player took the field for the Brooklyn Dodgers and broke baseball's color barrier.",a:"Who was Jackie Robinson?",f:"Every MLB player now wears his number 42 on April 15.",accept:["jackie robinson","robinson"]},
+{cat:"HISTORIC PLACES",q:"This 1921 attack destroyed the Greenwood district, known as Black Wall Street.",a:"What was the Tulsa Race Massacre?",f:"It is one of the worst acts of racial violence in U.S. history.",accept:["tulsa race massacre","tulsa massacre","tulsa race riot","tulsa"]},
+{cat:"SONGWRITERS",q:"This poet and diplomat wrote the words to “Lift Every Voice and Sing” in 1900.",a:"Who was James Weldon Johnson?",f:"His brother, J. Rosamond Johnson, wrote the music.",accept:["james weldon johnson","weldon johnson"]},
+{cat:"THE COURT",q:"This lawyer won Brown v. Board of Education and later became the first Black Supreme Court justice.",a:"Who was Thurgood Marshall?",f:"He argued 32 cases before the Supreme Court and won 29.",accept:["thurgood marshall","thurgood","marshall"]}
+];
+const FINAL=FINALS[0];
+const pickFinal=()=>{const used=store.get("japarty.fjUsed",[]);let pool=FINALS.filter(f=>!used.includes(f.cat));if(!pool.length){pool=FINALS;store.set("japarty.fjUsed",[])}
+  const f=pool[Math.random()*pool.length|0];store.set("japarty.fjUsed",(pool===FINALS?[]:used).concat(f.cat).slice(-FINALS.length));return f};
 
 const TF=[
 ["Harriet Tubman was born in Maryland.",true,"She was born into slavery in Dorchester County, Maryland, around 1822."],
@@ -809,7 +995,17 @@ const TF=[
 ["The Montgomery Bus Boycott lasted about one week.",false,"It lasted 381 days, ending after the Supreme Court ruled bus segregation unconstitutional."],
 ["Carter G. Woodson earned a PhD from Harvard.",true,"He received it in 1912, the second Black American to do so after W.E.B. Du Bois."],
 ["Barack Obama was the first Black U.S. senator.",false,"Hiram Revels of Mississippi became the first in 1870."],
-["Motown Records was founded in Detroit.",true,"Berry Gordy founded it in 1959 with an $800 family loan."]
+["Motown Records was founded in Detroit.",true,"Berry Gordy founded it in 1959 with an $800 family loan."],
+["Jesse Owens won four gold medals at the 1936 Berlin Olympics.",true,"He won the 100m, 200m, long jump and 4x100m relay."],
+["George Washington Carver invented peanut butter.",false,"Peanut butter existed before Carver. He is known for crop rotation and hundreds of peanut products."],
+["The Tuskegee Airmen were Black pilots who served in World War II.",true,"They flew more than 15,000 sorties in Europe and North Africa."],
+["Hank Aaron finished his career with 715 home runs.",false,"Number 715 broke Babe Ruth's record in 1974. He finished with 755."],
+["Lorraine Hansberry wrote A Raisin in the Sun.",true,"It opened on Broadway in 1959."],
+["Ruby Bridges was 12 years old when she integrated her New Orleans school.",false,"She was 6 years old, in 1960."],
+["Howard University is in Atlanta, Georgia.",false,"Howard University is in Washington, D.C."],
+["Ida B. Wells was a journalist.",true,"She co-owned the Memphis Free Speech newspaper and reported on lynching."],
+["Wilma Rudolph had polio as a child.",true,"She overcame it to win three gold medals at the 1960 Olympics."],
+["Thurgood Marshall argued more than 30 cases before the Supreme Court.",true,"He argued 32 and won 29."]
 ];
 
 const TIMELINE=[
@@ -834,8 +1030,8 @@ const saveTeams=()=>store.set("japarty.teams",teams.map(t=>t.name));
 const savedPack=store.get("japarty.pack",null);
 let pack=savedPack&&Array.isArray(savedPack.items)&&savedPack.items.length?savedPack.items:BUILTIN;
 let packName=pack===BUILTIN?"Black History":"Custom pack";
-let prefs=Object.assign({lobby:"groove",think:"think",music:true,sfx:true,vol:.8,auto:4},store.get("japarty.prefs",{}));
-if(!["groove","block","storm"].includes(prefs.lobby))prefs.lobby="groove";
+let prefs=Object.assign({lobby:"groove",think:"think",music:true,sfx:true,vol:.8,auto:4,partyUploads:true,partyApprove:true,partyQ:"quiet"},store.get("japarty.prefs",{}));
+if(!["groove","block","storm","party"].includes(prefs.lobby))prefs.lobby="groove";
 if(!["think","none"].includes(prefs.think))prefs.think="think";
 if(!(prefs.vol>=0&&prefs.vol<=1))prefs.vol=.8;
 if(![0,3,4,5].includes(+prefs.auto))prefs.auto=4;
@@ -865,10 +1061,10 @@ const IDB={db:null,
 const tuneRecord=r=>({id:r.id,title:r.title,artist:r.artist,start:r.start,data:r.data});
 const tunePool=()=>[...TUNES.filter(t=>!t.bad&&t.title.trim()),...(prefs.starters!==false?STARTER_TUNES:[])];
 let tuneStopFn=null,tuneTok=0;
-function stopTune(){tuneTok++;if(tuneStopFn){try{tuneStopFn()}catch(e){}tuneStopFn=null}}
+function stopTune(){tuneTok++;if(tuneStopFn){try{tuneStopFn()}catch(e){}tuneStopFn=null}if(PARTY.hold){PARTY.hold=false;setTimeout(partySync,0)}}
 async function tuneBuffer(rec){if(rec.buf)return rec.buf;try{rec.buf=await M.ctx.decodeAudioData(rec.data.slice(0))}catch(e){rec.buf=null;rec.bad=true}return rec.buf}
 async function playTune(item){
-  stopTune();if(!audioInit())return;const tok=tuneTok,c=M.ctx;
+  stopTune();if(!audioInit())return;const tok=tuneTok,c=M.ctx;PARTY.hold=true;partySync();
   if(!M.tuneBus){M.tuneBus=c.createGain();M.tuneBus.gain.value=1;M.tuneBus.connect(M.master)}
   const st=STARTER_TUNES.find(x=>x.id===item.audio);
   if(st){const g=c.createGain();g.connect(M.tuneBus);const spb=60/st.bpm;let t=c.currentTime+.08;
@@ -987,9 +1183,9 @@ function schedule(){
   if(M.next<c.currentTime-.2)M.next=c.currentTime+.05;
   while(M.next<c.currentTime+.12){tr.play(M.step,M.next,sp);M.next+=sp;M.step++}
 }
-function setTrack(name){M.track=name;M.step=0;if(M.ctx)M.next=M.ctx.currentTime+.06;playCustom();updateNowPlaying()}
-function lobbyMusic(){M.kind="lobby";setTrack(prefs.lobby)}
-function thinkMusic(){M.kind="think";setTrack(prefs.think)}
+function setTrack(name){M.track=name;M.step=0;if(M.ctx)M.next=M.ctx.currentTime+.06;playCustom();updateNowPlaying();partySync()}
+function lobbyMusic(){M.kind="lobby";setTrack(prefs.lobby!=="party"?prefs.lobby:partyActive()?"party":PARTY.queue.length?"none":"groove")}
+function thinkMusic(){M.kind="think";setTrack(partyActive()&&prefs.partyQ!=="pause"?"none":prefs.think)}
 function silence(){M.kind="none";setTrack("none")}
 function playCustom(){
   const c=isCustom(M.track)?CUSTOM.find(x=>x.id===M.track):null;
@@ -997,7 +1193,7 @@ function playCustom(){
   if(!c||M.src||!M.ctx)return;
   const s=M.ctx.createBufferSource();s.buffer=c.buf;s.loop=true;s.connect(M.musicBus);s.start();M.src=s;M.srcId=c.id;
 }
-const trackName=t=>isCustom(t)?((CUSTOM.find(x=>x.id===t)||{}).name||""):(TRACK_NAMES[t]||"");
+const trackName=t=>t==="party"||(t==="none"&&partyActive())?partyNowText():isCustom(t)?((CUSTOM.find(x=>x.id===t)||{}).name||""):(TRACK_NAMES[t]||"");
 const setMusicGain=()=>{if(M.musicBus)M.musicBus.gain.setTargetAtTime(musicLevel(),M.ctx.currentTime,.05)};
 function updateNowPlaying(){
   const el=$("#now-playing");if(!el)return;
@@ -1042,7 +1238,7 @@ function renderPackLabel(){$("#pack-name").textContent=packName;$("#pack-meta").
 function renderMusicUI(){
   const segBtns=(list,act,cur)=>list.map(([id,name])=>`<button data-act="${act}" data-track="${id}" aria-pressed="${id===cur}">${esc(name)}</button>`).join("");
   const mine=CUSTOM.map(c=>[c.id,c.name]);
-  const lob=[["groove","Sunday Groove"],["block","Block Party"],["storm","Quiet Storm"],...mine];
+  const lob=[["groove","Sunday Groove"],["block","Block Party"],["storm","Quiet Storm"],...mine,["party","Party playlist"]];
   $("#home-music").innerHTML=segBtns(lob,"music",prefs.lobby);
   $("#mx-lobby").innerHTML=segBtns(lob,"music",prefs.lobby);
   $("#mx-think").innerHTML=segBtns([["think","Thinking beat"],...mine,["none","Silence"]],"music-think",prefs.think);
@@ -1180,7 +1376,7 @@ function leaderboard(next,label){cancelAuto();
 /* ---------- Japarty Board ---------- */
 function boardCats(){
   const map=new Map();pack.forEach(it=>{if(!map.has(it.cat))map.set(it.cat,[]);map.get(it.cat).push(it)});
-  return [...map].slice(0,6).map(([name,items])=>({name,items:items.slice(0,5)}));
+  return [...map].slice(0,6).map(([name,items])=>({name,items:shuffle(items).slice(0,5)}));
 }
 function startBoard(){
   const cats=boardCats(),ids=[];cats.forEach((c,ci)=>c.items.forEach((_,r)=>{if(r>=1)ids.push(ci+"-"+r)}));
@@ -1232,7 +1428,7 @@ function clueReveal(){
 }
 function finishTile(){B.used.add(B.cur.id);B.cur=null;$("#clue").hidden=true;stopClock();lobbyMusic();renderBoard();renderStrip()}
 function startFinal(){
-  let item=FINAL;
+  let item=pickFinal();
   if(pack!==BUILTIN){const onBoard=new Set(B.cats.flatMap(c=>c.items));const spare=pack.filter(i=>!onBoard.has(i));const src=spare.length?spare:pack;item=src[Math.floor(Math.random()*src.length)]}
   B.fin={item,w:[]};$("#clue").hidden=false;silence();sfx("dd");
   setClue("Final Japarty","Category: "+item.cat,false);
@@ -1306,7 +1502,7 @@ function confetti(){
 
 /* ---------- LIVE: host on the big screen, players on their phones ---------- */
 const LIVE={room:null,db:null,user:null,canHost:false,myId:null,myPeer:null,status:"connecting"};
-const live={role:null,cur:null,sc:{gid:null,seq:-1,map:{},players:0},nick:String(store.get("japarty.nick","")||"").slice(0,20),defaultNick:"",pick:null,openAt:0,closeAt:0,H:null,hs:null,rev:0,pTimer:null,lastScores:null,lastRe:0,pendingSfx:false,pin:null,g:null,named:false,subs:[],hashPin:null,pinErr:"",joining:false,kicked:new Set(),bots:[],lobbyAt:0,teamNames:[],team:null,stage:"pin",rk:null,freeNick:false,roster:null,rosterBuf:{},rosterList:null,lastTaken:"",takenTO:null};
+const live={role:null,cur:null,sc:{gid:null,seq:-1,map:{},players:0},nick:String(store.get("japarty.nick","")||"").slice(0,20),defaultNick:"",pick:null,openAt:0,closeAt:0,H:null,hs:null,rev:0,pTimer:null,lastScores:null,lastRe:0,pendingSfx:false,pin:null,g:null,named:false,subs:[],hashPin:null,pinErr:"",joining:false,party:null,myUps:[],kicked:new Set(),bots:[],lobbyAt:0,teamNames:[],team:null,stage:"pin",rk:null,freeNick:false,roster:null,rosterBuf:{},rosterList:null,lastTaken:"",takenTO:null};
 {const r=store.get("japarty.roster",null);if(r&&Array.isArray(r.names)&&r.names.length)live.rosterList={rid:String(r.rid||Date.now().toString(36)),names:r.names.map(String).slice(0,300),teams:Array.isArray(r.teams)?r.teams.map(String):null,other:!!r.other}}
 const READY_MS=2600;
 const JOIN_BASE="";
@@ -1371,7 +1567,9 @@ function mqttRoom(pin,role){
     return()=>{set.delete(f);if(!set.size){MQ.handlers.delete(full);try{c.unsubscribe(full)}catch(e){}}}};
   const pub=(t,d,retain)=>new Promise(r=>{try{c.publish(base+"/"+t,JSON.stringify(d),{qos:1,retain:!!retain},()=>r())}catch(e){r()}});
   const hello=()=>role==="player"?pub("in",{pid:SB.pid,pres}):Promise.resolve();
-  if(role==="player")["state","scores","roster"].forEach(t=>unsubs.push(sub(t,d=>{(topicCbs[t]||new Set()).forEach(f=>{try{f({topic:t,data:d,sameTab:false,isMe:false,peer:"host",by:null,kind:"viewer",guest:false})}catch(e){}})})));
+  const upCbs=new Set();
+  if(role==="host")unsubs.push(sub("up",d=>upCbs.forEach(f=>{try{f(d)}catch(e){}})));
+  if(role==="player")["state","scores","roster","party"].forEach(t=>unsubs.push(sub(t,d=>{(topicCbs[t]||new Set()).forEach(f=>{try{f({topic:t,data:d,sameTab:false,isMe:false,peer:"host",by:null,kind:"viewer",guest:false})}catch(e){}})})));
   if(role==="player"){const onc=()=>hello();c.on("connect",onc);unsubs.push(()=>{try{c.removeListener("connect",onc)}catch(e){}})}
   if(role==="host"){
     unsubs.push(sub("in",d=>{
@@ -1388,6 +1586,8 @@ function mqttRoom(pin,role){
     onPeers(f){peerCbs.add(f);return()=>peerCbs.delete(f)},
     on(t,f){(topicCbs[t]||(topicCbs[t]=new Set())).add(f);return()=>topicCbs[t].delete(f)},
     emit(t,data){return pub(t,data,true)},
+    sendUp(d){return pub("up",d,false)},
+    onUp(f){upCbs.add(f);return()=>upCbs.delete(f)},
     presence(patch){Object.entries(patch).forEach(([k,v])=>{if(v===null)delete pres[k];else pres[k]=v});return hello()},
     leave(){timers.forEach(clearInterval);const out=role==="player"?pub("in",{pid:SB.pid,pres:{}}):Promise.resolve();return out.finally(()=>unsubs.forEach(u=>u()))},
     connected:()=>!!c.connected};
@@ -1402,7 +1602,9 @@ function supaRoom(pin,role){
   const fire=(joined,left,updated)=>{snap=Object.freeze([...peers.values()]);const ch={peers:snap,joined,left,updated};peerCbs.forEach(f=>{try{f(ch)}catch(e){}})};
   const chan=sb.channel(base,{config:{broadcast:{self:false}}}),inbox=sb.channel(base+"-in",{config:{broadcast:{self:false}}});
   const hello=()=>role==="player"?inbox.send({type:"broadcast",event:"p",payload:{pid:SB.pid,pres}}).then(()=>{},()=>{}):Promise.resolve();
-  if(role==="player")["state","scores","roster"].forEach(t=>chan.on("broadcast",{event:t},({payload})=>{(topicCbs[t]||new Set()).forEach(f=>{try{f({topic:t,data:payload,sameTab:false,isMe:false,peer:"host",by:null,kind:"viewer",guest:false})}catch(e){}})}));
+  const upCbs=new Set();
+  if(role==="host")inbox.on("broadcast",{event:"up"},({payload})=>upCbs.forEach(f=>{try{f(payload)}catch(e){}}));
+  if(role==="player")["state","scores","roster","party"].forEach(t=>chan.on("broadcast",{event:t},({payload})=>{(topicCbs[t]||new Set()).forEach(f=>{try{f({topic:t,data:payload,sameTab:false,isMe:false,peer:"host",by:null,kind:"viewer",guest:false})}catch(e){}})}));
   if(role==="host"){
     inbox.on("broadcast",{event:"p"},({payload})=>{
       const d=payload||{};if(typeof d.pid!=="string"||d.pid.length>40||!d.pres||typeof d.pres!=="object")return;
@@ -1418,6 +1620,8 @@ function supaRoom(pin,role){
     onPeers(f){peerCbs.add(f);return()=>peerCbs.delete(f)},
     on(t,f){(topicCbs[t]||(topicCbs[t]=new Set())).add(f);return()=>topicCbs[t].delete(f)},
     emit(t,data){return chan.send({type:"broadcast",event:t,payload:data}).then(()=>{},()=>{})},
+    sendUp(d){return inbox.send({type:"broadcast",event:"up",payload:d}).then(r=>{if(r&&r!=="ok")throw new Error(String(r))})},
+    onUp(f){upCbs.add(f);return()=>upCbs.delete(f)},
     presence(patch){Object.entries(patch).forEach(([k,v])=>{if(v===null)delete pres[k];else pres[k]=v});return hello()},
     leave(){timers.forEach(clearInterval);const out=role==="player"?inbox.send({type:"broadcast",event:"p",payload:{pid:SB.pid,pres:{}}}).catch(()=>{}):Promise.resolve();
       return out.finally(()=>{try{sb.removeChannel(chan)}catch(e){}try{sb.removeChannel(inbox)}catch(e){}})},
@@ -1429,7 +1633,8 @@ function supaRoom(pin,role){
     setTimeout(()=>finish(ok?room:null),10000);
   });
 }
-{const m=/^#join-([A-Za-z0-9]{6})$/.exec(location.hash||"");if(m)live.hashPin=m[1].toUpperCase()}
+{const m=/^#join-([A-Za-z0-9]{6})$/.exec(location.hash||"");if(m)live.hashPin=m[1].toUpperCase();
+  else{try{const st=JSON.parse(sessionStorage.getItem("japarty.seat")||"null");if(st&&/^[A-Z0-9]{6}$/.test(st.pin))live.hashPin=st.pin}catch(e){}}}
 const clsFor=it=>it&&Array.isArray(it.opts)&&it.opts.length===2?{c:["c2","c1"],l:["T","F"]}:{c:["c0","c1","c2","c3"],l:["A","B","C","D"]};
 const ordinal=n=>{const s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
 function players(){
@@ -1481,7 +1686,7 @@ function applyRoster(d){
 /* each game gets its own PIN: its own named room plus games/<PIN> and scores/<PIN> docs */
 async function connectGame(pin){
   if(live.pin===pin&&live.g)return live.g;
-  disconnectGame();live.pin=pin;live.cur=null;live.pick=null;live.team=null;live.roster=null;live.rosterBuf={};live.rk=null;live.freeNick=false;live.sc={gid:null,seq:-1,map:{},players:0};
+  disconnectGame();live.pin=pin;live.cur=null;live.pick=null;live.party=null;live.team=null;live.roster=null;live.rosterBuf={};live.rk=null;live.freeNick=false;live.sc={gid:null,seq:-1,map:{},players:0};
   let g=null;
   if(LIVE.mode==="supa"){g=await supaRoom(pin,live.role==="host"?"host":"player");if(!g){if(live.pin===pin)live.pin=null;return null}}
   else if(LIVE.mode==="mqtt"){g=await mqttRoom(pin,live.role==="host"?"host":"player")}
@@ -1497,6 +1702,8 @@ async function connectGame(pin){
     subs.push(LIVE.db.doc("roster/"+pin).onSnapshot(s=>{if(s.exists)applyRoster(s.data())},()=>{}));
   }
   subs.push(live.g.on("roster",m=>{if(!m.sameTab)applyRoster(m.data)},()=>{}));
+  subs.push(live.g.on("party",m=>{if(!m.sameTab)applyParty(m.data)},()=>{}));
+  if(live.role==="host"&&typeof live.g.onUp==="function")subs.push(live.g.onUp(partyIngest));
   live.subs=subs;return live.g;
 }
 function disconnectGame(){
@@ -1558,6 +1765,7 @@ function sendScoreChunks(d){
 function onPeersChange(ch){
   const me=ch.peers.find(p=>p.sameTab);if(me)LIVE.myPeer=me.peer;
   if(live.role!=="host")return;
+  if(ch.joined.some(p=>!p.sameTab))partyBroadcast();
   if(live.hs&&ch.joined.some(p=>!p.sameTab)){
     const now=Date.now();
     if(now-live.lastRe>1000){live.lastRe=now;live.g.emit("state",live.hs).catch(()=>{});if(live.lastScores)sendScoreChunks(live.lastScores);if(rosterOn())sendRoster()}
@@ -1634,14 +1842,14 @@ async function hostResume(){
   if(/^fj/.test(ph)&&ph!=="fjreveal"&&!H.fjDone)return hostFJWager();
   return hostPodium();
 }
-async function hostLobby(fresh){
+async function hostLobby(fresh,forcePin){
   stopClock();clearTimeout(readyTO);if(live.H)clearTimeout(live.H.allTO);
   const keep=live.role==="host"&&live.pin&&!fresh;
   if(live.role==="host"&&fresh&&live.pin)broadcast({phase:"ended"});
   live.role="host";mode="live";live.H={phase:"lobby"};live.lastScores=null;
   $("#gamebar").hidden=false;$("#gb-mode").textContent="Live game";progress("Setting up");renderStrip();
   show("live");$("#lh-body").innerHTML=`<p class="muted center">Opening a game room…</p>`;
-  const pin=keep?live.pin:newPin();
+  const pin=keep?live.pin:(forcePin||newPin());
   live.lobbyAt=Date.now();
   if(!keep){live.kicked=new Set();live.teamNames=[];live.bots=[];await connectGame(pin);if(live.role!=="host"||live.pin!==pin){$("#lh-body").innerHTML=`<p class="err center">Couldn't open a game room. Check the connection and try again.</p>`;return}}
   const link=joinLink(pin);progress("Game PIN "+pin);
@@ -1650,7 +1858,7 @@ async function hostLobby(fresh){
       <div class="pin-row"><div><span class="pin-label">Game PIN</span><div class="pin">${pin}</div></div><div class="qr" id="lh-qr" aria-label="QR code for the join link"></div></div>
       <p>${openMode()?"Scan the code or open the link. No account needed.":"Scan the code, or open the Japarty link and enter the PIN. Players need to be signed in with access to this page."}</p>
       ${link?"":`<p class="err">Phones can't open a file saved on this computer. Put Japarty.html on a website, open it from there, and the link and QR code will appear.</p>`}
-      ${link?`<div class="linkbox"><input id="lh-link" readonly value="${esc(link)}" aria-label="Join link"><button class="btn small" data-act="copy-link">Copy link</button></div>`:""}
+      ${link?`<div class="linkbox"><input id="lh-link" readonly value="${esc(link)}" aria-label="Join link"><button class="btn small" data-act="copy-link">Copy link</button><button class="btn small ghost-ink" data-act="poster">Make a poster</button></div>`:""}
       <div class="row" style="align-items:baseline;gap:14px"><span class="big-count" id="lh-count">0</span><span style="font-weight:800;font-size:18px" id="lh-count-label">players in the lobby</span><button class="linkish" data-act="new-pin" style="margin-left:auto">New PIN</button></div></div>
     <div class="panel">
       <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Name That Tune · song clips</option></select></div>
@@ -1660,6 +1868,9 @@ async function hostLobby(fresh){
       <div class="row"><button class="btn ghost small" data-act="lh-bots">Add 8 test players</button><button class="btn ghost small" data-act="lh-bots-clear" id="lh-bots-clear" hidden>Remove test players</button></div>
       <details class="more"><summary>More settings</summary><div class="more-body">
         <button class="btn ghost small" data-act="open-tunes" id="lh-songs" style="justify-self:start" hidden>Manage Name That Tune songs</button>
+        <div class="group"><label class="label" for="lh-pin-in">Your own PIN</label>
+          <div class="linkbox"><input id="lh-pin-in" class="sv-input" maxlength="6" placeholder="e.g. BEING1" autocapitalize="characters" spellcheck="false" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn ghost small" data-act="set-pin">Use this PIN</button></div>
+          <p class="muted" style="font-size:13px">6 letters or numbers. Choose one before you print posters, and keep it with Play again with the same PIN.</p></div>
         <label for="lh-t" class="label">Answer timer</label><select id="lh-t"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select>
         <div class="group"><span class="label">Player list</span><p class="muted" id="lh-roster-info" style="font-size:14px"></p><button class="btn ghost small" data-act="open-roster" style="justify-self:start">Import players</button></div>
         <label for="lh-teams" class="label">Teams</label><select id="lh-teams"><option value="0">Everyone for themselves</option><option value="2">2 teams</option><option value="3">3 teams</option><option value="4">4 teams</option><option value="roster" id="lh-teams-roster" hidden>From the player list</option></select>
@@ -1682,7 +1893,7 @@ async function hostLobby(fresh){
   <div class="group" id="lh-wait-group" hidden><span class="label" id="lh-wait-label">Not joined yet</span><div class="nick-cloud" id="lh-wait"></div></div>`;
   $("#lh-bots-clear").hidden=!live.bots.length;
   renderRosterHost();if(live.teamNames.length&&$("#lh-teams").value==="0")$("#lh-teams").value=String(live.teamNames.length);renderAutoSel();
-  broadcast({phase:"lobby"});sendRoster();updateCloud(players());lobbyMusic();keepAwake();
+  broadcast({phase:"lobby"});sendRoster();partyBroadcast(true);updateCloud(players());lobbyMusic();keepAwake();
   try{if(window.QRCode&&link){const big=link.length>140;new QRCode($("#lh-qr"),{text:link,width:big?220:168,height:big?220:168,colorDark:"#16112a",colorLight:"#ffffff",correctLevel:big?QRCode.CorrectLevel.L:QRCode.CorrectLevel.M})}else $("#lh-qr").hidden=true}catch(e){$("#lh-qr").hidden=true}
 }
 function hostStart(){
@@ -1819,7 +2030,7 @@ function botsFJ(H){
 const normAns=t=>String(t||"").toLowerCase().replace(/^\s*(who|what|where|when)\s+(is|was|are|were)\s+/,"").replace(/[^a-z0-9 ]/g," ").replace(/\b(the|a|an|dr|mr|mrs|ms)\b/g," ").replace(/\s+/g," ").trim();
 const fjMatch=(t,acc)=>{const n=normAns(t);return !!n&&acc.some(a=>n===a||(a.length>=4&&n.includes(a)))};
 function fjItem(){
-  if(pack===BUILTIN)return{...FINAL,accept:["carter g woodson","carter woodson","woodson"]};
+  if(pack===BUILTIN)return{...pickFinal()};
   const used=new Set(live.H.items.map(i=>i.q)),spare=pack.filter(i=>!used.has(i.q)),src=spare.length?spare:pack,it=src[Math.random()*src.length|0];
   const n=normAns(it.a),w=n.split(" "),lastW=w[w.length-1];
   return{cat:it.cat,q:it.q,a:it.a,f:it.f||"",accept:[n].concat(w.length>1&&lastW.length>=5?[lastW]:[])};
@@ -1907,15 +2118,20 @@ async function playerConnect(pin){
     if(!live.cur){disconnectGame();live.pinErr="Couldn't find game "+pin+". Check the PIN on the big screen.";return}
     if(live.cur.phase==="ended"){disconnectGame();live.pinErr="The game with PIN "+pin+" has ended.";return}
     live.stage="name";keepAwake();
+    const seat=readSeat();
+    if(seat&&seat.pin===pin&&typeof seat.nick==="string"&&seat.nick.trim()){if(Number.isInteger(seat.team))live.team=seat.team;live.joining=false;playerSetName(seat.nick.slice(0,30),Number.isInteger(seat.rk)?seat.rk:null);return}
   }catch(e){live.pinErr="Couldn't reach that game. Try again."}
   finally{live.joining=false;playerRender()}
 }
+const readSeat=()=>{try{return JSON.parse(sessionStorage.getItem("japarty.seat")||"null")}catch(e){return null}};
+const saveSeat=()=>{try{sessionStorage.setItem("japarty.seat",JSON.stringify({pin:live.pin,nick:live.nick,rk:live.rk,team:live.team}))}catch(e){}};
+const clearSeat=()=>{try{sessionStorage.removeItem("japarty.seat")}catch(e){}};
 function playerSetName(nick,rk){
   const s=live.cur;if(!live.g||!s)return;
   live.nick=nick;live.rk=rk;if(rk==null)store.set("japarty.nick",nick);
   if(rk!=null&&live.roster&&live.roster.teams&&Array.isArray(s.teams)){const t=s.teams.indexOf((live.roster.teams[rk]||"").trim());if(t>=0)live.team=t}
   live.g.presence({pin:live.pin,nick,rk:rk==null?null:rk,a:null,...(Number.isInteger(live.team)?{team:live.team}:{})}).catch(()=>{});
-  live.joined=true;live.stage="joined";sfx("lock");playerRender();
+  live.joined=true;live.stage="joined";saveSeat();sfx("lock");playerRender();
 }
 function applyState(s){
   if(!s||typeof s!=="object"||typeof s.rev!=="number"||s.pin!==live.pin)return;
@@ -1950,6 +2166,7 @@ function playerRender(){
   const keep={};["p-find","p-nick","p-pin","p-w","p-fa"].forEach(id=>{const e=$("#"+id);if(e)keep[id]={v:e.value,f:document.activeElement===e}});
   playerRenderInner();
   Object.entries(keep).forEach(([id,k])=>{const e=$("#"+id);if(!e)return;e.value=k.v;if(id==="p-find")filterRoster(k.v);if(k.f)e.focus()});
+  renderPlayerParty();
 }
 function filterRoster(q){const t=String(q||"").trim().toLowerCase();$$("#p-roster button").forEach(b=>{b.hidden=!!t&&!b.dataset.n.includes(t)})}
 function playerRenderInner(){
@@ -2103,7 +2320,8 @@ const ACT={
   "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Name That Tune.";return}launch(d.mode)},
   "add-team":()=>{if(teams.length>=6)return;teams.push(newTeam("Team "+(teams.length+1),teams.length));saveTeams();renderSetup();const el=$("#team-name-"+(teams.length-1));el.focus();el.select()},
   "remove-team":d=>{if(teams.length<=2)return;teams.splice(+d.i,1);teams.forEach((t,i)=>t.color=TEAM_COLORS[i]);saveTeams();renderSetup()},
-  "music":d=>{prefs.lobby=d.track;if(!prefs.music){prefs.music=true;setMusicGain()}savePrefs();if(M.kind==="lobby")lobbyMusic();renderMusicUI()},
+  "music":d=>{if(d.track==="party"){if(!PARTY.queue.length){ACT["open-party"]();return}partyStart();renderMusicUI();return}
+    prefs.lobby=d.track;if(!prefs.music){prefs.music=true;setMusicGain()}savePrefs();if(M.kind==="lobby")lobbyMusic();renderMusicUI()},
   "music-think":d=>{prefs.think=d.track;savePrefs();if(M.kind==="think")thinkMusic();renderMusicUI()},
   "toggle-music":()=>{prefs.music=!prefs.music;setMusicGain();savePrefs();renderMusicUI()},
   "open-music":()=>{renderMusicUI();$("#music").hidden=false;$("#music-title").focus()},
@@ -2124,7 +2342,7 @@ const ACT={
   "lh-bots-clear":()=>{live.bots=[];$("#lh-bots-clear").hidden=true;if(live.H&&live.H.scores)Object.keys(live.H.scores).forEach(k=>{if(/^bot-/.test(k))delete live.H.scores[k]});hostLiveUpdate()},
   "auto-now":()=>{const f=autoFn;cancelAuto();if(f)f()},
   "auto-pause":()=>cancelAuto(),
-  "p-team":d=>{const k=+d.k;if(!Number.isInteger(k))return;live.team=k;if(live.g)live.g.presence({team:k}).catch(()=>{});sfx("lock");playerRender()},
+  "p-team":d=>{const k=+d.k;if(!Number.isInteger(k))return;live.team=k;saveSeat();if(live.g)live.g.presence({team:k}).catch(()=>{});sfx("lock");playerRender()},
   "bigtext":(d,b)=>{const on=!document.body.classList.contains("bigtext");document.body.classList.toggle("bigtext",on);b.setAttribute("aria-pressed",String(on));prefs.big=on;savePrefs()},
   "fullscreen":()=>{try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}},
   "pack-load":()=>{$("#pack-file").click()},
@@ -2162,7 +2380,7 @@ const ACT={
   "new-pin":()=>askConfirm("Make a new PIN? Players in the lobby will need to join again with the new PIN.",()=>hostLobby(true)),
   "copy-link":(d,b)=>{const inp=$("#lh-link");const done=()=>{b.textContent="Copied";setTimeout(()=>{b.textContent="Copy link"},1800)};
     try{navigator.clipboard.writeText(inp.value).then(done,()=>{inp.focus();inp.select()})}catch(e){inp.focus();inp.select()}},
-  "p-other-pin":()=>{disconnectGame();live.joined=false;live.stage="pin";live.wantPin="";live.pinErr="";playerRender()},
+  "p-other-pin":()=>{clearSeat();disconnectGame();live.joined=false;live.stage="pin";live.wantPin="";live.pinErr="";playerRender()},
   "p-pick-name":d=>{const i=+d.i,R=live.roster;if(!R||!Number.isInteger(i)||!R.names[i])return;playerSetName(R.names[i],i)},
   "p-notlisted":()=>{live.freeNick=true;playerRender()},
   "p-backlist":()=>{live.freeNick=false;playerRender()},
@@ -2182,8 +2400,31 @@ const ACT={
     sfx("lock");try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
     playerRender();
   },
-  "p-rename":()=>{live.joined=false;live.stage="name";live.pinErr="";live.rk=null;if(live.g)live.g.presence({nick:null,rk:null}).catch(()=>{});playerRender()},
-  "p-leave":()=>goHome(),
+  "p-rename":()=>{clearSeat();live.joined=false;live.stage="name";live.pinErr="";live.rk=null;if(live.g)live.g.presence({nick:null,rk:null}).catch(()=>{});playerRender()},
+  "p-leave":()=>{clearSeat();goHome()},
+  "update-now":()=>refreshPage(),
+  "open-party":()=>{audioInit();$("#party").hidden=false;$("#pa-status").textContent="";renderParty();$("#party-title").focus()},
+  "party-close":()=>{if(PARTY.prev)partyPreview(PARTY.prev.id);$("#party").hidden=true},
+  "party-play":()=>{audioInit();if(partyActive()&&PARTY.el&&!PARTY.el.paused){PARTY.want=false;if(M.kind==="lobby")lobbyMusic();else partySync()}
+    else if(!PARTY.queue.length){$("#pa-status").textContent="Add a song first.";}else partyStart();renderParty()},
+  "party-skip":()=>partyAdvance(1),
+  "party-add":()=>{$("#party-file").click()},
+  "party-jump":d=>{const i=+d.i;if(!PARTY.queue[i])return;if(!partyActive())partyStart();partyLoad(i)},
+  "party-next":d=>{const i=+d.i,s=PARTY.queue[i];if(!s||i===PARTY.idx)return;PARTY.queue.splice(i,1);if(i<PARTY.idx)PARTY.idx--;PARTY.queue.splice(PARTY.idx+1,0,s);renderParty();partyBroadcast()},
+  "party-remove":d=>partyRemove(+d.i),
+  "party-approve":d=>{const i=PARTY.pending.findIndex(x=>x.id===d.id);if(i<0)return;if(PARTY.prev&&PARTY.prev.id===d.id)partyPreview(d.id);
+    const[s2]=PARTY.pending.splice(i,1);partyEnqueue(s2);if(!partyActive())partyStart();sfx("lock")},
+  "party-decline":d=>{const i=PARTY.pending.findIndex(x=>x.id===d.id);if(i<0)return;if(PARTY.prev&&PARTY.prev.id===d.id)partyPreview(d.id);
+    const[s2]=PARTY.pending.splice(i,1);URL.revokeObjectURL(s2.url);setSt(s2.id,"d");renderParty()},
+  "party-preview":d=>partyPreview(d.id),
+  "p-song":()=>{audioInit();$("#p-song-file").click()},
+  "set-pin":()=>{const v=cleanPin($("#lh-pin-in").value);if(v.length!==6){$("#lh-pin-in").focus();return}
+    if(v===live.pin)return;askConfirm(`Switch to PIN ${v}? Players in the lobby will need to join again.`,()=>hostLobby(true,v))},
+  "poster":()=>openPoster(),
+  "poster-close":()=>{$("#poster").hidden=true},
+  "poster-print":()=>{try{window.print()}catch(e){}},
+  "poster-save":()=>savePoster(),
+  "update-later":()=>{updDismissed=$("#update").dataset.v||"";$("#update").hidden=true},
   "confirm-yes":()=>{$("#confirm").hidden=true;const c=confirmCb;confirmCb=null;c&&c()},
   "confirm-no":()=>{$("#confirm").hidden=true;confirmCb=null},
   "pick":d=>pick(+d.t,+d.k),
@@ -2226,7 +2467,7 @@ document.addEventListener("click",e=>{if(performance.now()-dragEndAt<400)return;
 document.addEventListener("pointerdown",()=>audioInit());
 document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||"Team "+(+i+1);saveTeams()}});
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
+  if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#party").hidden)ACT["party-close"]();else if(!$("#poster").hidden)ACT["poster-close"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
   if(e.key==="Enter"&&e.target.id==="dd-wager")ACT["dd-lock"]();
   if(live.role==="host"&&mode==="live"&&!e.target.closest("input,select,textarea,button")&&$$(".overlay").every(o=>o.hidden)){
     if(e.key===" "||e.key==="Enter"){const b=[...$$("#lh-body .actions .btn")].find(x=>!x.hidden&&!x.disabled&&!x.classList.contains("ghost"))||($("#lh-start")&&!$("#lh-start").disabled?$("#lh-start"):null);if(b){e.preventDefault();b.click()}}
@@ -2237,6 +2478,11 @@ document.addEventListener("keydown",e=>{
 
 document.addEventListener("change",async e=>{
   if(e.target.classList&&e.target.classList.contains("auto-sel")){prefs.auto=+e.target.value;savePrefs();renderAutoSel();if(!prefs.auto)cancelAuto();return}
+  if(e.target.id==="pa-up"){prefs.partyUploads=e.target.checked;savePrefs();renderParty();partyBroadcast(true);return}
+  if(e.target.id==="pa-appr"){prefs.partyApprove=e.target.checked;savePrefs();return}
+  if(e.target.id==="pa-q"){prefs.partyQ=e.target.value==="pause"?"pause":"quiet";savePrefs();if(M.kind==="think")thinkMusic();else partySync();return}
+  if(e.target.id==="party-file"){const f=[...e.target.files];e.target.value="";if(f.length)partyAddFiles(f);return}
+  if(e.target.id==="p-song-file"){const f=e.target.files[0];e.target.value="";if(f)sendSong(f);return}
   if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";return}
   if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(teams[k]&&teams[k].name)||"Team "+(k+1)):[];
     if(live.hs){const{rev,at,pin,kicked,teams:_t,...rest}=live.hs;broadcast(rest)}updateCloud(players());return}
@@ -2276,6 +2522,7 @@ document.addEventListener("change",async e=>{
 document.addEventListener("input",e=>{
   const tid=e.target.dataset&&e.target.dataset.tid;
   if(e.target.id==="roster-text"){rosterPreview();return}
+  if(e.target.id==="po-event"){$("#po-event-out").textContent=e.target.value;store.set("japarty.event",e.target.value);return}
   if(e.target.id==="p-find"){filterRoster(e.target.value);return}
   if(tid){const r=TUNES.find(t=>t.id===tid);if(!r)return;const f=e.target.dataset.f;
     r[f]=f==="start"?Math.max(0,+e.target.value||0):e.target.value.slice(0,f==="title"?80:60);if(f==="start")r.off=null;
@@ -2355,6 +2602,271 @@ setInterval(()=>{
   }
 },1500);
 
+/* save a file through the host app when there is one; null means use a normal browser download */
+async function hostSave(){return null}
+/* ---------- party playlist: a queue on the big screen; players add songs from their phones ---------- */
+const P_MAX=12*1024*1024,P_MAX_SONGS=60,P_PER_PLAYER=3;
+const PARTY={queue:[],pending:[],idx:-1,want:false,hold:false,el:null,gain:null,level:0,st:{},ups:{},prev:null,bto:null};
+const partyCur=()=>PARTY.idx>=0?PARTY.queue[PARTY.idx]:null;
+const partyActive=()=>prefs.lobby==="party"&&PARTY.want&&PARTY.queue.length>0;
+const partyNowText=()=>{const c=partyCur();return c&&PARTY.el&&!PARTY.el.paused?`Party playlist · ${c.name}`:"Party playlist"};
+const fmtDur=d=>!d||!isFinite(d)?"":Math.floor(d/60)+":"+String(Math.floor(d%60)).padStart(2,"0");
+function partyEl(){
+  if(PARTY.el)return PARTY.el;if(!audioInit())return null;
+  const el=new Audio();el.preload="auto";
+  try{const src=M.ctx.createMediaElementSource(el);PARTY.gain=M.ctx.createGain();PARTY.gain.gain.value=0;src.connect(PARTY.gain);PARTY.gain.connect(M.musicBus)}catch(e){PARTY.gain=null}
+  el.addEventListener("ended",()=>partyAdvance(1));
+  el.addEventListener("error",()=>{const c=partyCur();if(c&&el.src){if(c.src==="player")setSt(c.id,"f","play");partyAdvance(1,true)}});
+  ["play","pause"].forEach(ev=>el.addEventListener(ev,()=>{renderPartyBits();updateNowPlaying();partyBroadcast()}));
+  PARTY.el=el;return el;
+}
+function partySync(){
+  const on=partyActive()&&!PARTY.hold;
+  const lvl=on?(M.kind==="lobby"?1:prefs.partyQ==="pause"?0:.3):0;
+  if(!PARTY.el&&!lvl){renderPartyBits();return}
+  const el=partyEl();if(!el)return;
+  if(lvl>0&&(PARTY.idx<0||PARTY.idx>=PARTY.queue.length))partyLoad(0);
+  PARTY.level=lvl;
+  if(PARTY.gain)PARTY.gain.gain.setTargetAtTime(lvl,M.ctx.currentTime,lvl?.25:.1);else el.volume=Math.min(1,lvl*(prefs.music?prefs.vol:0));
+  clearTimeout(PARTY.pauseTO);
+  if(lvl>0){if(el.paused&&el.src)el.play().catch(()=>{})}
+  else if(!el.paused)PARTY.pauseTO=setTimeout(()=>{if(PARTY.level===0)el.pause()},450);
+  renderPartyBits();
+}
+function partyLoad(i){
+  const el=partyEl();if(!el)return;const prev=partyCur(),s=PARTY.queue[i];if(!s)return;
+  if(prev&&prev!==s&&prev.src==="player"){prev.played=true;setSt(prev.id,"x")}
+  PARTY.idx=i;el.src=s.url;if(s.src==="player")setSt(s.id,"n");
+  if(PARTY.level>0)el.play().catch(()=>{});
+  renderParty();updateNowPlaying();partyBroadcast();
+}
+function partyAdvance(dir,quiet){
+  const n=PARTY.queue.length;if(!n){PARTY.idx=-1;if(PARTY.el){PARTY.el.pause();PARTY.el.removeAttribute("src")}renderParty();partyBroadcast();return}
+  partyLoad(((PARTY.idx<0?-1:PARTY.idx)+dir+n)%n);
+}
+function partyStart(){prefs.lobby="party";PARTY.want=true;savePrefs();if(M.kind==="lobby")lobbyMusic();else partySync();renderMusicUI()}
+function partyEnqueue(song,silent){
+  if(PARTY.queue.length>=P_MAX_SONGS){if(song.src==="player")setSt(song.id,"f","full");URL.revokeObjectURL(song.url);return}
+  PARTY.queue.push(song);if(song.src==="player")setSt(song.id,"q");
+  if(partyActive()&&PARTY.idx<0)partySync();
+  if(!silent)renderParty();partyBroadcast();
+}
+function partyRemove(i){
+  const s=PARTY.queue[i];if(!s)return;const wasCur=i===PARTY.idx;
+  PARTY.queue.splice(i,1);if(s.src==="player"&&!s.played)setSt(s.id,"d");URL.revokeObjectURL(s.url);
+  if(i<PARTY.idx)PARTY.idx--;
+  if(wasCur){PARTY.idx--;partyAdvance(1)}
+  if(!PARTY.queue.length){PARTY.idx=-1;if(PARTY.el){PARTY.el.pause();PARTY.el.removeAttribute("src")}if(M.kind==="lobby")lobbyMusic()}
+  renderParty();partyBroadcast();
+}
+function setSt(u,c,x){
+  PARTY.st[u]={c,x:x||"",at:Date.now()};
+  const k=Object.keys(PARTY.st);if(k.length>50){k.sort((a,b)=>PARTY.st[a].at-PARTY.st[b].at).slice(0,k.length-50).forEach(z=>delete PARTY.st[z])}
+  partyBroadcast();
+}
+function partyWaitingFor(pid){return PARTY.pending.filter(x=>x.pid===pid).length+PARTY.queue.filter(x=>x.pid===pid&&x.src==="player"&&!x.played).length+Object.values(PARTY.ups).filter(x=>x.pid===pid).length}
+function partyIngest(d){
+  if(!d||typeof d!=="object"||typeof d.u!=="string"||!/^[a-z0-9]{6,24}$/.test(d.u))return;
+  if(d.t==="m"){
+    if(PARTY.ups[d.u]||PARTY.st[d.u])return;
+    const size=+d.size,n=+d.n,ch=+d.ch,pid=String(d.pid||"").slice(0,40);
+    if(!prefs.partyUploads)return setSt(d.u,"f","off");
+    if(!(size>0&&size<=P_MAX)||!(ch>=4096&&ch<=65536)||n!==Math.ceil(size/ch))return setSt(d.u,"f","big");
+    if(pid&&partyWaitingFor(pid)>=P_PER_PLAYER)return setSt(d.u,"f","limit");
+    if(Object.keys(PARTY.ups).length>=4)return setSt(d.u,"f","busy");
+    if(PARTY.queue.length+PARTY.pending.length>=P_MAX_SONGS)return setSt(d.u,"f","full");
+    PARTY.ups[d.u]={pid,nick:String(d.nick||"").trim().slice(0,30)||"A player",name:String(d.name||"").trim().slice(0,80)||"Song",
+      type:/^audio\/[\w.+-]{1,40}$/.test(d.type)?d.type:"audio/mpeg",size,n,ch,parts:new Array(n),got:0,t:Date.now()};
+    return setSt(d.u,"r");
+  }
+  if(d.t==="c"){
+    const up=PARTY.ups[d.u],i=d.i;if(!up||!Number.isInteger(i)||i<0||i>=up.n||up.parts[i]||typeof d.d!=="string"||d.d.length>up.ch*1.4+8)return;
+    let b;try{const bin=atob(d.d);b=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)b[k]=bin.charCodeAt(k)}catch(e){return}
+    if(b.length>up.ch)return;up.parts[i]=b;up.got++;up.t=Date.now();
+    if(up.got===up.n)partyFinishUp(d.u);
+  }
+}
+async function partyFinishUp(u){
+  const up=PARTY.ups[u];if(!up)return;delete PARTY.ups[u];
+  const blob=new Blob(up.parts,{type:up.type});if(blob.size!==up.size)return setSt(u,"f","incomplete");
+  const url=URL.createObjectURL(blob),dur=await probeAudio(url);
+  if(!dur){URL.revokeObjectURL(url);return setSt(u,"f","play")}
+  const song={id:u,name:up.name,by:up.nick,pid:up.pid,url,dur,src:"player"};
+  if(prefs.partyApprove){PARTY.pending.push(song);setSt(u,"p");sfx("select")}else{partyEnqueue(song);sfx("select")}
+  renderParty();
+}
+function probeAudio(url){return new Promise(r=>{const a=new Audio();let done=false;const fin=v=>{if(!done){done=true;a.removeAttribute("src");r(v)}};
+  a.preload="metadata";a.onloadedmetadata=()=>fin(isFinite(a.duration)&&a.duration>0?a.duration:1);a.onerror=()=>fin(0);setTimeout(()=>fin(0),12000);a.src=url})}
+setInterval(()=>{const now=Date.now();Object.entries(PARTY.ups).forEach(([u,up])=>{if(now-up.t>60000){delete PARTY.ups[u];setSt(u,"f","incomplete")}})},10000);
+function partyBroadcast(now){
+  if(live.role!=="host"||!live.g||!live.pin)return;
+  clearTimeout(PARTY.bto);
+  const go=()=>{if(live.role!=="host"||!live.g||!live.pin)return;
+    const c=partyCur(),n=PARTY.queue.length,cut=(t,k)=>String(t||"").slice(0,k);
+    const next=[];if(n>1)for(let k=1;k<Math.min(n,4);k++){const x=PARTY.queue[(PARTY.idx+k+n)%n];if(x&&x!==c)next.push({n:cut(x.name,50),b:cut(x.by,24)})}
+    const st={};Object.entries(PARTY.st).forEach(([u,v])=>{let pos=0;if(v.c==="q"){const i=PARTY.queue.findIndex(x=>x.id===u);pos=i<0?0:PARTY.idx<0?i+1:(i-PARTY.idx+n)%n}st[u]=[v.c,pos,v.x]});
+    live.g.emit("party",{pin:live.pin,on:!!(prefs.partyUploads&&typeof live.g.onUp==="function"),np:c&&PARTY.el&&!PARTY.el.paused?{n:cut(c.name,60),b:cut(c.by,30)}:null,next,st}).catch(()=>{});
+  };
+  if(now)go();else PARTY.bto=setTimeout(go,400);
+}
+function renderPartyBits(){
+  const c=partyCur(),playing=!!(c&&PARTY.el&&!PARTY.el.paused&&PARTY.level>0);
+  const np=$("#gb-np");if(np){np.hidden=!playing;if(playing)$("#gb-np-t").textContent=c.name+(c.src==="player"?" · from "+c.by:"")}
+  const b=$("#gb-party");if(b){const n=PARTY.pending.length;b.textContent=n?`Playlist · ${n} new`:"Playlist";b.classList.toggle("has-new",n>0)}
+  const pb=$("#pa-play");if(pb)pb.textContent=partyActive()&&PARTY.el&&!PARTY.el.paused?"Pause":"Play";
+  const bar=$("#pa-bar i");if(bar&&PARTY.el&&PARTY.el.duration)bar.style.width=(PARTY.el.currentTime/PARTY.el.duration*100).toFixed(1)+"%";
+}
+function renderParty(){
+  renderPartyBits();if($("#party").hidden)return;
+  const c=partyCur(),n=PARTY.queue.length;
+  $("#pa-now").innerHTML=c?`<span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b>${esc(c.name)}</b><small>${c.src==="player"?"Added by "+esc(c.by):"From this computer"}${c.dur>1?" · "+fmtDur(c.dur):""}</small><span class="pa-bar" id="pa-bar"><i></i></span>`
+    :`<span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b>Nothing playing yet</b><small>Add songs from this computer, or open a live game so players can add theirs.</small>`;
+  $("#pa-skip").disabled=n<2;
+  const pend=PARTY.pending;$("#pa-pend-wrap").hidden=!pend.length;$("#pa-pend-label").textContent=`Requests from players · ${pend.length}`;
+  $("#pa-pend").innerHTML=pend.map(x=>`<div class="pa-row req"><span class="mx-name">${esc(x.name)}<small>From ${esc(x.by)}${x.dur>1?" · "+fmtDur(x.dur):""}</small></span>
+    <button class="btn ghost small" data-act="party-preview" data-id="${x.id}">${PARTY.prev&&PARTY.prev.id===x.id?"Stop":"Preview"}</button><button class="btn small" data-act="party-approve" data-id="${x.id}">Add to playlist</button><button class="btn ghost small" data-act="party-decline" data-id="${x.id}">Skip it</button></div>`).join("");
+  $("#pa-q-label").textContent=n?`Playlist · ${n} song${n===1?"":"s"} · plays in a loop`:"Playlist";
+  $("#pa-queue").innerHTML=n?PARTY.queue.map((x,i)=>`<div class="pa-row${i===PARTY.idx?" cur":""}"><span class="pa-n">${i===PARTY.idx?"▶":i+1}</span><span class="mx-name">${esc(x.name)}<small>${x.src==="player"?"From "+esc(x.by):"From this computer"}${x.dur>1?" · "+fmtDur(x.dur):""}</small></span>
+    ${i===PARTY.idx?"":`<button class="btn ghost small" data-act="party-jump" data-i="${i}">Play now</button><button class="btn ghost small" data-act="party-next" data-i="${i}">Play next</button>`}<button class="icon-btn" data-act="party-remove" data-i="${i}" aria-label="Remove ${esc(x.name)}">×</button></div>`).join("")
+    :'<p class="muted" style="font-size:14px">No songs yet.</p>';
+  $("#pa-up").checked=prefs.partyUploads;$("#pa-appr").checked=prefs.partyApprove;$("#pa-q").value=prefs.partyQ;
+  const canUp=live.role==="host"&&live.g&&typeof live.g.onUp==="function";
+  $("#pa-note").textContent=(canUp?`Players add songs from their phones in game ${live.pin}, up to ${P_PER_PLAYER} each, 12 MB per file. `
+    :live.role==="host"&&live.g?"Players can add songs from their phones on the Japarty website. Here, add songs from this computer. "
+    :"Open a live game so players can add songs from their phones. ")+"Songs stay on this computer until you close the page. Only play music you have the right to play at your event.";
+}
+setInterval(()=>{if(!$("#party").hidden)renderPartyBits()},500);
+function partyPreview(id){
+  if(PARTY.prev){try{PARTY.prev.a.pause()}catch(e){}const was=PARTY.prev.id;PARTY.prev=null;PARTY.hold=false;partySync();renderParty();if(was===id)return}
+  const x=PARTY.pending.find(y=>y.id===id);if(!x)return;
+  const a=new Audio(x.url);a.currentTime=x.dur>60?30:0;a.volume=Math.min(1,.9*prefs.vol+.1);
+  PARTY.prev={id,a};PARTY.hold=true;partySync();a.play().catch(()=>{});
+  const stop=()=>{if(PARTY.prev&&PARTY.prev.a===a){a.pause();PARTY.prev=null;PARTY.hold=false;partySync();renderParty()}};
+  a.onended=stop;setTimeout(stop,15000);renderParty();
+}
+async function partyAddFiles(files){
+  const st=$("#pa-status");let added=0;const bad=[];audioInit();
+  for(const f of files){
+    if(f.size>200*1024*1024){bad.push(f.name);continue}
+    st.textContent="Loading "+f.name+"…";
+    const url=URL.createObjectURL(f),dur=await probeAudio(url);
+    if(!dur){URL.revokeObjectURL(url);bad.push(f.name);continue}
+    partyEnqueue({id:"h"+Math.random().toString(36).slice(2,10),name:f.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").slice(0,80),by:"",pid:"",url,dur,src:"host"},true);added++;
+  }
+  st.textContent=(added?`Added ${added} song${added===1?"":"s"}.`:"")+(bad.length?` Couldn't play ${bad.join(", ")}.`:"");
+  if(added&&!partyActive())partyStart();renderParty();
+}
+
+/* phones: now playing, and send a song to the big screen */
+function applyParty(d){
+  if(!d||typeof d!=="object"||d.pin!==live.pin)return;
+  const ok=v=>v==null||(typeof v==="object"&&typeof v.n==="string"&&typeof v.b==="string");
+  if(!ok(d.np)||(d.next&&!Array.isArray(d.next))||(d.st&&typeof d.st!=="object"))return;
+  live.party=d;renderPlayerParty();
+}
+const PP_TEXT={off:"The DJ turned off song requests.",busy:"The DJ is busy. Try again in a minute.",full:"The playlist is full.",limit:`You already have ${P_PER_PLAYER} songs waiting.`,play:"That file couldn't be played. Try an MP3.",big:"That file is too big.",incomplete:"The upload didn't finish. Try again."};
+function ppStatus(x){
+  const st=live.party&&live.party.st&&Array.isArray(live.party.st[x.u])?live.party.st[x.u]:null;
+  if(x.local==="sending")return[`Sending… ${x.pct}%`,""];
+  if(x.local==="badtype")return["That isn't a music file.","bad"];
+  if(x.local==="big")return["Over 12 MB. Try a shorter song.","bad"];
+  if(x.local==="failed")return["Couldn't send. Check your connection and try again.","bad"];
+  if(!st)return["Sent. Waiting for the DJ…",""];
+  const[c,pos,why]=st;
+  return c==="r"?["The DJ is receiving your song…",""]:c==="p"?["Waiting for the DJ to approve",""]:c==="q"?[pos===1?"Up next!":pos>1?`In the playlist · #${pos} in line`:"In the playlist","ok"]
+    :c==="n"?["Playing now!","ok"]:c==="x"?["Played","ok"]:c==="d"?["The DJ skipped this one","bad"]:[PP_TEXT[why]||"Didn't go through. Try another file.","bad"];
+}
+function renderPlayerParty(){
+  const el=$("#p-party");if(!el)return;const P=live.party,s=live.cur;
+  const show=live.role==="player"&&live.joined&&P&&P.pin===live.pin&&!(s&&["question","fjq","fjwager","countdown"].includes(s.phase))&&(P.np||P.on||live.myUps.some(x=>x.pin===live.pin));
+  el.hidden=!show;if(!show)return;
+  const canUp=P.on&&live.g&&typeof live.g.sendUp==="function";
+  const mine=live.myUps.filter(x=>x.pin===live.pin).slice(0,4);
+  const waiting=mine.filter(x=>{const t=ppStatus(x)[0];return x.local==="sending"||/Waiting|receiving|line|Up next|Sent\./.test(t)}).length;
+  const sending=mine.some(x=>x.local==="sending");
+  el.innerHTML=`${P.np?`<div class="pp-now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><span class="label">Now playing</span><b>${esc(P.np.n)}</b>${P.np.b?`<small>Added by ${esc(P.np.b)}</small>`:""}</div></div>`:`<span class="label">Party playlist</span>`}
+    ${canUp?`<button class="btn ghost" data-act="p-song" ${sending||waiting>=P_PER_PLAYER?"disabled":""}>${sending?"Sending your song…":waiting>=P_PER_PLAYER?`${P_PER_PLAYER} songs waiting`:"Add a song from your phone"}</button><p class="muted" style="font-size:13px">A music file from your phone, up to 12 MB. ${P.on?"The DJ approves songs before they play.":""}</p>`
+      :!P.on?`<p class="muted" style="font-size:14px">The DJ isn't taking song requests right now.</p>`:""}
+    ${mine.length?`<div class="pp-mine">${mine.map(x=>{const[t,c]=ppStatus(x);return`<div><span>${esc(x.name)}</span><span class="${c}">${esc(t)}</span></div>`}).join("")}</div>`:""}`;
+}
+function b64(u8){let out="";for(let i=0;i<u8.length;i+=8192)out+=String.fromCharCode.apply(null,u8.subarray(i,i+8192));return btoa(out)}
+async function sendSong(file){
+  const g=live.g;if(!g||typeof g.sendUp!=="function"||!live.party||!live.party.on)return;
+  const nm=file.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim().slice(0,80)||"My song";
+  const ent={u:Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4),pin:live.pin,name:nm,local:"sending",pct:0};
+  live.myUps.unshift(ent);if(live.myUps.length>12)live.myUps.length=12;
+  if(!(/^audio\//.test(file.type)||/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm)$/i.test(file.name))){ent.local="badtype";return renderPlayerParty()}
+  if(file.size>P_MAX){ent.local="big";return renderPlayerParty()}
+  renderPlayerParty();
+  try{
+    const buf=new Uint8Array(await file.arrayBuffer()),CH=LIVE.mode==="supa"?16384:24576,n=Math.ceil(buf.length/CH);
+    await g.sendUp({t:"m",u:ent.u,pid:SB.pid||LIVE.myPeer||"",nick:live.nick,name:nm,size:buf.length,type:file.type||"audio/mpeg",n,ch:CH});
+    for(let i=0;i<n;i++){
+      if(live.g!==g)throw new Error("left");
+      await g.sendUp({t:"c",u:ent.u,i,d:b64(buf.subarray(i*CH,(i+1)*CH))});
+      if(LIVE.mode==="supa")await new Promise(r=>setTimeout(r,70));
+      const p=Math.round((i+1)/n*100);if(p!==ent.pct){ent.pct=p;if(i%3===0||i===n-1)renderPlayerParty()}
+    }
+    ent.local="";sfx("lock");
+  }catch(e){ent.local="failed"}
+  renderPlayerParty();
+}
+
+/* printable poster */
+function openPoster(){
+  const link=live.pin?joinLink(live.pin):"";if(!link)return;
+  $("#po-event").value=store.get("japarty.event","BEING Celebration");$("#po-event-out").textContent=$("#po-event").value;
+  $("#po-pin").textContent=live.pin;$("#po-url").textContent=link.replace(/^https?:\/\//,"").replace(/[?#].*$/,"")+" · PIN "+live.pin;
+  const q=$("#po-qr");q.innerHTML="";try{new QRCode(q,{text:link,width:640,height:640,colorDark:"#16112a",colorLight:"#ffffff",correctLevel:link.length>140?QRCode.CorrectLevel.L:QRCode.CorrectLevel.M})}catch(e){}
+  $("#po-print").hidden=inHost();
+  $("#po-note").textContent=(inHost()?"Save the poster as an image, then print it from your computer. ":"")+`This poster works for game ${live.pin}. To print it ahead of time, choose your own PIN under More settings and keep it for every game.`;
+  $("#po-status").textContent="";$("#poster").hidden=false;$("#poster-title").focus();
+}
+async function savePoster(){
+  const st=$("#po-status");st.textContent="Making the image…";
+  try{
+    try{await Promise.all([document.fonts.load('120px "Bungee"'),document.fonts.load('700 40px "Bricolage Grotesque"')])}catch(e){}
+    const W=1700,H=2200,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+    const ink="#16112a",gold="#c98a12",clay="#b8401c",leaf="#1a7a4e",paper="#fffaf0";
+    x.fillStyle=paper;x.fillRect(0,0,W,H);
+    const kente=y=>{const pat=[[gold,30],[ink,6],[clay,18],[gold,8],[leaf,24],[ink,6]];let px=0,i=0;while(px<W){const[cl,w]=pat[i%pat.length];x.fillStyle=cl;x.fillRect(px,y,w*3,80);px+=w*3;i++}};
+    kente(0);kente(H-80);
+    const ctr=(t,y,font,col)=>{x.font=font;x.fillStyle=col;x.textAlign="center";x.fillText(t,W/2,y)};
+    const disp='"Bungee","Impact","Arial Black",sans-serif',body='"Bricolage Grotesque",system-ui,sans-serif';
+    ctr(($("#po-event").value||"").toUpperCase(),230,`800 52px ${body}`,clay);
+    x.font=`200px ${disp}`;x.textAlign="center";x.fillStyle=ink;x.fillText("JAPARTY!",W/2+8,470);x.fillStyle=gold;x.fillText("JAPARTY!",W/2,460);
+    ctr("The Black History party quiz",560,`600 50px ${body}`,ink);
+    const qrc=$("#po-qr canvas")||$("#po-qr img"),qs=820,qx=(W-qs)/2,qy=640;
+    x.fillStyle="#fff";x.fillRect(qx-40,qy-40,qs+80,qs+80);x.strokeStyle=ink;x.lineWidth=8;x.strokeRect(qx-40,qy-40,qs+80,qs+80);
+    if(qrc){x.imageSmoothingEnabled=false;x.drawImage(qrc,qx,qy,qs,qs)}
+    ctr("Scan to play",1640,`120px ${disp}`,ink);
+    ctr("Game PIN  "+live.pin,1760,`700 64px ${body}`,ink);
+    const steps=["Scan the code with your phone camera","Pick your name","Answer on your phone"];
+    x.textAlign="left";steps.forEach((t,i)=>{const y=1880+i*80;x.fillStyle=ink;x.beginPath();x.arc(480,y-16,30,0,Math.PI*2);x.fill();
+      x.fillStyle=paper;x.font=`40px ${disp}`;x.textAlign="center";x.fillText(String(i+1),480,y-2);x.textAlign="left";x.fillStyle=ink;x.font=`700 44px ${body}`;x.fillText(t,535,y)});
+    ctr($("#po-url").textContent,2100,`500 34px ${body}`,ink);
+    const blob=await new Promise(r=>c.toBlob(r,"image/png"));if(!blob)throw new Error("no image");
+    const name=`japarty-poster-${live.pin}.png`;
+    const hs=await hostSave(name,blob);if(hs!==null){st.textContent=hs?"Saved "+name+".":"The download didn't go through.";return}
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();st.textContent="Downloaded "+name+".";
+  }catch(e){st.textContent="Couldn't make the image in this browser."}
+}
+
+/* new version check: on the website, look for a newer copy of this page */
+const inHost=()=>!!(false);
+let updDismissed="";
+async function checkUpdate(){
+  if(inHost()||!/^https?:$/.test(location.protocol))return;
+  try{const r=await fetch(location.pathname+"?vcheck="+Date.now(),{cache:"no-store"});if(!r.ok)return;
+    const m=/const APP_VERSION="([^"]+)"/.exec(await r.text());
+    if(m&&m[1]!==APP_VERSION&&m[1]!==updDismissed){
+      $("#update-msg").textContent=`Japarty v${m[1]} is ready.`+(live.role==="host"&&live.H&&live.H.phase!=="lobby"?" Your game resumes after the refresh.":live.role==="player"&&live.joined?" You'll rejoin your game automatically.":"");
+      $("#update").hidden=false;$("#update").dataset.v=m[1]}}catch(e){}
+}
+function refreshPage(){try{const u=new URL(location.href);u.searchParams.set("r",Date.now().toString(36));location.replace(u.toString())}catch(e){location.reload()}}
+setTimeout(checkUpdate,20000);setInterval(checkUpdate,120000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});
+
 /* keep screens awake during a game (host and phones) */
 let wakeLock=null;
 async function keepAwake(){try{if("wakeLock" in navigator&&!wakeLock&&document.visibilityState==="visible"){wakeLock=await navigator.wakeLock.request("screen");wakeLock.addEventListener("release",()=>{wakeLock=null})}}catch(e){}}
@@ -2364,6 +2876,7 @@ document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.te
 /* ---------- boot ---------- */
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
+$$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
 renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();show("home");initLive();loadTunes();
 </script>
 
