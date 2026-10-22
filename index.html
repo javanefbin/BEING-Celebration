@@ -14,7 +14,7 @@
   --stage:#120f24; --stage2:#1c1838; --stage3:#29224d; --line:#3b3468; --scrim:rgba(8,6,18,.86);
   --paper:#f7efe0; --muted:#b4acd2; --ink:#16112a;
   --gold:#f2b632; --gold-deep:#a8761a; --clay:#d6502a; --leaf:#1f8f5c; --sky:#2a82c6; --glow:#2c2462;
-  --good:#3fd394; --bad:#ff6b5e; --white:#ffffff; --ink-line:rgba(22,17,42,.28); --paper-2:#ece2cf;
+  --good:#3fd394; --bad:#ff6b5e; --white:#ffffff; --plum:#7d4fc4; --ink-line:rgba(22,17,42,.28); --paper-2:#ece2cf;
   --display:"Bungee","Impact","Arial Black",system-ui,sans-serif;
   --body:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:14px;
@@ -423,6 +423,39 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 @keyframes bob{50%{transform:translateY(-10px)}}
 .linkish{background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px;font-size:14px}
 
+/* Cash or Case */
+.m-plum{--mc:var(--plum);--mc-ink:var(--white)}
+.cs-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.cs-top h2{display:flex;align-items:center;gap:10px;font-size:clamp(22px,3vw,32px)}
+.cs-top h2 i{width:16px;height:16px;border-radius:50%;background:var(--tc)}
+.cs-layout{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) minmax(90px,150px);gap:clamp(8px,2vw,20px);align-items:start}
+@media(max-width:720px){.cs-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cs-layout .cases{grid-column:1/-1;grid-row:1}}
+.vb{display:grid;gap:6px}
+.vb span,.vboard span{display:block;text-align:center;padding:6px 8px;border-radius:8px;background:var(--gold);color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums;transition:opacity .4s,background .4s}
+.vb span.hi,.vboard span.hi{background:var(--clay);color:var(--white)}
+.vb span.off,.vboard span.off{opacity:.18;text-decoration:line-through}
+.vboard{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.vboard>div{display:grid;gap:5px}
+.vboard.mini span{padding:4px 6px;font-size:13px}
+.vboard.big{max-width:620px;margin:0 auto}
+.vboard.big span{font-size:clamp(14px,1.8vw,19px);padding:8px}
+.cases{display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));gap:clamp(6px,1.2vw,12px)}
+.case{position:relative;aspect-ratio:4/3;border-radius:10px;border:0;background:linear-gradient(180deg,#d9dde6,#9aa3b5);color:var(--ink);display:grid;place-items:center;align-content:center;gap:2px;margin-top:10px;box-shadow:inset 0 -4px 0 rgba(22,17,42,.25);transition:transform .12s;padding:4px}
+.case::before{content:"";position:absolute;top:-9px;left:32%;right:32%;height:10px;border:3px solid #9aa3b5;border-bottom:0;border-radius:8px 8px 0 0}
+.case b{font-family:var(--display);font-weight:400;font-size:clamp(18px,3vw,34px);line-height:1}
+.case small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+button.case:hover:not(:disabled){transform:translateY(-3px)}
+button.case:disabled{opacity:.55;cursor:default}
+.case.mine{background:linear-gradient(180deg,#ffd76a,var(--gold))}.case.mine::before{border-color:var(--gold)}
+.case.open{background:var(--stage2);color:var(--muted);box-shadow:none;border:1px dashed var(--line)}.case.open::before{border-color:var(--line)}
+.case.open b{font-size:clamp(13px,1.8vw,20px);color:var(--paper);font-family:var(--body);font-weight:800}
+.case.gone{visibility:hidden}
+.case.big{width:min(180px,40vw);margin:14px auto 0}
+.case.big b{font-size:44px}
+.cases.phone{gap:8px}.cases.phone .case b{font-size:24px}.cases.phone .case.open b{font-size:13px}
+@keyframes flipin{from{transform:rotateX(80deg);opacity:.2}}
+.case.flip{animation:flipin .45s ease-out}
+
 /* Party playlist */
 .gb-np{display:inline-flex;align-items:center;gap:8px;max-width:min(320px,40vw);font-size:14px;font-weight:700;color:var(--muted);min-width:0}
 .gb-np span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -518,7 +551,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
       <div>
         <span class="label">Live game · everyone plays on their phone</span>
         <h2>Play live with the whole room</h2>
-        <p>Show this page on the big screen. Players scan the QR code, pick their name and answer on their phones. Works for groups of 100 or more, with Quiz Rush, True or False, Name That Tune, teams and Final Japarty.</p>
+        <p>Show this page on the big screen. Players scan the QR code, pick their name and answer on their phones. Works for groups of 100 or more, with Quiz Rush, True or False, Guess the Song, teams and Final Japarty.</p>
         <p class="live-note" id="live-note">Checking for a live connection…</p>
       </div>
       <div class="live-btns">
@@ -592,8 +625,8 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
             <button class="btn" data-act="start" data-mode="timeline">Play Timeline</button>
           </div>
         </article>
-        <article class="mode m-paper wide">
-          <div class="mode-top"><h2>Name That Tune</h2><span>Music round</span></div>
+        <article class="mode m-paper">
+          <div class="mode-top"><h2>Guess the Song</h2><span>Music round</span></div>
           <div class="mode-body">
             <p>A short clip plays and teams pick the song title from four choices before time runs out. Add your own song files, or start with the two public-domain starter tunes Japarty plays itself. Also works in live games on phones.</p>
             <div class="opts">
@@ -601,7 +634,15 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
               <label for="tune-time">Clip and timer<select id="tune-time"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option></select></label>
             </div>
             <p class="tn-count" id="tune-meta"></p>
-            <div class="row"><button class="btn" data-act="start" data-mode="tune">Play Name That Tune</button><button class="btn ghost" data-act="open-tunes">Manage songs</button></div>
+            <div class="row"><button class="btn" data-act="start" data-mode="tune">Play Guess the Song</button><button class="btn ghost" data-act="open-tunes">Manage songs</button></div>
+          </div>
+        </article>
+        <article class="mode m-plum">
+          <div class="mode-top"><h2>Cash or Case</h2><span>Take a chance</span></div>
+          <div class="mode-body">
+            <p>Each team picks a closed case, then opens the others round by round. After every round the Banker makes an offer: take the cash, or keep playing and hope your case holds more. A Black History question before each offer raises it 10% for a right answer. Also works in live games, where everyone plays their own case on their phone.</p>
+            <div class="opts"><label for="cash-cases">Cases<select id="cash-cases"><option value="16" selected>16 · quicker</option><option value="24">24 · longer</option></select></label></div>
+            <button class="btn" data-act="start" data-mode="cash">Play Cash or Case</button>
           </div>
         </article>
       </div>
@@ -645,6 +686,14 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
   </section>
 
   <!-- Timeline -->
+  <section class="screen" id="cash" hidden>
+    <div class="cs-top">
+      <div><h2 id="cs-title"></h2><p class="muted" id="cs-sub"></p></div>
+      <div class="cs-own" id="cs-own"></div>
+    </div>
+    <div class="cs-layout"><div class="vb" id="cs-vl"></div><div class="cases" id="cs-cases"></div><div class="vb" id="cs-vr"></div></div>
+  </section>
+
   <section class="screen" id="timeline" hidden>
     <div class="tl-intro">
       <div><div class="who" id="tl-who"></div><p id="tl-title"></p></div>
@@ -815,10 +864,10 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
   </div>
 </div>
 
-<!-- Name That Tune songs -->
+<!-- Guess the Song songs -->
 <div class="overlay" id="tunes" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tunes-title">
-    <div class="modal-head"><h2 id="tunes-title" tabindex="-1">Name That Tune songs</h2><button class="icon-btn" data-act="tunes-close" aria-label="Close song settings">×</button></div>
+    <div class="modal-head"><h2 id="tunes-title" tabindex="-1">Guess the Song songs</h2><button class="icon-btn" data-act="tunes-close" aria-label="Close song settings">×</button></div>
     <p class="muted">Add song files from this computer, then check each title. Players pick the right title from four choices, so short, clear titles work best. Songs are saved in this browser on this computer only, so set them up on the computer that runs the big screen. Only use music you have the right to play at your event.</p>
     <div class="group" id="tn-list"></div>
     <div class="row"><button class="btn" data-act="tunes-add">+ Add song files</button><span class="muted" id="tn-status" style="font-size:14px"></span></div>
@@ -867,7 +916,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.0";
+const APP_VERSION="2.1";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1044,7 +1093,7 @@ const M={ctx:null,master:null,musicBus:null,sfxBus:null,track:prefs.lobby,kind:"
 const CUSTOM=[];/* your own music: decoded into memory on this device, never uploaded */
 const isCustom=t=>/^c\d+$/.test(t);
 const musicLevel=()=>prefs.music?.7*prefs.vol:0;
-/* Name That Tune: starter melodies are public domain (1896 hymn, 1902 rag); your own clips live in this browser's IndexedDB */
+/* Guess the Song: starter melodies are public domain (1896 hymn, 1902 rag); your own clips live in this browser's IndexedDB */
 const STARTER_TUNES=[
  {id:"s-saints",title:"When the Saints Go Marching In",artist:"Traditional",fact:"This traditional hymn became a New Orleans jazz standard. Louis Armstrong's 1938 recording made it famous worldwide.",bpm:150,
   notes:[[60,1],[64,1],[65,1],[67,5],[60,1],[64,1],[65,1],[67,5],[60,1],[64,1],[65,1],[67,2],[64,2],[60,2],[64,2],[62,6],[64,1],[64,1],[62,1],[60,3],[60,1],[64,2],[67,2],[67,1],[65,5],[64,1],[65,1],[67,2],[64,2],[60,2],[62,2],[60,6]]},
@@ -1084,7 +1133,7 @@ function renderTuneUI(withList=true){
   const meta=$("#tune-meta");if(meta)meta.textContent=n>=2?`${n} songs ready (${mine} of yours${prefs.starters!==false?", 2 starter tunes":""}).`:`Add at least 2 songs to play (${n} ready now).`;
   if($("#tunes").hidden)return;
   $("#tn-random").checked=!!prefs.tuneRandom;$("#tn-starters").checked=prefs.starters!==false;
-  $("#tn-count").textContent=n>=2?`${n} songs ready to play.`:`Name That Tune needs at least 2 songs. ${n} ready now.`;
+  $("#tn-count").textContent=n>=2?`${n} songs ready to play.`:`Guess the Song needs at least 2 songs. ${n} ready now.`;
   if(!withList)return;
   const rows=TUNES.map(t=>`<div class="tn-row"><div class="tn-fields">
       <input id="tn-title-${t.id}" data-tid="${t.id}" data-f="title" maxlength="80" value="${esc(t.title)}" aria-label="Song title" placeholder="Song title">
@@ -1210,6 +1259,7 @@ function sfx(name){
     case "wrong":tone(0,t,.4,{hz:240,slide:120,type:"sawtooth",vol:.08,lp:900,bus:b});tone(0,t+.2,.5,{hz:190,slide:90,type:"sawtooth",vol:.08,lp:900,bus:b});break;
     case "whoosh":noise(t,.55,{ft:"bandpass",f:900,q:.5,vol:.14,bus:b});break;
     case "timesup":tone(0,t,.25,{hz:440,type:"square",vol:.06,lp:1800,bus:b});tone(0,t+.25,.5,{hz:330,type:"square",vol:.06,lp:1800,bus:b});break;
+    case "ring":for(let k=0;k<2;k++)for(let j=0;j<8;j++){tone(0,t+k*.9+j*.05,.05,{hz:j%2?620:480,type:"sine",vol:.09,bus:b})}break;
     case "dd":[60,64,67,72,76,79,84,88].forEach((n,i)=>tone(n,t+i*.055,.3,{type:"triangle",vol:.13,bus:b}));noise(t,.9,{ft:"bandpass",f:3000,q:.4,vol:.05,bus:b});break;
     case "fanfare":{
       [[60,0],[64,.13],[67,.26],[72,.39],[67,.62],[72,.75],[76,.88]].forEach(([n,d])=>{tone(n,t+d,.32,{type:"sawtooth",vol:.06,lp:2200,bus:b});tone(n-12,t+d,.32,{type:"triangle",vol:.07,bus:b})});
@@ -1278,15 +1328,15 @@ function stopClock(){clearInterval(clockIv);clockIv=null;M.urgent=false}
 function resetClock(el,T){el.style.setProperty("--p",1);el.querySelector("span").textContent=T;el.classList.remove("hot")}
 
 /* ---------- launching ---------- */
-const MODE_NAMES={quiz:"Quiz Rush",tf:"True or False Blitz",board:"Japarty Board",timeline:"Timeline Shuffle",tune:"Name That Tune"};
+const MODE_NAMES={quiz:"Quiz Rush",tf:"True or False Blitz",board:"Japarty Board",timeline:"Timeline Shuffle",tune:"Guess the Song",cash:"Cash or Case"};
 function launch(m){
   lastMode=m;mode=m;prevRank=null;
   teams.forEach(t=>{t.score=0;t.streak=0;t.last=0});
   $("#gamebar").hidden=false;$("#gb-mode").textContent=MODE_NAMES[m];
-  ({quiz:()=>startQuiz("quiz"),tf:()=>startQuiz("tf"),tune:()=>startQuiz("tune"),board:startBoard,timeline:startTimeline})[m]();
+  ({quiz:()=>startQuiz("quiz"),tf:()=>startQuiz("tf"),tune:()=>startQuiz("tune"),board:startBoard,timeline:startTimeline,cash:startCash})[m]();
   renderStrip();
 }
-function goHome(){cancelAuto();
+function goHome(){CS=null;cancelAuto();
   stopTune();stopClock();clearTimeout(readyTO);["#clue","#pack","#confirm"].forEach(s=>$(s).hidden=true);
   if(live.role==="host"){if(live.H)clearTimeout(live.H.allTO);broadcast({phase:"ended"});live.H=null;live.lastScores=null;live.hs=null;store.del("japarty.host")}
   if(live.role==="player"){clearInterval(live.pTimer);live.joined=false}
@@ -1298,13 +1348,37 @@ function goHome(){cancelAuto();
 }
 function askConfirm(msg,cb){$("#confirm-msg").textContent=msg;confirmCb=cb;$("#confirm").hidden=false;$('#confirm [data-act="confirm-yes"]').focus()}
 
+/* ---------- Cash or Case: shared rules (same on the big screen and phones) ---------- */
+const CASH={16:{v:[1,5,10,25,50,100,250,500,750,1000,2500,5000,10000,25000,50000,100000],s:[4,3,3,2,1,1]},
+  24:{v:[1,2,5,10,20,30,50,75,100,150,200,300,500,750,1000,1500,2500,5000,7500,10000,20000,40000,70000,100000],s:[6,5,4,3,2,1,1]}};
+function seedRng(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}
+  let a=(Math.imul(h^h>>>16,2246822507)^Math.imul(h^h>>>13,3266489909))>>>0;
+  return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function cashBoard(seed,n){const v=[...CASH[n].v],r=seedRng(seed);for(let i=v.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[v[i],v[j]]=[v[j],v[i]]}return v}
+const cashNeed=(n,r)=>CASH[n].s.slice(0,r+1).reduce((a,b)=>a+b,0);
+const cashDefaultOwn=(seed,n)=>Math.floor(seedRng(seed+"|own")()*n);
+function cashFill(op,own,need,n){const o=op.slice(0,need);for(let i=0;i<n&&o.length<need;i++)if(i!==own&&!o.includes(i))o.push(i);return o}
+function niceAmt(x){const st=x<100?1:x<1000?10:x<10000?50:x<100000?500:1000;return Math.max(1,Math.round(x/st)*st)}
+function cashOffer(board,opened,r,R,bonus){const left=board.filter((_,i)=>!opened.includes(i)),avg=left.reduce((a,b)=>a+b,0)/Math.max(1,left.length);
+  return niceAmt(avg*(.15+.75*(R>1?r/(R-1):1))*(bonus?1.1:1))}
+function cashClean(d,n){
+  const own=Number.isInteger(d&&d.c)&&d.c>=0&&d.c<n?d.c:null,op=[];
+  if(d&&Array.isArray(d.op))d.op.forEach(i=>{if(Number.isInteger(i)&&i>=0&&i<n&&i!==own&&!op.includes(i)&&op.length<n-2)op.push(i)});
+  return{own,op};
+}
+const pts=v=>fmt(v)+" pts";
+function valueBoard(n,off,cls){
+  const v=[...CASH[n].v],half=Math.ceil(v.length/2),col=a=>a.map(x=>`<span class="${off&&off.has(x)?"off":""}${x>=CASH[n].v[CASH[n].v.length-4]?" hi":""}">${fmt(x)}</span>`).join("");
+  return `<div class="vboard ${cls||""}"><div>${col(v.slice(0,half))}</div><div>${col(v.slice(half))}</div></div>`;
+}
+
 /* ---------- Quiz Rush + True/False ---------- */
 function buildItems(kind,n,secs){
   if(kind==="tune"){
     const pool=tunePool(),titles=pool.map(t=>t.title.trim());
     const items=shuffle(pool).map(t=>{const title=t.title.trim();let opts=[title,...shuffle(titles.filter(x=>x!==title)).slice(0,3)];
       const dec=shuffle(DECOY_TITLES.filter(x=>!opts.includes(x)));while(opts.length<4&&dec.length)opts.push(dec.pop());opts=shuffle(opts);
-      return{cat:"Name that tune",q:"Which song is this?",opts,correct:opts.indexOf(title),fact:t.fact||(t.artist?`“${title}” by ${t.artist}.`:""),audio:t.id,secs,off:null}});
+      return{cat:"Guess the song",q:"Which song is this?",opts,correct:opts.indexOf(title),fact:t.fact||(t.artist?`“${title}” by ${t.artist}.`:""),audio:t.id,secs,off:null}});
     return n>0?items.slice(0,n):items;
   }
   const items=kind==="tf"?shuffle(TF).map(([s,v,f])=>({cat:"True or false?",q:s,opts:["True","False"],correct:v?0:1,fact:f}))
@@ -1439,6 +1513,80 @@ function fjReveal(){
   body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">Mark each team's final answer</span>${judgeRows(teams.map((_,t)=>({t,amt:B.fin.w[t]})))}</div><div class="row center"><button class="btn" data-act="fj-apply">Show final scores</button></div>`);
 }
 
+/* ---------- Cash or Case: one shared screen, teams take turns ---------- */
+let CS=null;
+function startCash(){
+  const n=+$("#cash-cases").value===24?24:16;
+  CS={n,R:CASH[n].s.length,turn:0,results:[]};teams.forEach(t=>{t.score=0;t.last=0});cashTurn();
+}
+function cashTurn(){
+  const tm=teams[CS.turn];Object.assign(CS,{board:shuffle(CASH[CS.n].v),own:null,opened:[],r:0,step:"pick",deal:null,bonus:false,q:null});
+  show("cash");progress(`${tm.name} · turn ${CS.turn+1} of ${teams.length}`);renderStrip();renderCash();lobbyMusic();
+}
+function renderCash(){
+  const tm=teams[CS.turn],n=CS.n,need=cashNeed(n,CS.r),left=need-CS.opened.length;
+  $("#cs-title").innerHTML=`<i style="--tc:${tm.color}"></i>${esc(tm.name)}`;
+  $("#cs-sub").textContent=CS.step==="pick"?"Pick the case you'll keep. It stays closed until the end."
+    :CS.step==="open"?`Round ${CS.r+1} of ${CS.R}: open ${left} more case${left===1?"":"s"}. Low numbers are good news.`
+    :CS.step==="done"?"Round over.":"";
+  $("#cs-own").innerHTML=CS.own==null?"":`<div class="case mine big"><b>${CS.own+1}</b><small>Your case</small></div>`;
+  const off=new Set(CS.opened.map(i=>CS.board[i])),half=Math.ceil(n/2),v=[...CASH[n].v];
+  const col=a=>a.map(x=>`<span class="${off.has(x)?"off":""}${x>=v[v.length-4]?" hi":""}">${fmt(x)}</span>`).join("");
+  $("#cs-vl").innerHTML=col(v.slice(0,half));$("#cs-vr").innerHTML=col(v.slice(half));
+  $("#cs-cases").style.setProperty("--cols",n===24?6:4);
+  $("#cs-cases").innerHTML=CS.board.map((val,i)=>{
+    if(i===CS.own)return `<div class="case gone" aria-hidden="true"></div>`;
+    if(CS.opened.includes(i))return `<div class="case open"><small>#${i+1}</small><b>${fmt(val)}</b></div>`;
+    const can=CS.step==="pick"||(CS.step==="open"&&left>0);
+    return `<button class="case" data-act="cs-case" data-i="${i}" ${can?"":"disabled"} aria-label="Case ${i+1}"><b>${i+1}</b></button>`;
+  }).join("");
+}
+function cashClick(i){
+  if(!CS||!Number.isInteger(i)||i<0||i>=CS.n)return;
+  if(CS.step==="pick"){CS.own=i;CS.step="open";sfx("lock");renderCash();return}
+  if(CS.step!=="open"||i===CS.own||CS.opened.includes(i))return;
+  const need=cashNeed(CS.n,CS.r);if(CS.opened.length>=need)return;
+  CS.opened.push(i);const val=CS.board[i],v=CASH[CS.n].v;sfx(val>=v[Math.floor(v.length/2)]?"wrong":"correct");renderCash();
+  const el=$(`#cs-cases .case.open:nth-child(${i+1})`);if(el)el.classList.add("flip");
+  if(CS.opened.length===need){CS.step="wait";setTimeout(cashAsk,1100)}
+}
+function cashAsk(){
+  if(!CS)return;const it=buildItems("quiz",1)[0],c=clsFor(it);CS.q=it;CS.step="q";
+  $("#clue").hidden=false;$("#clue-timer").hidden=true;$("#clue-cat").textContent="Bonus question · "+it.cat;$("#clue-val").textContent="Answer right and the Banker's offer goes up 10%.";
+  body(`<p class="clue-q">${esc(it.q)}</p><div class="answers${it.opts.length===2?" two":""}">${it.opts.map((o,k)=>`<button class="ans ${c.c[k]}" data-act="cs-ans" data-k="${k}"><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`);
+}
+function cashAnswer(k){
+  if(!CS||CS.step!=="q")return;const it=CS.q;CS.bonus=k===it.correct;CS.step="qdone";
+  $$('#clue-body [data-act="cs-ans"]').forEach((b,i)=>{b.disabled=true;b.classList.toggle("right",i===it.correct)});
+  $("#clue-body .answers").classList.add("revealed");sfx(CS.bonus?"correct":"wrong");
+  $("#clue-body").insertAdjacentHTML("beforeend",`<p class="center tl-result">${CS.bonus?"Right! The offer goes up 10%.":"Not this time."}</p>${it.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(it.fact)}</span></div>`:""}<div class="row center"><button class="btn" data-act="cs-offer">Hear the Banker's offer</button></div>`);
+}
+function cashShowOffer(){
+  if(!CS)return;const amt=cashOffer(CS.board,CS.opened,CS.r,CS.R,CS.bonus);CS.amt=amt;CS.step="offer";silence();sfx("ring");
+  $("#clue").hidden=false;$("#clue-cat").textContent=`Round ${CS.r+1} of ${CS.R}`;$("#clue-val").textContent=teams[CS.turn].name;
+  body(`<p class="center label">The Banker offers</p><div class="dd">${fmt(amt)}</div>${CS.bonus?'<p class="center"><span class="dbl">+10% bonus</span></p>':""}
+    <p class="center muted">Take the cash, or keep playing and open ${CS.r+1<CS.R?CASH[CS.n].s[CS.r+1]+" more case"+(CASH[CS.n].s[CS.r+1]>1?"s":""):"to the final choice"}?</p>
+    <div class="row center"><button class="btn" data-act="cs-deal">Take the cash</button><button class="btn ghost" data-act="cs-play">Keep playing</button></div>`);
+}
+function cashPlayOn(){
+  if(!CS)return;lobbyMusic();
+  if(CS.r+1<CS.R){CS.r++;CS.step="open";CS.bonus=false;$("#clue").hidden=true;renderCash();return}
+  const other=CS.board.findIndex((_,i)=>i!==CS.own&&!CS.opened.includes(i));CS.other=other;CS.step="final";
+  $("#clue-cat").textContent="Final choice";$("#clue-val").textContent=teams[CS.turn].name;
+  body(`<p class="clue-q">Two cases are left: yours, #${CS.own+1}, and #${other+1}. Keep yours, or swap?</p>${valueBoard(CS.n,new Set(CS.opened.map(i=>CS.board[i])),"mini")}
+    <div class="row center"><button class="btn" data-act="cs-keep">Keep case #${CS.own+1}</button><button class="btn ghost" data-act="cs-swap">Swap for #${other+1}</button></div>`);
+}
+function cashFinish(kind){
+  if(!CS)return;const tm=teams[CS.turn],ownV=CS.board[CS.own];let won,line;
+  if(kind==="deal"){won=CS.amt;line=`Your case #${CS.own+1} held ${fmt(ownV)}. ${won>=ownV?"Good call taking the cash!":"Your case was worth more this time."}`}
+  else{const pick=kind==="swap"?CS.other:CS.own;won=CS.board[pick];const alt=CS.board[kind==="swap"?CS.own:CS.other];line=kind==="swap"?`You swapped. Your old case held ${fmt(alt)}.`:`The other case held ${fmt(alt)}.`}
+  tm.score=won;tm.last=won;CS.step="done";renderStrip();sfx(won>=CASH[CS.n].v[Math.floor(CS.n*.75)]?"fanfare":"correct");
+  const last=CS.turn+1>=teams.length;
+  $("#clue").hidden=false;$("#clue-cat").textContent="Result";$("#clue-val").textContent=tm.name;
+  body(`<p class="center label">${esc(tm.name)} wins</p><div class="dd">${fmt(won)}</div><p class="center">${esc(line)}</p>
+    <div class="row center"><button class="btn" data-act="cs-nextteam">${last?"See final results":`${esc(teams[CS.turn+1].name)}'s turn`}</button></div>`);
+}
+
 /* ---------- Timeline Shuffle ---------- */
 function startTimeline(){
   const per=Math.max(1,Math.min(2,Math.floor(TIMELINE.length/teams.length)));
@@ -1505,6 +1653,7 @@ const LIVE={room:null,db:null,user:null,canHost:false,myId:null,myPeer:null,stat
 const live={role:null,cur:null,sc:{gid:null,seq:-1,map:{},players:0},nick:String(store.get("japarty.nick","")||"").slice(0,20),defaultNick:"",pick:null,openAt:0,closeAt:0,H:null,hs:null,rev:0,pTimer:null,lastScores:null,lastRe:0,pendingSfx:false,pin:null,g:null,named:false,subs:[],hashPin:null,pinErr:"",joining:false,party:null,myUps:[],kicked:new Set(),bots:[],lobbyAt:0,teamNames:[],team:null,stage:"pin",rk:null,freeNick:false,roster:null,rosterBuf:{},rosterList:null,lastTaken:"",takenTO:null};
 {const r=store.get("japarty.roster",null);if(r&&Array.isArray(r.names)&&r.names.length)live.rosterList={rid:String(r.rid||Date.now().toString(36)),names:r.names.map(String).slice(0,300),teams:Array.isArray(r.teams)?r.teams.map(String):null,other:!!r.other}}
 const READY_MS=2600;
+const TIMED=new Set(["question","fjq","cpick","copen","cq","coffer","cfinal"]);
 const JOIN_BASE="";
 /* LIVE SERVER so anyone can join (used by the standalone Japarty.html file).
    Paste your free Supabase project's URL and anon or publishable key here, or enter them under "Let anyone join". */
@@ -1793,6 +1942,18 @@ function hostLiveUpdate(){
     if(c){c.textContent=n;$("#lq-total").textContent=ps.length}
     if(H.open&&ps.length&&n>=ps.length&&!H.allTO)H.allTO=setTimeout(hostReveal,700);
   }
+  if(/^c(pick|open|q|offer|final)$/.test(H.phase)){
+    const act=ps.filter(p=>!H.deals[cashKey(p)]),all=H.phase==="cpick"||H.phase==="cq";const pool=all?ps:act;
+    const done=pool.filter(p=>{const d=cashD(p,H);
+      if(H.phase==="cpick")return d&&Number.isInteger(d.c);
+      if(H.phase==="copen")return d&&Array.isArray(d.op)&&d.op.length>=cashNeed(H.n,H.r);
+      if(H.phase==="cq")return validAns(p.presence.a,H);
+      if(H.phase==="coffer")return d&&(d.dl===H.r||d.nd===H.r);
+      return d&&(d.f==="k"||d.f==="s")}).length;
+    const c=$("#cc-count");if(c){c.textContent=done;$("#cc-total").textContent=pool.length}
+    if(pool.length&&done>=pool.length&&!H.allTO){const ph=H.phase;H.allTO=setTimeout(()=>{H.allTO=null;cashEndNow(ph)},900)}
+    else if(!pool.length&&H.phase!=="cpick"&&H.phase!=="cq"&&!H.allTO){const ph=H.phase;H.allTO=setTimeout(()=>{H.allTO=null;cashEndNow(ph)},1500)}
+  }
   if(H.phase==="fjwager"||H.phase==="fjq"){
     const k=H.phase==="fjwager"?"fw":"fa",n=ps.filter(p=>{const v=p.presence[k];return v&&typeof v==="object"&&v.g===H.gid}).length,c=$("#fj-count");
     if(c){c.textContent=n;$("#fj-total").textContent=ps.length}
@@ -1837,6 +1998,7 @@ async function hostResume(){
   const ph=H.phase;
   if(!H.items||ph==="lobby"||ph==="starting")return hostLobby();
   if(ph==="countdown"){H.i=-1;return hostCountdown()}
+  if(H.kind==="cash"&&ph!=="podium"){const r=Math.max(0,H.r);return ph==="cpick"?cashPick():ph==="copen"?cashOpen(r):ph==="cq"?cashQ(r):ph==="coffer"?cashOfferStage(r):ph==="csum"?cashSum(r):cashFinal()}
   if(ph==="question"){H.i--;return hostBoard()}
   if(ph==="reveal"||ph==="board")return hostBoard();
   if(/^fj/.test(ph)&&ph!=="fjreveal"&&!H.fjDone)return hostFJWager();
@@ -1861,13 +2023,13 @@ async function hostLobby(fresh,forcePin){
       ${link?`<div class="linkbox"><input id="lh-link" readonly value="${esc(link)}" aria-label="Join link"><button class="btn small" data-act="copy-link">Copy link</button><button class="btn small ghost-ink" data-act="poster">Make a poster</button></div>`:""}
       <div class="row" style="align-items:baseline;gap:14px"><span class="big-count" id="lh-count">0</span><span style="font-weight:800;font-size:18px" id="lh-count-label">players in the lobby</span><button class="linkish" data-act="new-pin" style="margin-left:auto">New PIN</button></div></div>
     <div class="panel">
-      <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Name That Tune · song clips</option></select></div>
-      <div class="opts"><label for="lh-n">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label></div>
+      <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Guess the Song · song clips</option><option value="cash">Cash or Case · everyone plays their own case</option></select></div>
+      <div class="opts"><label for="lh-cases" id="lh-cases-wrap" hidden>Cases<select id="lh-cases"><option value="16" selected>16 · about 8 minutes</option><option value="24">24 · about 11 minutes</option></select></label><label for="lh-n" id="lh-n-wrap">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label></div>
       <button class="btn" data-act="lh-start" id="lh-start" disabled>Start the game</button>
       <p class="muted" style="font-size:13px;margin-top:-6px" id="lh-start-note">Start unlocks when the first player joins.</p>
       <div class="row"><button class="btn ghost small" data-act="lh-bots">Add 8 test players</button><button class="btn ghost small" data-act="lh-bots-clear" id="lh-bots-clear" hidden>Remove test players</button></div>
       <details class="more"><summary>More settings</summary><div class="more-body">
-        <button class="btn ghost small" data-act="open-tunes" id="lh-songs" style="justify-self:start" hidden>Manage Name That Tune songs</button>
+        <button class="btn ghost small" data-act="open-tunes" id="lh-songs" style="justify-self:start" hidden>Manage Guess the Song songs</button>
         <div class="group"><label class="label" for="lh-pin-in">Your own PIN</label>
           <div class="linkbox"><input id="lh-pin-in" class="sv-input" maxlength="6" placeholder="e.g. BEING1" autocapitalize="characters" spellcheck="false" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn ghost small" data-act="set-pin">Use this PIN</button></div>
           <p class="muted" style="font-size:13px">6 letters or numbers. Choose one before you print posters, and keep it with Play again with the same PIN.</p></div>
@@ -1898,7 +2060,10 @@ async function hostLobby(fresh,forcePin){
 }
 function hostStart(){
   const kind=$("#lh-kind").value;
-  if(kind==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs before starting Name That Tune.";return}
+  if(kind==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs before starting Guess the Song.";return}
+  if(kind==="cash"){const n=+$("#lh-cases").value===24?24:16,R=CASH[n].s.length;
+    live.H={phase:"starting",gid:Math.random().toString(36).slice(2,10),kind,n,R,items:buildItems("quiz",R,15),i:-1,seq:0,T:15,scores:{},fj:false,fjDone:true,dbl:false,r:-1,bonus:{},deals:{}};
+    live.lastScores=null;$("#gb-mode").textContent="Live · Cash or Case";return hostCountdown()}
   live.H={phase:"starting",gid:Math.random().toString(36).slice(2,10),kind,items:buildItems(kind,+$("#lh-n").value,+$("#lh-t").value),i:-1,seq:0,T:kind==="tf"?10:+$("#lh-t").value,scores:{},fj:$("#lh-fj").checked,fjDone:false,dbl:$("#lh-dbl").checked};
   live.lastScores=null;$("#gb-mode").textContent="Live · "+MODE_NAMES[kind];hostCountdown();
 }
@@ -1906,7 +2071,7 @@ function hostCountdown(){cancelAuto();
   const H=live.H;H.phase="countdown";progress("Starting");silence();
   broadcast({phase:"countdown",gid:H.gid,seq:H.seq,total:H.items.length,kind:H.kind});
   let n=3;$("#lh-body").innerHTML=`<p class="clue-q">Get ready! ${esc(MODE_NAMES[H.kind])} starts in</p><div class="count-big" id="lh-cd">3</div><p class="live-count">${players().length} players are in</p>`;sfx("tick");
-  const step=()=>{if(live.H!==H||H.phase!=="countdown")return;n--;if(n<=0){sfx("dd");return hostNext()}
+  const step=()=>{if(live.H!==H||H.phase!=="countdown")return;n--;if(n<=0){sfx("dd");return H.kind==="cash"?cashPick():hostNext()}
     const el=$("#lh-cd");el.textContent=n;el.style.animation="none";void el.offsetWidth;el.style.animation="";sfx("tick");readyTO=setTimeout(step,1000)};
   clearTimeout(readyTO);readyTO=setTimeout(step,1000);
 }
@@ -1979,11 +2144,12 @@ function hostPodium(){cancelAuto();
   const H=live.H;stopClock();clearTimeout(readyTO);H.phase="podium";progress("Final results");
   const r=hostRanking(),top=r.slice(0,3).map(([,e])=>[e.n,e.s]);
   const std=teamStandings();
-  broadcast({phase:"podium",gid:H.gid,seq:H.seq,top,players:r.length,teamTop:std});
+  broadcast({phase:"podium",gid:H.gid,seq:H.seq,top,players:r.length,teamTop:std,kind:H.kind});
   const col=["var(--gold)","var(--paper)","var(--clay)"];
   $("#lh-body").innerHTML=`<div class="pod"><h2>${top.length?esc(top[0][0])+" wins!":"Game over"}</h2>
     <div class="stands">${[1,0,2].filter(i=>top[i]).map(i=>`<div class="stand p${i+1}" style="--tc:${col[i]}"><div class="stand-name">${esc(top[i][0])}</div><div class="stand-score">${fmt(top[i][1])}</div><div class="stand-block">${i+1}</div></div>`).join("")}</div>
     ${std.length?`<div style="width:min(640px,100%);display:grid;gap:10px;text-align:left"><span class="label">${esc(std[0][0])} wins the team round</span>${teamRows(std)}</div>`:""}
+    ${H.kind==="cash"&&H.cashStats?`<p class="clue-q small">${H.cashStats.bestDeal&&H.cashStats.bestDeal.diff>0?`Best cash-out: ${esc(H.cashStats.bestDeal.n)} took ${fmt(H.cashStats.bestDeal.won)} when their case held ${fmt(H.cashStats.bestDeal.ownV)}. `:""}${H.cashStats.million?`${H.cashStats.million} player${H.cashStats.million===1?" was":"s were"} holding the ${fmt(H.cashStats.top)} case.`:""}</p>`:""}
     <p class="muted">${r.length} player${r.length===1?"":"s"} took part.</p>
     <div class="row center"><button class="btn" data-act="lh-again">Play again with the same PIN</button><button class="btn ghost" data-act="lh-csv">Download results</button><button class="btn ghost" data-act="lh-end">End live game</button></div><p class="muted" id="lh-csv-note"></p></div>`;
   lobbyMusic();sfx("fanfare");confetti();
@@ -2024,6 +2190,89 @@ function botsFJ(H){
   live.bots.forEach(b=>setTimeout(()=>{if(live.H!==H||H.phase!=="fjq"||!live.bots.includes(b))return;
     const t=Math.random()<b.skill?right:["Booker T. Washington","W.E.B. Du Bois","No idea"][Math.random()*3|0];
     b.presence={...b.presence,fa:{g:H.gid,t}};hostLiveUpdate()},3000+Math.random()*15000));
+}
+
+/* ---------- Cash or Case, live: everyone plays their own case on their phone ---------- */
+const cashKey=p=>p.by||p.peer;
+const cashD=(p,H)=>{const d=p.presence&&p.presence.d;return d&&typeof d==="object"&&d.g===H.gid?d:null};
+function cashStage(phase,extra,T,html,onEnd){
+  const H=live.H;cancelAuto();stopClock();clearTimeout(H.allTO);H.allTO=null;H.phase=phase;H.seq++;H.cashEnd=onEnd;
+  broadcast({phase,gid:H.gid,seq:H.seq,n:H.n,R:H.R,r:H.r,T,readyMs:0,...extra});
+  $("#lh-body").innerHTML=html;
+  if(T){const el=$("#cl-timer");if(el)startClock(T,el,()=>{sfx("timesup");cashEndNow(phase)})}
+  botsCash(H);hostLiveUpdate();
+}
+function cashEndNow(phase){const H=live.H;if(!H||H.phase!==phase)return;stopClock();clearTimeout(H.allTO);H.allTO=null;const f=H.cashEnd;H.cashEnd=null;if(f)f()}
+const clHead=(eyebrow,title,sub,T)=>`<div class="tl-intro"><div><span class="label" style="color:var(--clay)">${eyebrow}</span><div class="who">${title}</div>${sub?`<p>${sub}</p>`:""}</div>${T?`<div class="timer" id="cl-timer"><span>${T}</span></div>`:""}</div>`;
+const clCount=(what)=>`<div class="live-count"><b id="cc-count">0</b> of <span id="cc-total">0</span> ${what}</div>`;
+function cashPick(){
+  const H=live.H;H.r=-1;progress("Cash or Case · pick a case");lobbyMusic();
+  cashStage("cpick",{},20,clHead("Cash or Case","Pick your case","Everyone picks one case on their phone. It stays closed until the end, and every phone has its own shuffle of the values below.",20)
+    +clCount("players picked")+valueBoard(H.n,null,"big"),()=>cashOpen(0));
+}
+function cashOpen(r){
+  const H=live.H;H.r=r;const k=CASH[H.n].s[r],T=Math.min(40,12+6*k);progress(`Cash or Case · round ${r+1} of ${H.R}`);lobbyMusic();
+  cashStage("copen",{k,need:cashNeed(H.n,r)},T,clHead(`Round ${r+1} of ${H.R}`,`Open ${k} case${k>1?"s":""} on your phone`,"Low numbers are good news. Phones that run out of time open their next cases automatically.",T)
+    +clCount("players done")+valueBoard(H.n,null,"big"),()=>cashQ(r));
+}
+function cashQ(r){
+  const H=live.H;H.i=r;H.open=true;const it=H.items[r],c=clsFor(it);progress(`Cash or Case · bonus question ${r+1}`);thinkMusic();
+  cashStage("cq",{cat:it.cat,q:it.q,opts:it.opts},15,`<div class="q-card"><div class="eyebrow">Bonus question · a right answer raises your offer 10%</div><div class="timer" id="cl-timer"><span>15</span></div><h2 class="q-text">${esc(it.q)}</h2></div>
+    <div class="answers${it.opts.length===2?" two":""}">${it.opts.map((o,k)=>`<div class="ans ${c.c[k]}"><b>${c.l[k]}</b><span>${esc(o)}</span></div>`).join("")}</div>`+clCount("players answered"),()=>{
+      const it2=H.items[r];players().forEach(p=>{const a=p.presence.a;if(validAns(a,H)&&a.k===it2.correct){const key=cashKey(p);(H.bonus[key]||(H.bonus[key]=[])).push(r)}});
+      H.open=false;cashOfferStage(r)});
+}
+function cashOfferStage(r){
+  const H=live.H,it=H.items[r],c=clsFor(it);silence();sfx("ring");progress(`Cash or Case · offer ${r+1}`);
+  cashStage("coffer",{correct:it.correct},15,`<div class="dd">The Banker is calling</div><p class="clue-q">Take the cash, or keep playing?</p>
+    <p class="center muted">The answer was <b>${c.l[it.correct]}: ${esc(it.opts[it.correct])}</b>. Right answers raised offers by 10%. Every phone gets its own offer.</p>
+    <div class="row center">${clCount("players decided")}<div class="timer" id="cl-timer"><span>15</span></div></div>`,()=>cashSum(r));
+}
+function cashOfferFor(p,H,r){
+  const key=cashKey(p),seed=H.gid+"|"+key,d=cashD(p,H)||{},cl=cashClean(d,H.n),own=cl.own==null?cashDefaultOwn(seed,H.n):cl.own,board=cashBoard(seed,H.n);
+  const op=cashFill(cl.op,own,cashNeed(H.n,r),H.n);return{key,board,own,op,amt:cashOffer(board,op,r,H.R,(H.bonus[key]||[]).includes(r))};
+}
+function cashSum(r){
+  const H=live.H;let took=0,still=0;const offers=[];
+  players().forEach(p=>{const key=cashKey(p);if(H.deals[key])return;const d=cashD(p,H)||{},o=cashOfferFor(p,H,r);
+    offers.push([nickOf(p),o.amt]);if(d.dl===r){H.deals[key]={r,amt:o.amt};took++}else still++});
+  offers.sort((a,b)=>b[1]-a[1]);const top=offers.slice(0,3),dealt=Object.keys(H.deals).length,last=r+1>=H.R;
+  progress(`Cash or Case · round ${r+1} done`);lobbyMusic();
+  cashStage("csum",{took,still,dealt,top},0,`${clHead(`Round ${r+1} of ${H.R}`,`${took} player${took===1?"":"s"} took the cash`,`${still} still playing · ${dealt} cashed out so far`,0)}
+    ${top.length?`<div class="group"><span class="label">Biggest offers this round</span><div class="mini-lb">${top.map(([n,a],i)=>`<div><b>${i+1}</b><span>${esc(n)}</span><em>${fmt(a)}</em></div>`).join("")}</div></div>`:""}
+    <div class="actions"><button class="btn" data-act="cl-next">${last?"Final choice":"Next round"}</button></div>`,null);
+  autoNext(cashAfterSum,last?"Final choice":"Next round",Math.max(5,+prefs.auto||5));
+}
+function cashAfterSum(){const H=live.H;if(!H||H.phase!=="csum")return;cancelAuto();if(H.r+1<H.R)cashOpen(H.r+1);else cashFinal()}
+function cashFinal(){
+  const H=live.H;H.r=H.R-1;progress("Cash or Case · final choice");thinkMusic();
+  cashStage("cfinal",{},15,clHead("Final choice","Keep your case, or swap?","Two cases are left on every phone that kept playing: yours and one other.",15)+clCount("players decided"),cashEndGame);
+}
+function cashEndGame(){
+  const H=live.H;let bestDeal=null,million=0;const top=CASH[H.n].v[H.n-1];
+  players().forEach(p=>{
+    const key=cashKey(p),d=cashD(p,H)||{},o=cashOfferFor(p,H,H.R-1),ownV=o.board[o.own];let won;
+    if(H.deals[key]){won=H.deals[key].amt;const diff=won-ownV;if(!bestDeal||diff>bestDeal.diff)bestDeal={n:nickOf(p),diff,won,ownV}}
+    else{const other=o.board.findIndex((_,i)=>i!==o.own&&!o.op.includes(i));won=d.f==="s"&&other>=0?o.board[other]:ownV}
+    if(ownV===top)million++;
+    H.scores[key]={n:nickOf(p),s:won,st:0,l:won,c:0,t:teamOf(p)};
+  });
+  H.seq++;const list=hostRanking().map(([k,e],i)=>[k,e.s,e.l,i+1,0]);
+  live.lastScores={pin:live.pin,gid:H.gid,seq:H.seq,players:list.length,list};sendScoreChunks(live.lastScores);dbWrite("scores/"+live.pin,live.lastScores);
+  H.cashStats={bestDeal,million,top};hostPodium();
+}
+function botsCash(H){
+  if(!live.bots.length)return;const ph=H.phase;
+  live.bots.forEach(b=>{
+    const key=b.by,seed=H.gid+"|"+key,d=Object.assign({g:H.gid,c:null,op:[]},b.presence.d&&b.presence.d.g===H.gid?b.presence.d:{});
+    const later=(ms,f)=>setTimeout(()=>{if(live.H!==H||H.phase!==ph||!live.bots.includes(b))return;f();b.presence={...b.presence,d:{...d}};hostLiveUpdate()},ms);
+    if(ph==="cpick")later(500+Math.random()*4000,()=>{d.c=Math.floor(Math.random()*H.n)});
+    if(ph==="copen"&&d.dl==null)later(800+Math.random()*6000,()=>{const own=d.c==null?cashDefaultOwn(seed,H.n):d.c;const free=[...Array(H.n).keys()].filter(i=>i!==own&&!d.op.includes(i));
+      while(d.op.length<cashNeed(H.n,H.r)&&free.length)d.op.push(free.splice(Math.floor(Math.random()*free.length),1)[0])});
+    if(ph==="cq"){const it=H.items[H.r];later(800+Math.random()*8000,()=>{const k=Math.random()<b.skill?it.correct:Math.floor(Math.random()*it.opts.length);b.presence={...b.presence,a:{g:H.gid,s:H.seq,k,ms:2000}}})}
+    if(ph==="coffer"&&d.dl==null)later(800+Math.random()*6000,()=>{if(Math.random()<.22)d.dl=H.r;else d.nd=H.r});
+    if(ph==="cfinal"&&d.dl==null)later(800+Math.random()*5000,()=>{d.f=Math.random()<.5?"k":"s"});
+  });
 }
 
 /* live Final Japarty: phones wager, then type an answer; the host confirms the marking */
@@ -2138,8 +2387,8 @@ function applyState(s){
   if(live.cur&&s.rev<=live.cur.rev)return;
   if(s.phase==="question"||s.phase==="reveal"){if(!Array.isArray(s.opts)||!s.opts.every(o=>typeof o==="string"))return}
   const prev=live.cur;live.cur=s;
-  if((s.phase==="question"||s.phase==="fjq")&&!(prev&&prev.phase===s.phase&&prev.gid===s.gid&&prev.seq===s.seq)){
-    const T=Math.min(120,Math.max(3,+s.T||20))*1000,rd=Math.min(10000,Math.max(0,+s.readyMs||READY_MS));
+  if(TIMED.has(s.phase)&&!(prev&&prev.phase===s.phase&&prev.gid===s.gid&&prev.seq===s.seq)){
+    const T=Math.min(120,Math.max(3,+s.T||20))*1000,rd=Math.min(10000,Math.max(0,s.readyMs==null?READY_MS:+s.readyMs||0));
     let age=Date.now()-(+s.at||Date.now());if(!(age>=0&&age<rd+T+5000))age=0;
     const now=performance.now();live.openAt=now+Math.max(0,rd-age);live.closeAt=live.openAt+T-Math.max(0,age-rd);
     if(live.role==="player"&&live.nick)sfx("whoosh");
@@ -2214,6 +2463,7 @@ function playerRenderInner(){
     el.innerHTML=(seen?waitCard("You're in!",`Look for your name on the big screen. ${s&&s.pc>1?s.pc+" players are in the lobby. ":""}The game starts when the host is ready.`)
       :waitCard("Almost in…","Connecting to the big screen. Keep this page open; it can take a few seconds."))+`<div class="center"><button class="linkish" data-act="p-rename">Change nickname</button></div>`;return}
   const c=clsFor(s),pk=myPick(s),me=myEntry();
+  if(/^c(pick|open|q|offer|sum|final)$/.test(s.phase))return renderCashPhone(s,el,me);
   if(s.phase==="question"){
     if(pk!=null){el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}</span></div><div class="p-result pick ${c.c[pk]}"><span class="p-letter">${c.l[pk]}</span><h2>Locked in</h2><p>${esc(s.opts[pk])}</p><p>Waiting for everyone else…</p></div>`;return}
     el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}${s.dbl?'<span class="dbl">Double points</span>':""}</span><span id="p-clock"></span></div>${s.kind==="tune"?'<p class="listen">Listen to the big screen</p>':""}<p class="p-q">${esc(s.q)}</p>
@@ -2264,6 +2514,9 @@ function playerRenderInner(){
     el.innerHTML=me?`<div class="p-card"><span class="label">Your place</span><div class="p-big">${ordinal(me[3])}</div><p><b>${fmt(me[1])}</b> points${gap?" · "+gap:""}</p>${teamLine}${topList(5)}</div>`:waitCard("Leaderboard","Check the big screen.");
     return;
   }
+  if(s.phase==="podium"&&s.kind==="cash"){const C=live.cash&&live.cash.gid===s.gid?live.cash:null;
+    el.innerHTML=`<div class="p-card"><span class="label">Cash or Case · final results</span>${me?`<div class="p-big">${fmt(me[1])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players}.</p>`:"<h2>Game over</h2>"}
+      ${C&&C.own!=null?`<p>Your case #${C.own+1} held <b>${fmt(C.board[C.own])}</b>.${C.dl!=null?` You took the cash at ${fmt(C.amt)}.`:""}</p>`:""}${topList(3)}<p class="muted">Thanks for playing Japarty!</p></div>`;return}
   if(s.phase==="podium"){
     el.innerHTML=`<div class="p-card"><span class="label">Final results</span>${me?`<div class="p-big">${ordinal(me[3])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:"<h2>Game over</h2>"}${teamLine}${topList(3)}<p class="muted">Thanks for playing Japarty!</p></div>`;
     return;
@@ -2274,12 +2527,66 @@ function lobbySeen(s){
   if(!s||s.phase!=="lobby"||!Array.isArray(s.ids))return true;
   const me=String(LIVE.myId||LIVE.myPeer||"").slice(-6);return!!me&&s.ids.includes(me);
 }
+function cashState(s){
+  const key=LIVE.myId||LIVE.myPeer||"";
+  if(!live.cash||live.cash.gid!==s.gid||live.cash.n!==s.n){const seed=s.gid+"|"+key;live.cash={gid:s.gid,n:s.n,seed,board:cashBoard(seed,s.n),own:null,op:[],dl:null,nd:null,f:null,amt:0,ans:{},auto:""}}
+  return live.cash;
+}
+function cashSend(){const C=live.cash;if(!C||!live.g)return;live.g.presence({d:{g:C.gid,c:C.own,op:C.op,dl:C.dl,nd:C.nd,f:C.f}}).catch(()=>{})}
+function cashMyOffer(s,C){const r=s.r,op=cashFill(C.op,C.own,cashNeed(s.n,r),s.n);return cashOffer(C.board,op,r,s.R,C.ans[r]!=null&&C.ans[r]===s.correct)}
+function cashPhone(what,i){
+  const s=live.cur;if(!s||live.role!=="player")return;const C=cashState(s);
+  if(what==="pick"&&s.phase==="cpick"&&C.own==null&&Number.isInteger(i)&&i>=0&&i<s.n){C.own=i;sfx("lock")}
+  else if(what==="open"&&s.phase==="copen"&&C.dl==null&&C.own!=null&&Number.isInteger(i)&&i!==C.own&&!C.op.includes(i)&&C.op.length<s.need){
+    C.op.push(i);const v=CASH[s.n].v;sfx(C.board[i]>=v[Math.floor(v.length/2)]?"wrong":"correct");try{navigator.vibrate&&navigator.vibrate(20)}catch(e){}}
+  else if(what==="deal"&&s.phase==="coffer"&&C.dl==null&&C.nd!==s.r){C.amt=cashMyOffer(s,C);C.dl=s.r;sfx("fanfare")}
+  else if(what==="nodeal"&&s.phase==="coffer"&&C.dl==null){C.nd=s.r;sfx("lock")}
+  else if((what==="keep"||what==="swap")&&s.phase==="cfinal"&&C.dl==null&&!C.f){C.f=what==="keep"?"k":"s";sfx("lock")}
+  else return;
+  cashSend();playerRender();
+}
+function cashTick(s){
+  const C=cashState(s),now=performance.now(),c=$("#p-clock");
+  if(c){const t=now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";if(c.textContent!==t)c.textContent=t}
+  if(now<live.closeAt)return;
+  if(s.phase==="cpick"&&C.own==null){C.own=cashDefaultOwn(C.seed,s.n);C.auto="We picked a case for you.";cashSend();playerRender()}
+  else if(s.phase==="copen"&&C.dl==null&&C.op.length<s.need){if(C.own==null)C.own=cashDefaultOwn(C.seed,s.n);C.op=cashFill(C.op,C.own,s.need,s.n);C.auto="Time's up, so we opened the rest for you.";cashSend();playerRender()}
+}
+function cashGrid(s,C,canOpen){
+  return `<div class="cases phone" style="--cols:4">${C.board.map((v,i)=>i===C.own?`<div class="case mine"><b>${i+1}</b><small>Yours</small></div>`
+    :C.op.includes(i)?`<div class="case open"><small>#${i+1}</small><b>${fmt(v)}</b></div>`
+    :`<button class="case" data-act="${s.phase==="cpick"?"c-pick":"c-open"}" data-i="${i}" ${canOpen?"":"disabled"} aria-label="Case ${i+1}"><b>${i+1}</b></button>`).join("")}</div>`;
+}
+function renderCashPhone(s,el,me){
+  const C=cashState(s),off=new Set(C.op.map(i=>C.board[i])),head=(l,t)=>`<div class="p-meta"><span>${l}</span><span id="p-clock"></span></div>${t?`<p class="p-q">${t}</p>`:""}`;
+  const dealtCard=()=>`<div class="p-result good"><span class="label" style="color:inherit">You took the cash</span><span class="p-pts">${fmt(C.amt)}</span><p>Your case stays closed until the end. Watch the big screen.</p></div>`;
+  if(s.phase==="cpick"){
+    el.innerHTML=C.own==null?head("Cash or Case","Pick your case. You keep it closed until the end.")+cashGrid(s,C,true)
+      :`<div class="p-card"><span class="label">Cash or Case</span><div class="case mine big"><b>${C.own+1}</b><small>Your case</small></div><p>${C.auto?esc(C.auto)+" ":""}Waiting for everyone to pick…</p></div>`+valueBoard(s.n,null,"mini");return}
+  if(C.dl!=null&&s.phase!=="cq"){el.innerHTML=dealtCard();return}
+  if(s.phase==="copen"){const left=s.need-C.op.length;
+    el.innerHTML=head(`Round ${s.r+1} of ${s.R}`,left>0?`Open ${left} more case${left===1?"":"s"}`:"Done! Waiting for the others…")+(C.auto?`<p class="muted center">${esc(C.auto)}</p>`:"")+cashGrid(s,C,left>0)+valueBoard(s.n,off,"mini");return}
+  if(s.phase==="cq"){const pk=myPick(s),c=clsFor(s);
+    el.innerHTML=pk!=null?`<div class="p-result pick ${c.c[pk]}"><span class="p-letter">${c.l[pk]}</span><h2>Locked in</h2><p>${esc(s.opts[pk])}</p><p>The Banker is listening…</p></div>`
+      :head("Bonus question","")+`<p class="listen">A right answer raises your next offer 10%</p><p class="p-q">${esc(s.q)}</p><div class="p-answers" id="p-answers">${s.opts.map((o,k)=>`<button class="p-btn ${c.c[k]}" data-act="p-pick" data-k="${k}" disabled><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`;
+    playerTick();return}
+  if(s.phase==="coffer"){const amt=cashMyOffer(s,C),bonus=C.ans[s.r]!=null&&C.ans[s.r]===s.correct;
+    el.innerHTML=C.nd===s.r?`<div class="p-card"><span class="label">You kept playing</span><h2>Good luck!</h2><p>You turned down ${fmt(amt)}.</p></div>`
+      :head(`Offer ${s.r+1} of ${s.R}`,"")+`<div class="p-card"><span class="label">The Banker offers you</span><div class="p-big">${fmt(amt)}</div>${bonus?'<span class="dbl">+10% for your right answer</span>':""}
+        <button class="btn" data-act="c-deal">Take the cash</button><button class="btn ghost" data-act="c-nodeal" style="width:100%">Keep playing</button></div>`+valueBoard(s.n,off,"mini");return}
+  if(s.phase==="csum"){el.innerHTML=`<div class="p-card"><span class="label">Round ${s.r+1} of ${s.R}</span><h2>Still playing</h2><p>${+s.took||0} player${+s.took===1?"":"s"} took the cash this round.</p></div>`+valueBoard(s.n,off,"mini");return}
+  if(s.phase==="cfinal"){const other=C.board.findIndex((_,i)=>i!==C.own&&!cashFill(C.op,C.own,cashNeed(s.n,s.R-1),s.n).includes(i));
+    el.innerHTML=C.f?`<div class="p-card"><span class="label">Locked in</span><h2>${C.f==="k"?"Keeping":"Swapping"}</h2><p>Your result shows at the end.</p></div>`
+      :head("Final choice","Keep your case, or swap for the last one?")+`<div class="p-card"><div class="row center"><div class="case mine big"><b>${C.own+1}</b><small>Yours</small></div><div class="case big"><b>${other+1}</b><small>Last case</small></div></div>
+        <button class="btn" data-act="c-keep">Keep case #${C.own+1}</button><button class="btn ghost" data-act="c-swap" style="width:100%">Swap for #${other+1}</button></div>`+valueBoard(s.n,off,"mini");return}
+}
 function playerTick(){
   const s=live.cur;if(live.role!=="player"||!s)return;
   if(live.joined&&s.phase==="lobby"&&!lobbySeen(s)&&live.g&&performance.now()-(live.lastHello||0)>3000){live.lastHello=performance.now();live.g.presence({pin:live.pin,nick:live.nick}).catch(()=>{})}
   if(s.phase==="fjq"){const c=$("#p-clock"),b=$("#p-fa-btn");if(!c)return;const now=performance.now(),t=now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";
     if(c.textContent!==t)c.textContent=t;if(b&&now>live.closeAt+1500&&!b.disabled){b.disabled=true;b.textContent="Time's up"}return}
-  if(s.phase!=="question")return;
+  if(/^c(pick|open|offer|final)$/.test(s.phase)){cashTick(s);return}
+  if(s.phase!=="question"&&s.phase!=="cq")return;
   const box=$("#p-answers");if(!box)return;
   const now=performance.now(),open=now>=live.openAt&&now<live.closeAt+1000;
   box.querySelectorAll("button").forEach(b=>{if(b.disabled===open)b.disabled=!open});
@@ -2317,7 +2624,7 @@ function parsePack(txt){
 
 /* ---------- actions ---------- */
 const ACT={
-  "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Name That Tune.";return}launch(d.mode)},
+  "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Guess the Song.";return}launch(d.mode)},
   "add-team":()=>{if(teams.length>=6)return;teams.push(newTeam("Team "+(teams.length+1),teams.length));saveTeams();renderSetup();const el=$("#team-name-"+(teams.length-1));el.focus();el.select()},
   "remove-team":d=>{if(teams.length<=2)return;teams.splice(+d.i,1);teams.forEach((t,i)=>t.color=TEAM_COLORS[i]);saveTeams();renderSetup()},
   "music":d=>{if(d.track==="party"){if(!PARTY.queue.length){ACT["open-party"]();return}partyStart();renderMusicUI();return}
@@ -2338,6 +2645,21 @@ const ACT={
   "lh-reveal":()=>hostReveal(),
   "lh-next":()=>live.H&&(live.H.i+1>=live.H.items.length?(live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):hostBoard()),
   "fj-clue":()=>hostFJClue(),
+  "cs-case":d=>cashClick(+d.i),
+  "cs-ans":d=>cashAnswer(+d.k),
+  "cs-offer":()=>cashShowOffer(),
+  "cs-deal":()=>cashFinish("deal"),
+  "cs-play":()=>cashPlayOn(),
+  "cs-keep":()=>cashFinish("keep"),
+  "cs-swap":()=>cashFinish("swap"),
+  "cs-nextteam":()=>{$("#clue").hidden=true;if(!CS)return;if(CS.turn+1>=teams.length){CS=null;podium()}else{CS.turn++;cashTurn()}},
+  "c-pick":d=>cashPhone("pick",+d.i),
+  "c-open":d=>cashPhone("open",+d.i),
+  "c-deal":()=>cashPhone("deal"),
+  "c-nodeal":()=>cashPhone("nodeal"),
+  "c-keep":()=>cashPhone("keep"),
+  "c-swap":()=>cashPhone("swap"),
+  "cl-next":()=>{const H=live.H;if(H&&H.phase==="csum")cashAfterSum()},
   "lh-bots":()=>{if(live.role!=="host"||!live.pin)return;addBots(8);$("#lh-bots-clear").hidden=false;sfx("lock");hostLiveUpdate()},
   "lh-bots-clear":()=>{live.bots=[];$("#lh-bots-clear").hidden=true;if(live.H&&live.H.scores)Object.keys(live.H.scores).forEach(k=>{if(/^bot-/.test(k))delete live.H.scores[k]});hostLiveUpdate()},
   "auto-now":()=>{const f=autoFn;cancelAuto();if(f)f()},
@@ -2393,7 +2715,8 @@ const ACT={
   "roster-clear":()=>{live.rosterList=null;store.del("japarty.roster");$("#roster").hidden=true;afterRosterChange()},
   "lh-end":()=>goHome(),
   "p-pick":d=>{
-    const s=live.cur;if(!s||s.phase!=="question"||myPick(s)!=null)return;
+    const s=live.cur;if(!s||(s.phase!=="question"&&s.phase!=="cq")||myPick(s)!=null)return;
+    if(s.phase==="cq"&&live.cash&&live.cash.gid===s.gid)live.cash.ans[s.r]=+d.k;
     const now=performance.now();if(now<live.openAt)return;
     const k=+d.k;live.pick={gid:s.gid,seq:s.seq,k};
     if(live.g)live.g.presence({a:{g:s.gid,s:s.seq,k,ms:Math.round(Math.max(0,now-live.openAt))}}).catch(()=>{});
@@ -2483,7 +2806,7 @@ document.addEventListener("change",async e=>{
   if(e.target.id==="pa-q"){prefs.partyQ=e.target.value==="pause"?"pause":"quiet";savePrefs();if(M.kind==="think")thinkMusic();else partySync();return}
   if(e.target.id==="party-file"){const f=[...e.target.files];e.target.value="";if(f.length)partyAddFiles(f);return}
   if(e.target.id==="p-song-file"){const f=e.target.files[0];e.target.value="";if(f)sendSong(f);return}
-  if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";return}
+  if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";const c=e.target.value==="cash";$("#lh-cases-wrap").hidden=!c;$("#lh-n-wrap").hidden=c;return}
   if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(teams[k]&&teams[k].name)||"Team "+(k+1)):[];
     if(live.hs){const{rev,at,pin,kicked,teams:_t,...rest}=live.hs;broadcast(rest)}updateCloud(players());return}
   if(e.target.id==="roster-file"){const f=e.target.files[0];e.target.value="";if(!f)return;try{$("#roster-text").value=(await f.text()).replace(/^\uFEFF/,"");rosterPreview()}catch(err){}return}
@@ -2778,7 +3101,7 @@ function ppStatus(x){
 }
 function renderPlayerParty(){
   const el=$("#p-party");if(!el)return;const P=live.party,s=live.cur;
-  const show=live.role==="player"&&live.joined&&P&&P.pin===live.pin&&!(s&&["question","fjq","fjwager","countdown"].includes(s.phase))&&(P.np||P.on||live.myUps.some(x=>x.pin===live.pin));
+  const show=live.role==="player"&&live.joined&&P&&P.pin===live.pin&&!(s&&["question","fjq","fjwager","countdown","cpick","copen","cq","coffer","cfinal"].includes(s.phase))&&(P.np||P.on||live.myUps.some(x=>x.pin===live.pin));
   el.hidden=!show;if(!show)return;
   const canUp=P.on&&live.g&&typeof live.g.sendUp==="function";
   const mine=live.myUps.filter(x=>x.pin===live.pin).slice(0,4);
