@@ -434,7 +434,16 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 .vb span,.vboard span{display:block;text-align:center;padding:6px 8px;border-radius:8px;background:var(--gold);color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums;transition:opacity .4s,background .4s}
 .vb span.hi,.vboard span.hi{background:var(--clay);color:var(--white)}
 .vb span.off,.vboard span.off{opacity:.18;text-decoration:line-through}
-.vboard{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.vboard{display:grid;grid-template-columns:repeat(var(--vc,2),minmax(0,1fr));gap:8px;width:100%}
+.vboard.mini[style*="--vc:4"] span{font-size:11px;padding:3px 2px}
+.cs-layout.wide-vb{grid-template-columns:minmax(150px,220px) minmax(0,1fr) minmax(150px,220px)}
+.cs-layout.wide-vb .vb{grid-template-columns:1fr 1fr}
+.cs-layout.wide-vb .vb span{font-size:13px;padding:5px 4px}
+.cs-layout.wide-vb .case b{font-size:clamp(16px,2vw,24px)}
+.cs-layout.wide-vb .case.open b{font-size:clamp(10px,1.25vw,15px)}
+.case.open b{max-width:100%;white-space:nowrap;letter-spacing:-.01em}
+.cases.phone.dense{gap:6px}.cases.phone.dense .case b{font-size:19px}.cases.phone.dense .case.open b{font-size:11px}.cases.phone.dense .case small{font-size:9px}
+@media(max-width:720px){.cs-layout.wide-vb{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .vboard>div{display:grid;gap:5px}
 .vboard.mini span{padding:4px 6px;font-size:13px}
 .vboard.big{max-width:620px;margin:0 auto}
@@ -641,7 +650,7 @@ button.case:disabled{opacity:.55;cursor:default}
           <div class="mode-top"><h2>Cash or Case</h2><span>Take a chance</span></div>
           <div class="mode-body">
             <p>Each team picks a closed case, then opens the others round by round. After every round the Banker makes an offer: take the cash, or keep playing and hope your case holds more. A Black History question before each offer raises it 10% for a right answer. Also works in live games, where everyone plays their own case on their phone.</p>
-            <div class="opts"><label for="cash-cases">Cases<select id="cash-cases"><option value="16" selected>16 · quicker</option><option value="24">24 · longer</option></select></label></div>
+            <div class="opts"><label for="cash-cases">Cases<select id="cash-cases"><option value="16" selected>16 · quickest</option><option value="24">24</option><option value="32">32</option><option value="40">40 · longest</option></select></label></div>
             <button class="btn" data-act="start" data-mode="cash">Play Cash or Case</button>
           </div>
         </article>
@@ -916,7 +925,7 @@ button.case:disabled{opacity:.55;cursor:default}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.1";
+const APP_VERSION="2.2";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1350,7 +1359,11 @@ function askConfirm(msg,cb){$("#confirm-msg").textContent=msg;confirmCb=cb;$("#c
 
 /* ---------- Cash or Case: shared rules (same on the big screen and phones) ---------- */
 const CASH={16:{v:[1,5,10,25,50,100,250,500,750,1000,2500,5000,10000,25000,50000,100000],s:[4,3,3,2,1,1]},
-  24:{v:[1,2,5,10,20,30,50,75,100,150,200,300,500,750,1000,1500,2500,5000,7500,10000,20000,40000,70000,100000],s:[6,5,4,3,2,1,1]}};
+  24:{v:[1,2,5,10,20,30,50,75,100,150,200,300,500,750,1000,1500,2500,5000,7500,10000,20000,40000,70000,100000],s:[6,5,4,3,2,1,1]},
+  32:{v:[1,2,5,10,15,20,30,40,50,75,100,150,200,250,300,400,500,750,1000,1500,2000,2500,5000,7500,10000,15000,20000,30000,40000,60000,80000,100000],s:[8,6,5,4,3,2,1,1]},
+  40:{v:[1,2,3,5,10,15,20,25,30,40,50,60,75,100,125,150,200,250,300,400,500,600,750,1000,1250,1500,2000,2500,3000,4000,5000,7500,10000,15000,20000,30000,45000,60000,80000,100000],s:[10,8,6,5,4,3,1,1]}};
+const cashSize=v=>CASH[+v]?+v:16;
+const cashCols=(n,phone)=>phone?(n>=32?5:4):(n>=32?8:n===24?6:4);
 function seedRng(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}
   let a=(Math.imul(h^h>>>16,2246822507)^Math.imul(h^h>>>13,3266489909))>>>0;
   return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -1368,8 +1381,8 @@ function cashClean(d,n){
 }
 const pts=v=>fmt(v)+" pts";
 function valueBoard(n,off,cls){
-  const v=[...CASH[n].v],half=Math.ceil(v.length/2),col=a=>a.map(x=>`<span class="${off&&off.has(x)?"off":""}${x>=CASH[n].v[CASH[n].v.length-4]?" hi":""}">${fmt(x)}</span>`).join("");
-  return `<div class="vboard ${cls||""}"><div>${col(v.slice(0,half))}</div><div>${col(v.slice(half))}</div></div>`;
+  const v=[...CASH[n].v],k=n>=32?4:2,per=Math.ceil(v.length/k),col=a=>a.map(x=>`<span class="${off&&off.has(x)?"off":""}${x>=CASH[n].v[CASH[n].v.length-4]?" hi":""}">${fmt(x)}</span>`).join("");
+  return `<div class="vboard ${cls||""}" style="--vc:${k}">${Array.from({length:k},(_,i)=>`<div>${col(v.slice(i*per,(i+1)*per))}</div>`).join("")}</div>`;
 }
 
 /* ---------- Quiz Rush + True/False ---------- */
@@ -1516,7 +1529,7 @@ function fjReveal(){
 /* ---------- Cash or Case: one shared screen, teams take turns ---------- */
 let CS=null;
 function startCash(){
-  const n=+$("#cash-cases").value===24?24:16;
+  const n=cashSize($("#cash-cases").value);
   CS={n,R:CASH[n].s.length,turn:0,results:[]};teams.forEach(t=>{t.score=0;t.last=0});cashTurn();
 }
 function cashTurn(){
@@ -1533,7 +1546,7 @@ function renderCash(){
   const off=new Set(CS.opened.map(i=>CS.board[i])),half=Math.ceil(n/2),v=[...CASH[n].v];
   const col=a=>a.map(x=>`<span class="${off.has(x)?"off":""}${x>=v[v.length-4]?" hi":""}">${fmt(x)}</span>`).join("");
   $("#cs-vl").innerHTML=col(v.slice(0,half));$("#cs-vr").innerHTML=col(v.slice(half));
-  $("#cs-cases").style.setProperty("--cols",n===24?6:4);
+  $("#cs-cases").style.setProperty("--cols",cashCols(n));$(".cs-layout").classList.toggle("wide-vb",n>=32);
   $("#cs-cases").innerHTML=CS.board.map((val,i)=>{
     if(i===CS.own)return `<div class="case gone" aria-hidden="true"></div>`;
     if(CS.opened.includes(i))return `<div class="case open"><small>#${i+1}</small><b>${fmt(val)}</b></div>`;
@@ -2024,7 +2037,7 @@ async function hostLobby(fresh,forcePin){
       <div class="row" style="align-items:baseline;gap:14px"><span class="big-count" id="lh-count">0</span><span style="font-weight:800;font-size:18px" id="lh-count-label">players in the lobby</span><button class="linkish" data-act="new-pin" style="margin-left:auto">New PIN</button></div></div>
     <div class="panel">
       <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Guess the Song · song clips</option><option value="cash">Cash or Case · everyone plays their own case</option></select></div>
-      <div class="opts"><label for="lh-cases" id="lh-cases-wrap" hidden>Cases<select id="lh-cases"><option value="16" selected>16 · about 8 minutes</option><option value="24">24 · about 11 minutes</option></select></label><label for="lh-n" id="lh-n-wrap">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label></div>
+      <div class="opts"><label for="lh-cases" id="lh-cases-wrap" hidden>Cases<select id="lh-cases"><option value="16" selected>16 · about 8 minutes</option><option value="24">24 · about 11 minutes</option><option value="32">32 · about 13 minutes</option><option value="40">40 · about 14 minutes</option></select></label><label for="lh-n" id="lh-n-wrap">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label></div>
       <button class="btn" data-act="lh-start" id="lh-start" disabled>Start the game</button>
       <p class="muted" style="font-size:13px;margin-top:-6px" id="lh-start-note">Start unlocks when the first player joins.</p>
       <div class="row"><button class="btn ghost small" data-act="lh-bots">Add 8 test players</button><button class="btn ghost small" data-act="lh-bots-clear" id="lh-bots-clear" hidden>Remove test players</button></div>
@@ -2061,7 +2074,7 @@ async function hostLobby(fresh,forcePin){
 function hostStart(){
   const kind=$("#lh-kind").value;
   if(kind==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs before starting Guess the Song.";return}
-  if(kind==="cash"){const n=+$("#lh-cases").value===24?24:16,R=CASH[n].s.length;
+  if(kind==="cash"){const n=cashSize($("#lh-cases").value),R=CASH[n].s.length;
     live.H={phase:"starting",gid:Math.random().toString(36).slice(2,10),kind,n,R,items:buildItems("quiz",R,15),i:-1,seq:0,T:15,scores:{},fj:false,fjDone:true,dbl:false,r:-1,bonus:{},deals:{}};
     live.lastScores=null;$("#gb-mode").textContent="Live · Cash or Case";return hostCountdown()}
   live.H={phase:"starting",gid:Math.random().toString(36).slice(2,10),kind,items:buildItems(kind,+$("#lh-n").value,+$("#lh-t").value),i:-1,seq:0,T:kind==="tf"?10:+$("#lh-t").value,scores:{},fj:$("#lh-fj").checked,fjDone:false,dbl:$("#lh-dbl").checked};
@@ -2553,7 +2566,7 @@ function cashTick(s){
   else if(s.phase==="copen"&&C.dl==null&&C.op.length<s.need){if(C.own==null)C.own=cashDefaultOwn(C.seed,s.n);C.op=cashFill(C.op,C.own,s.need,s.n);C.auto="Time's up, so we opened the rest for you.";cashSend();playerRender()}
 }
 function cashGrid(s,C,canOpen){
-  return `<div class="cases phone" style="--cols:4">${C.board.map((v,i)=>i===C.own?`<div class="case mine"><b>${i+1}</b><small>Yours</small></div>`
+  return `<div class="cases phone${s.n>=32?" dense":""}" style="--cols:${cashCols(s.n,true)}">${C.board.map((v,i)=>i===C.own?`<div class="case mine"><b>${i+1}</b><small>Yours</small></div>`
     :C.op.includes(i)?`<div class="case open"><small>#${i+1}</small><b>${fmt(v)}</b></div>`
     :`<button class="case" data-act="${s.phase==="cpick"?"c-pick":"c-open"}" data-i="${i}" ${canOpen?"":"disabled"} aria-label="Case ${i+1}"><b>${i+1}</b></button>`).join("")}</div>`;
 }

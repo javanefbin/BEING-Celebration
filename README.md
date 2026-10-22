@@ -6,7 +6,7 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 - **Quiz Rush**: timed multiple choice, faster answers score more.
 - **True or False Blitz**: 10-second rounds.
 - **Guess the Song**: add your own song clips, plus two public-domain starter tunes.
-- **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. In live games everyone plays their own case on their phone.
+- **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. Choose 16, 24, 32 or 40 cases. In live games everyone plays their own case on their phone.
 - **Japarty Board**: six categories with a Daily Double and Final Japarty (one shared screen).
 - **Timeline Shuffle**: drag four events into order (one shared screen).
 
