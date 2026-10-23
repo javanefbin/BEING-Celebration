@@ -491,6 +491,43 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 .pick-tags{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;font-size:12px;font-weight:800}
 .pick-tags i{font-style:normal;background:rgba(22,17,42,.25);border-radius:999px;padding:2px 8px}
 
+/* Score history */
+.hero-pills{gap:8px}
+.hist-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--stage2);border-radius:999px;padding:7px 14px;font-weight:800;font-size:14px;color:var(--gold)}
+.hist-pill:hover{background:var(--stage3)}
+.hof-body{display:grid;gap:16px;width:min(980px,100%);margin:0 auto}
+.hof-scope{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;color:var(--muted);font-size:14px}
+.hof-scope b{color:var(--paper)}
+.hof-filters{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.hof-filters select{min-width:160px}
+.hof-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--stage2)}
+.hof-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:520px}
+.hof-table th{text-align:left;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}
+.hof-table td{padding:10px 12px;border-bottom:1px solid var(--line)}
+.hof-table tr:last-child td{border-bottom:0}
+.hof-table td.r{font-family:var(--display);color:var(--muted);width:44px}
+.hof-table tr:nth-child(1) td.r{color:var(--gold)}
+.hof-table td.n{font-weight:800}
+.hof-table td.num,.hof-table th.num{text-align:right}
+.hof-games{display:grid;gap:10px}
+.hof-game{background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:grid;gap:6px}
+.hof-game .meta{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--muted);font-size:13px;font-weight:700}
+.hof-game .meta b{color:var(--paper)}
+.hof-game .top{display:flex;flex-wrap:wrap;gap:6px}
+.hof-game .top span{background:var(--stage);border-radius:999px;padding:4px 10px;font-size:14px;font-weight:700}
+.hof-game .top span:first-child{background:var(--gold);color:var(--ink)}
+.hof-game details summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:700}
+.hof-game ol{margin:6px 0 0;padding-left:22px;display:grid;gap:2px;font-variant-numeric:tabular-nums;columns:2;font-size:14px}
+.hof-recs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.hof-rec{background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px}
+.hof-rec b{font-family:var(--display);font-weight:400;font-size:26px;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.1}
+.hof-rec span{color:var(--muted);font-size:13px;font-weight:700}
+.hof-rec em{font-style:normal;font-weight:800}
+.hof-flash{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.hof-flash span{background:var(--gold);color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:800;animation:pop .4s both}
+.hof-flash span.pb{background:var(--good)}
+.hof-empty{background:var(--stage2);border:1px dashed var(--line);border-radius:var(--r);padding:22px;text-align:center;color:var(--muted)}
+
 /* Cash or Case */
 .m-plum{--mc:var(--plum);--mc-ink:var(--white)}
 .cs-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
@@ -622,7 +659,8 @@ button.case:disabled{opacity:.55;cursor:default}
     <div class="kente" aria-hidden="true"></div>
     <header class="hero">
       <h1 class="logo">JAPARTY!</h1>
-      <button class="online-pill" data-act="open-arena" id="online-pill" hidden><i aria-hidden="true"></i><span id="online-n">0 online</span></button>
+      <div class="row hero-pills"><button class="online-pill" data-act="open-arena" id="online-pill" hidden><i aria-hidden="true"></i><span id="online-n">0 online</span></button>
+        <button class="hist-pill" data-act="open-hof" id="hist-pill"><span id="champ-text">Score history</span></button></div>
       <p><b>The Black History party quiz.</b> Host a live game where everyone answers from their own phone, or play together on one shared screen.</p>
     </header>
     <article class="live-card">
@@ -824,14 +862,23 @@ button.case:disabled{opacity:.55;cursor:default}
     <div id="ar-body" class="ar-body" aria-live="polite"></div>
   </section>
 
+  <!-- Score history -->
+  <section class="screen" id="hof" hidden>
+    <div class="ar-top"><span class="logo">JAPARTY!</span><span class="gb-mode">Score history</span><span class="gb-spacer"></span>
+      <button class="btn ghost small" data-act="hof-back">Back</button></div>
+    <div class="hof-body" id="hof-body"></div>
+  </section>
+
   <!-- Podium -->
   <section class="screen" id="podium" hidden>
     <div class="pod">
       <h2 id="pod-title"></h2>
       <div class="stands" id="stands"></div>
       <div class="rest" id="pod-rest"></div>
+      <div class="hof-flash" id="pod-flash" hidden></div>
       <div class="row center">
         <button class="btn" data-act="pod-again">Play again</button>
+        <button class="btn ghost" data-act="open-hof">Score history</button>
         <button class="btn ghost" data-act="pod-home">Back to lobby</button>
       </div>
     </div>
@@ -1030,7 +1077,7 @@ button.case:disabled{opacity:.55;cursor:default}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.6";
+const APP_VERSION="2.7";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1488,7 +1535,8 @@ function resetClock(el,T){el.style.setProperty("--p",1);el.querySelector("span")
 
 /* ---------- launching ---------- */
 const MODE_NAMES={quiz:"Quiz Rush",tf:"True or False Blitz",board:"Japarty Board",timeline:"Timeline Shuffle",tune:"Guess the Song",cash:"Cash or Case"};
-function launch(m){rememberNames();
+let screenGameId=null;
+function launch(m){rememberNames();screenGameId=newId();
   lastMode=m;mode=m;prevRank=null;
   teams.forEach(t=>{t.score=0;t.streak=0;t.last=0});
   $("#gamebar").hidden=false;$("#gb-mode").textContent=MODE_NAMES[m];
@@ -1799,6 +1847,9 @@ function podium(){cancelAuto();
   $("#pod-title").textContent=tie?"It's a tie!":`${teams[r[0]].name} wins!`;
   $("#stands").innerHTML=[1,0,2].filter(i=>top[i]!==undefined).map(i=>{const tm=teams[top[i]];return `<div class="stand p${i+1}" style="--tc:${tm.color}"><div class="stand-name">${esc(tm.name)}</div><div class="stand-score">${fmt(tm.score)}</div><div class="stand-block">${i+1}</div></div>`}).join("");
   $("#pod-rest").innerHTML=r.slice(3).map((t,i)=>`<div><span>${i+4}. ${esc(teams[t].name)}</span><b>${fmt(teams[t].score)}</b></div>`).join("");
+  const list=r.map(t=>({n:teams[t].name,s:teams[t].score})),kind=lastMode||"quiz",fl=$("#pod-flash");
+  const flash=playAs==="teams"?[]:histFlash(kind,list);fl.innerHTML=flash.map(f=>`<span class="${f.pb?"pb":""}">${esc(f.t)}</span>`).join("");fl.hidden=!flash.length;
+  if(screenGameId){histAdd({id:"s"+screenGameId,at:Date.now(),kind,mode:"screen",np:list.length,players:list,teams:playAs==="teams"});screenGameId=null}
   lobbyMusic();sfx("fanfare");confetti();
 }
 function confetti(){
@@ -2308,14 +2359,17 @@ function hostPodium(){cancelAuto();
   const H=live.H;stopClock();clearTimeout(readyTO);H.phase="podium";progress("Final results");
   const r=hostRanking(),top=r.slice(0,3).map(([,e])=>[e.n,e.s]);
   const std=teamStandings();
-  broadcast({phase:"podium",gid:H.gid,seq:H.seq,top,players:r.length,teamTop:std,kind:H.kind});
+  const hl=r.filter(([k])=>!/^bot-/.test(k)).map(([,e])=>({n:e.n,s:e.s})),flash=histFlash(H.kind,hl);
+  if(!H.saved&&hl.length){H.saved=true;histAdd({id:"g"+H.gid,at:Date.now(),kind:H.kind,mode:"live",np:hl.length,players:hl.slice(0,100)})}
+  broadcast({phase:"podium",gid:H.gid,seq:H.seq,top,players:r.length,teamTop:std,kind:H.kind,rec:flash.filter(f=>!f.pb).map(f=>f.t).slice(0,1)});
   const col=["var(--gold)","var(--paper)","var(--clay)"];
   $("#lh-body").innerHTML=`<div class="pod"><h2>${top.length?esc(top[0][0])+" wins!":"Game over"}</h2>
     <div class="stands">${[1,0,2].filter(i=>top[i]).map(i=>`<div class="stand p${i+1}" style="--tc:${col[i]}"><div class="stand-name">${esc(top[i][0])}</div><div class="stand-score">${fmt(top[i][1])}</div><div class="stand-block">${i+1}</div></div>`).join("")}</div>
     ${std.length?`<div style="width:min(640px,100%);display:grid;gap:10px;text-align:left"><span class="label">${esc(std[0][0])} wins the team round</span>${teamRows(std)}</div>`:""}
     ${H.kind==="cash"&&H.cashStats?`<p class="clue-q small">${H.cashStats.bestDeal&&H.cashStats.bestDeal.diff>0?`Best cash-out: ${esc(H.cashStats.bestDeal.n)} took ${fmt(H.cashStats.bestDeal.won)} when their case held ${fmt(H.cashStats.bestDeal.ownV)}. `:""}${H.cashStats.million?`${H.cashStats.million} player${H.cashStats.million===1?" was":"s were"} holding the ${fmt(H.cashStats.top)} case.`:""}</p>`:""}
+    ${flash.length?`<div class="hof-flash">${flash.map(f=>`<span class="${f.pb?"pb":""}">${esc(f.t)}</span>`).join("")}</div>`:""}
     <p class="muted">${r.length} player${r.length===1?"":"s"} took part.</p>
-    <div class="row center"><button class="btn" data-act="lh-again">Play again with the same PIN</button><button class="btn ghost" data-act="lh-csv">Download results</button><button class="btn ghost" data-act="lh-end">End live game</button></div><p class="muted" id="lh-csv-note"></p></div>`;
+    <div class="row center"><button class="btn" data-act="lh-again">Play again with the same PIN</button><button class="btn ghost" data-act="open-hof">Score history</button><button class="btn ghost" data-act="lh-csv">Download results</button><button class="btn ghost" data-act="lh-end">End live game</button></div><p class="muted" id="lh-csv-note"></p></div>`;
   lobbyMusic();sfx("fanfare");confetti();
 }
 
@@ -2679,11 +2733,17 @@ function playerRenderInner(){
     el.innerHTML=me?`<div class="p-card"><span class="label">Your place</span><div class="p-big">${ordinal(me[3])}</div><p><b>${fmt(me[1])}</b> points${gap?" · "+gap:""}</p>${teamLine}${topList(5)}</div>`:waitCard("Leaderboard","Check the big screen.");
     return;
   }
+  if(s.phase==="podium"&&me&&typeof s.kind==="string"&&KIND_NAMES[s.kind]&&!HIST.mine.some(x=>x.id==="p"+s.gid)){
+    const prev=HIST.mine.filter(x=>x.kind===s.kind).reduce((a,x)=>Math.max(a,x.s),-1);live.pbNew=prev>=0&&me[1]>prev?s.gid:live.pbNew;
+    histSaveMine({id:"p"+s.gid,at:Date.now(),kind:s.kind,rank:me[3],of:live.sc.players,s:me[1],n:live.nick})}
+  const pbLine=s.phase==="podium"&&live.pbNew===s.gid?`<div class="hof-flash"><span class="pb">New personal best!</span></div>`:"";
+  const recLine=s.phase==="podium"&&Array.isArray(s.rec)&&typeof s.rec[0]==="string"?`<div class="hof-flash"><span>${esc(s.rec[0].slice(0,80))}</span></div>`:"";
+  const histBtn=`<button class="linkish" data-act="open-hof">See your score history</button>`;
   if(s.phase==="podium"&&s.kind==="cash"){const C=live.cash&&live.cash.gid===s.gid?live.cash:null;
     el.innerHTML=`<div class="p-card"><span class="label">Cash or Case · final results</span>${me?`<div class="p-big">${fmt(me[1])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players}.</p>`:"<h2>Game over</h2>"}
-      ${C&&C.own!=null?`<p>Your case #${C.own+1} held <b>${fmt(C.board[C.own])}</b>.${C.dl!=null?` You took the cash at ${fmt(C.amt)}.`:""}</p>`:""}${topList(3)}<p class="muted">Thanks for playing Japarty!</p></div>`;return}
+      ${C&&C.own!=null?`<p>Your case #${C.own+1} held <b>${fmt(C.board[C.own])}</b>.${C.dl!=null?` You took the cash at ${fmt(C.amt)}.`:""}</p>`:""}${pbLine}${recLine}${topList(3)}<p class="muted">Thanks for playing Japarty!</p>${histBtn}</div>`;return}
   if(s.phase==="podium"){
-    el.innerHTML=`<div class="p-card"><span class="label">Final results</span>${me?`<div class="p-big">${ordinal(me[3])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:"<h2>Game over</h2>"}${teamLine}${topList(3)}<p class="muted">Thanks for playing Japarty!</p></div>`;
+    el.innerHTML=`<div class="p-card"><span class="label">Final results</span>${me?`<div class="p-big">${ordinal(me[3])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:"<h2>Game over</h2>"}${teamLine}${pbLine}${recLine}${topList(3)}<p class="muted">Thanks for playing Japarty!</p>${histBtn}</div>`;
     return;
   }
   el.innerHTML=waitCard("Hang tight","The host is setting up the next round.");
@@ -2901,6 +2961,12 @@ const ACT={
   "p-rename":()=>{clearSeat();live.joined=false;live.stage="name";live.pinErr="";live.rk=null;if(live.g)live.g.presence({nick:null,rk:null}).catch(()=>{});playerRender()},
   "p-leave":()=>{clearSeat();goHome()},
   "update-now":()=>refreshPage(),
+  "open-hof":()=>{if(mode==="arena"&&AR.duel&&!AR.duel.done)return;openHof()},
+  "hof-back":()=>closeHof(),
+  "hof-tab":d=>{HIST.tab=d.v;renderHof()},
+  "hof-span":d=>{HIST.span=d.v;renderHof()},
+  "hof-csv":()=>histCsv(),
+  "hof-clear":()=>askConfirm(HIST.sharedOn?"Clear the score history saved on this device? The shared history on this page stays.":"Clear all score history on this device? This can't be undone.",()=>{HIST.local=[];store.set("japarty.history",[]);renderChampion();renderHof()}),
   "open-arena":()=>{audioInit();if(!AR.on)return;if(live.role==="player"&&!live.joined){clearInterval(live.pTimer);disconnectGame();live.role=null}if(live.role)return;openArena()},
   "arena-back":()=>{if(AR.duel&&!AR.duel.done){askConfirm(`Leave the duel? It counts as a loss, and ${AR.duel.opp.n} gets the win.`,()=>{duelLeave();goHome()});return}AR.duel=null;goHome()},
   "ar-challenge":d=>{AR.pickFor=d.k;AR.note="";arenaRender()},
@@ -3003,6 +3069,7 @@ document.addEventListener("change",async e=>{
   if(e.target.id==="pa-q"){prefs.partyQ=e.target.value==="pause"?"pause":"quiet";savePrefs();if(M.kind==="think")thinkMusic();else partySync();return}
   if(e.target.id==="party-file"){const f=[...e.target.files];e.target.value="";if(f.length)partyAddFiles(f);return}
   if(e.target.id==="p-song-file"){const f=e.target.files[0];e.target.value="";if(f)sendSong(f);return}
+  if(e.target.id==="hof-kind"){HIST.kind=e.target.value;renderHof();return}
   if(e.target.id==="ar-cat"){AR.pref.cat=e.target.value;store.set("japarty.arenaPref",AR.pref);return}
   if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";const c=e.target.value==="cash";$("#lh-cases-wrap").hidden=!c;$("#lh-n-wrap").hidden=c;return}
   if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(playAs==="teams"&&teams[k]&&teams[k].name)||"Team "+(k+1)):[];
@@ -3482,6 +3549,7 @@ function arenaTick(){
 function arRecord(r,D){
   const R=AR.rec;if(r==="win"){R.w++;R.streak=Math.max(1,(R.streak>0?R.streak:0)+1)}else if(r==="lose"){R.l++;R.streak=Math.min(-1,(R.streak<0?R.streak:0)-1)}else{R.t=(R.t|0)+1;R.streak=0}
   if(D.mode==="speed")R.speed=Math.max(R.speed|0,D.my.c|0);else R.best=Math.max(R.best|0,D.my.tot|0);
+  histAdd({id:"d"+D.id,at:Date.now(),kind:"duel-"+D.mode,mode:"duel",np:2,players:[{n:arName()||"You",s:D.mode==="speed"?D.my.c:D.my.tot},{n:D.opp.n,s:D.mode==="speed"?D.op.c:D.op.tot}]});
   R.hist.unshift({o:D.opp.n,m:specText(D.spec),r,my:D.mode==="speed"?D.my.c:D.my.tot,op:D.mode==="speed"?D.op.c:D.op.tot,sp:D.mode==="speed",at:Date.now()});R.hist=R.hist.slice(0,8);
   store.set("japarty.arena",R);
 }
@@ -3659,6 +3727,103 @@ function duelHTML(){
     <p class="center tl-result">You ${mine.pts?"+"+fmt(mine.pts):"+0"} · ${esc(D.opp.n)} ${theirs&&theirs.pts?"+"+fmt(theirs.pts):"+0"}</p>${q.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(q.fact)}</span></div>`:""}${rxBar(D)}</div>`;
 }
 
+/* ---------- Score history: every finished game is saved for an all-time leaderboard ---------- */
+const KIND_NAMES=Object.assign({},MODE_NAMES,{"duel-quiz":"Quiz duel","duel-tf":"True or false duel","duel-speed":"Speed round"});
+const HIST={local:[],shared:[],sharedOn:false,mine:[],tab:"board",kind:"",span:"all",prev:null,screenId:null};
+try{const l=store.get("japarty.history",[]);if(Array.isArray(l))HIST.local=l.map(histClean).filter(Boolean)}catch(e){}
+try{const m=store.get("japarty.myHistory",[]);if(Array.isArray(m))HIST.mine=m.filter(x=>x&&typeof x.kind==="string")}catch(e){}
+function histClean(g){
+  if(!g||typeof g!=="object"||typeof g.id!=="string"||!/^[a-z0-9]{2,24}$/.test(g.id)||typeof g.at!=="number"||!KIND_NAMES[g.kind]||!["screen","live","duel"].includes(g.mode)||!Array.isArray(g.players))return null;
+  const players=g.players.filter(p=>p&&typeof p.n==="string"&&p.n.trim()&&typeof p.s==="number"&&isFinite(p.s)).slice(0,150).map(p=>({n:p.n.trim().slice(0,30),s:Math.round(p.s)}));
+  if(!players.length)return null;players.sort((a,b)=>b.s-a.s);
+  return{id:g.id,at:g.at,kind:g.kind,mode:g.mode,np:Math.max(players.length,Math.min(10000,g.np|0)),players,teams:!!g.teams};
+}
+const histAll=()=>{const m=new Map();HIST.shared.concat(HIST.local).forEach(g=>{if(g&&!m.has(g.id))m.set(g.id,g)});return[...m.values()].sort((a,b)=>b.at-a.at)};
+const notCounted=n=>isDefName(n)||/^Test player \d+$/.test(n)||n==="You";
+function histBest(kind,name){let best=null;histAll().forEach(g=>{if(g.kind!==kind)return;g.players.forEach(p=>{if(notCounted(p.n)||(name&&p.n.toLowerCase()!==name.toLowerCase()))return;if(!best||p.s>best.s)best={n:p.n,s:p.s,at:g.at}})});return best}
+function histAdd(g){
+  g=histClean(g);if(!g)return;
+  HIST.local=[g,...HIST.local.filter(x=>x.id!==g.id)].slice(0,300);store.set("japarty.history",HIST.local);
+  if(LIVE.db&&LIVE.canHost)LIVE.db.doc("history/"+g.id).set(g).catch(()=>{});
+  renderChampion();
+}
+/* compare a finished game with the history before saving it, for the "new record" banners */
+function histFlash(kind,list){
+  const out=[];if(!list.length)return out;const top=list[0];
+  const rec=histBest(kind);if(!notCounted(top.n)&&(!rec||top.s>rec.s)&&top.s>0)out.push({t:rec?`New ${KIND_NAMES[kind]} record: ${top.n}, ${fmt(top.s)}`:`First ${KIND_NAMES[kind]} record: ${top.n}, ${fmt(top.s)}`});
+  list.slice(0,8).forEach(p=>{if(notCounted(p.n))return;const pb=histBest(kind,p.n);if(pb&&p.s>pb.s)out.push({t:`New personal best: ${p.n}`,pb:true})});
+  return out.slice(0,5);
+}
+function histStats(games){
+  const P=new Map();
+  games.forEach(g=>{const many=g.players.length>1;
+    g.players.forEach(p=>{if(notCounted(p.n)||(g.teams&&g.mode==="screen"&&isDefName(p.n)))return;
+      const k=p.n.toLowerCase(),e=P.get(k)||{n:p.n,games:0,wins:0,pod:0,best:0,bestKind:"",last:0};
+      const rank=1+g.players.filter(x=>x.s>p.s).length;
+      e.games++;if(many&&rank===1)e.wins++;if(many&&rank<=3)e.pod++;if(p.s>e.best){e.best=p.s;e.bestKind=g.kind}if(g.at>e.last){e.last=g.at;e.n=p.n}P.set(k,e)})});
+  return[...P.values()].sort((a,b)=>b.wins-a.wins||b.pod-a.pod||b.best-a.best||a.n.localeCompare(b.n));
+}
+function histFiltered(){
+  const now=Date.now(),day=new Date();day.setHours(0,0,0,0);
+  const from=HIST.span==="today"?day.getTime():HIST.span==="week"?now-7*864e5:0;
+  return histAll().filter(g=>g.at>=from&&(!HIST.kind||g.kind===HIST.kind));
+}
+function renderChampion(){
+  const el=$("#champ-text");if(!el)return;const st=histStats(histAll().filter(g=>g.mode!=="duel"));
+  el.textContent=st.length&&st[0].wins>0?`Champion: ${st[0].n} · ${st[0].wins} win${st[0].wins===1?"":"s"}`:"Score history";
+}
+function histSaveMine(x){HIST.mine=[x,...HIST.mine.filter(y=>y.id!==x.id)].slice(0,60);store.set("japarty.myHistory",HIST.mine)}
+const fmtWhen=t=>{try{return new Date(t).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}catch(e){return""}};
+function openHof(){
+  if(mode!=="hof"){HIST.prev=mode;HIST.screenId=($$(".screen").find(x=>!x.hidden)||{}).id||"home";HIST.bar=!$("#gamebar").hidden}
+  mode="hof";$("#gamebar").hidden=true;show("hof");renderHof();
+}
+function closeHof(){const id=HIST.screenId||"home";mode=HIST.prev||"home";show(id);if(HIST.bar)$("#gamebar").hidden=false;if(id==="home")renderChampion()}
+function renderHof(){
+  if(mode!=="hof")return;const all=histAll(),games=histFiltered(),kinds=[...new Set(all.map(g=>g.kind))];
+  const shared=HIST.sharedOn,tabs=[["board","Leaderboard"],["recent","Recent games"],["records","Records"],["mine","My results"]];
+  const filters=`<div class="hof-filters"><select id="hof-kind" aria-label="Game"><option value="">All games</option>${kinds.map(k=>`<option value="${k}"${HIST.kind===k?" selected":""}>${esc(KIND_NAMES[k])}</option>`).join("")}</select>
+    <div class="seg" role="group" aria-label="Time">${[["all","All time"],["week","This week"],["today","Today"]].map(([v,l])=>`<button data-act="hof-span" data-v="${v}" aria-pressed="${HIST.span===v}">${l}</button>`).join("")}</div></div>`;
+  let body="";
+  if(HIST.tab==="board"){const st=histStats(games.filter(g=>HIST.kind||g.mode!=="duel")).slice(0,100);
+    body=filters+(st.length?`<div class="hof-wrap"><table class="hof-table"><thead><tr><th>#</th><th>Name</th><th class="num">Wins</th><th class="num">Top 3</th><th class="num">Games</th><th class="num">Best score</th></tr></thead><tbody>
+      ${st.map((e,i)=>`<tr><td class="r">${i+1}</td><td class="n">${esc(e.n)}</td><td class="num">${e.wins}</td><td class="num">${e.pod}</td><td class="num">${e.games}</td><td class="num">${fmt(e.best)}${!HIST.kind&&e.bestKind?` <small class="muted">${esc(KIND_NAMES[e.bestKind])}</small>`:""}</td></tr>`).join("")}</tbody></table></div>
+      <p class="muted" style="font-size:13px">Ranked by wins, then top-3 finishes, then best score. Solo games count as played but not as wins.${HIST.kind?"":" Duels show when you pick a duel type."}</p>`
+      :`<div class="hof-empty">No games ${HIST.span==="today"?"today":HIST.span==="week"?"this week":"yet"}${HIST.kind?" for "+esc(KIND_NAMES[HIST.kind]):""}. Finish a game and it shows up here.</div>`)}
+  else if(HIST.tab==="recent"){
+    body=filters+(games.length?`<div class="hof-games">${games.slice(0,60).map(g=>`<div class="hof-game"><div class="meta"><b>${esc(KIND_NAMES[g.kind])}</b><span>${g.mode==="live"?`Live · ${g.np} player${g.np===1?"":"s"}`:g.mode==="duel"?"Arena duel":`One screen · ${g.players.length} ${g.teams?"team":"player"}${g.players.length===1?"":"s"}`}</span><span>${esc(fmtWhen(g.at))}</span></div>
+      <div class="top">${g.players.slice(0,3).map((p,i)=>`<span>${i+1}. ${esc(p.n)} · ${fmt(p.s)}</span>`).join("")}</div>
+      ${g.players.length>3?`<details><summary>All ${g.players.length} results</summary><ol>${g.players.map(p=>`<li>${esc(p.n)} · ${fmt(p.s)}</li>`).join("")}</ol></details>`:""}</div>`).join("")}</div>`
+      :`<div class="hof-empty">No games match these filters yet.</div>`)}
+  else if(HIST.tab==="records"){
+    const recs=kinds.map(k=>{const b=histBest(k);return b?{k,b}:null}).filter(Boolean),st=histStats(all.filter(g=>g.mode!=="duel"));
+    const big=all.filter(g=>g.mode==="live").sort((a,b)=>b.np-a.np)[0],plays=all.filter(g=>g.mode!=="duel").length;
+    body=recs.length||st.length?`<div class="hof-recs">
+      ${st[0]&&st[0].wins?`<div class="hof-rec"><span>Most wins</span><b>${st[0].wins}</b><em>${esc(st[0].n)}</em></div>`:""}
+      ${recs.map(({k,b})=>`<div class="hof-rec"><span>${esc(KIND_NAMES[k])} high score</span><b>${fmt(b.s)}</b><em>${esc(b.n)}</em><span>${esc(fmtWhen(b.at))}</span></div>`).join("")}
+      ${big?`<div class="hof-rec"><span>Biggest live game</span><b>${big.np}</b><em>players in ${esc(KIND_NAMES[big.kind])}</em><span>${esc(fmtWhen(big.at))}</span></div>`:""}
+      <div class="hof-rec"><span>Games played</span><b>${plays}</b><em>${all.length-plays} Arena duel${all.length-plays===1?"":"s"}</em></div></div>`
+      :`<div class="hof-empty">Records appear after the first finished game.</div>`}
+  else{
+    const mine=HIST.mine,R=AR.rec,bests={};mine.forEach(x=>{if(!bests[x.kind]||x.s>bests[x.kind])bests[x.kind]=x.s});
+    body=`<div class="hof-recs">${Object.entries(bests).map(([k,v])=>`<div class="hof-rec"><span>Your best · ${esc(KIND_NAMES[k]||k)}</span><b>${fmt(v)}</b></div>`).join("")}
+        <div class="hof-rec"><span>Arena record</span><b>${R.w}–${R.l}</b><em>${R.t|0} tie${(R.t|0)===1?"":"s"}</em></div></div>
+      ${mine.length?`<div class="hof-games">${mine.map(x=>`<div class="hof-game"><div class="meta"><b>${esc(KIND_NAMES[x.kind]||x.kind)}</b><span>Live game</span><span>${esc(fmtWhen(x.at))}</span></div><div class="top"><span>${ordinal(x.rank)} of ${x.of}</span><span>${fmt(x.s)} points</span></div></div>`).join("")}</div>`
+        :`<div class="hof-empty">Play a live game on your phone and your finishes show up here.</div>`}
+      ${R.hist.length?`<div class="hof-games">${R.hist.map(h=>`<div class="hof-game"><div class="meta"><b>${esc(titleCase(h.m))}</b><span>vs ${esc(h.o)}</span><span>${esc(fmtWhen(h.at))}</span></div><div class="top"><span>${h.r==="win"?"Won":h.r==="lose"?"Lost":"Tied"}</span><span>${fmt(h.my)}–${fmt(h.op)}</span></div></div>`).join("")}</div>`:""}`;
+  }
+  $("#hof-body").innerHTML=`<div class="hof-scope">${shared?"<b>Shared</b><span>Everyone who opens this page sees the same history.</span>":"<b>Saved on this device</b><span>Each computer or phone keeps its own history.</span>"}
+      <span class="gb-spacer"></span><button class="btn ghost small" data-act="hof-csv">Download history</button>${HIST.local.length?`<button class="btn ghost small" data-act="hof-clear">Clear ${shared?"my copy":"history"}</button>`:""}</div>
+    <div class="seg" role="tablist" aria-label="Score history">${tabs.map(([v,l])=>`<button role="tab" data-act="hof-tab" data-v="${v}" aria-pressed="${HIST.tab===v}" aria-selected="${HIST.tab===v}">${l}</button>`).join("")}</div>
+    ${body}<p class="muted" id="hof-note" style="font-size:13px"></p>`;
+}
+async function histCsv(){
+  const cell=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const rows=[["Date","Game","Type","Rank","Name","Score","Players"]];
+  histAll().forEach(g=>g.players.forEach((p,i)=>rows.push([new Date(g.at).toISOString(),KIND_NAMES[g.kind],g.mode,1+g.players.filter(x=>x.s>p.s).length,p.n,p.s,g.np])));
+  return downloadText("japarty-score-history.csv",rows.map(r=>r.map(cell).join(",")).join("\r\n"),"text/csv",$("#hof-note"));
+}
+
 /* printable poster */
 function openPoster(){
   const link=live.pin?joinLink(live.pin):"";if(!link)return;
@@ -3724,9 +3889,10 @@ document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.te
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="Press Play on any one-screen game and type your name to start, or add a box for each person playing. You can still play as teams.";
+{const WHATS_NEW="New: Score history, with an all-time leaderboard, recent games, record high scores and personal bests. Open it from the home screen.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
+renderChampion();
 renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();show("home");initLive();loadTunes();
 </script>
 

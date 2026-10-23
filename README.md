@@ -12,6 +12,15 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 Press **Play** on any one-screen game and a **Who's playing?** box asks for your name. Add a box for each person playing on the same screen (up to 8), or choose **Play as teams instead**. Solo play works too.
 - **Timeline Shuffle**: drag four events into order (one shared screen).
 
+## Score history
+Every finished game is saved: one-screen games, live games and Arena duels. Open **Score history** from the home screen (it shows the reigning champion) or from any results screen:
+- **Leaderboard**: everyone ranked by wins, then top-3 finishes, then best score, filtered by game and by all time, this week or today.
+- **Recent games**: each game with its date, type and full results.
+- **Records**: the high score for each game, most wins and the biggest live game.
+- **My results**: your own finishes from live games on your phone, personal bests and your Arena record.
+
+Results screens call out **new records** and **new personal bests**. On this website each device keeps its own history (download it as a CSV anytime). On the shared Claude page, games hosted by editors go into one history everyone sees.
+
 ## Arena
 Everyone who has the site open shows up as online, with a count on the home screen. Open **Enter the Arena** to see who's around and challenge anyone on their own device:
 - **Quiz duel**: 5, 7 or 10 questions, from all categories or just one. Faster right answers score more.
