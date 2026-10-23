@@ -462,6 +462,29 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 .duel-res{display:grid;gap:10px;justify-items:center;text-align:center}
 .duel-res h2{font-family:var(--display);font-weight:400;font-size:clamp(36px,9vw,64px);color:var(--gold);line-height:1;text-shadow:0 .05em 0 var(--clay)}
 .p-btn.right{box-shadow:0 0 0 4px var(--paper)}
+.ar-picker{display:grid;gap:10px;width:100%;background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ar-cat{display:grid;gap:4px}
+.ar-quick{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--stage2);border:1px solid var(--line);border-left:6px solid var(--gold);border-radius:var(--r);padding:14px 18px}
+.ar-quick p{color:var(--muted);margin-top:4px}
+.ar-row.open{border-color:var(--gold)}
+.ar-filter{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-bottom:4px}
+.ar-filter input{flex:1 1 160px}
+.p-btn.right:disabled{opacity:1}
+.p-btn.dim:disabled{opacity:.3}
+.ar-stats{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.ar-stats div{background:var(--stage);border-radius:10px;padding:8px 10px;display:grid;gap:2px}
+.ar-stats b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold);font-variant-numeric:tabular-nums}
+.ar-stats span{font-size:12px;color:var(--muted);font-weight:700}
+.ar-me details.more{width:100%}
+.ar-hist{display:flex;gap:10px;align-items:baseline;font-size:14px}
+.ar-hist span:first-child{font-weight:800;width:44px;flex:none}.ar-hist .win{color:var(--good)}.ar-hist .lose{color:var(--bad)}.ar-hist .tie{color:var(--muted)}
+.ar-hist span:nth-child(2){flex:1;min-width:0;color:var(--muted)}
+.ar-hist b{font-variant-numeric:tabular-nums}
+.rx-bar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rx-bar button{border:1px solid var(--line);background:var(--stage);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.rx-bar button:hover{background:var(--stage3)}
+.rx{font-style:normal;display:inline-block;margin:0 6px;background:var(--gold);color:var(--ink);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;animation:pop .3s both}
+.speed-clock{font-family:var(--display);color:var(--gold);font-size:20px}
 .p-btn.dim{opacity:.3}
 .pick-tags{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;font-size:12px;font-weight:800}
 .pick-tags i{font-style:normal;background:rgba(22,17,42,.25);border-radius:999px;padding:2px 8px}
@@ -988,7 +1011,7 @@ button.case:disabled{opacity:.55;cursor:default}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.3";
+const APP_VERSION="2.4";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2807,14 +2830,23 @@ const ACT={
   "open-arena":()=>{audioInit();if(!AR.on)return;if(live.role==="player"&&!live.joined){clearInterval(live.pTimer);disconnectGame();live.role=null}if(live.role)return;openArena()},
   "arena-back":()=>{if(AR.duel&&!AR.duel.done){askConfirm(`Leave the duel? It counts as a loss, and ${AR.duel.opp.n} gets the win.`,()=>{duelLeave();goHome()});return}AR.duel=null;goHome()},
   "ar-challenge":d=>{AR.pickFor=d.k;AR.note="";arenaRender()},
+  "ar-openpick":()=>{AR.pickFor="open";AR.note="";arenaRender()},
   "ar-pickoff":()=>{AR.pickFor=null;arenaRender()},
-  "ar-go":d=>arenaChallenge(d.k,d.m==="tf"?"tf":"quiz"),
+  "ar-pm":d=>{AR.pref.mode=d.m;store.set("japarty.arenaPref",AR.pref);arenaRender()},
+  "ar-pn":d=>{AR.pref.n=+d.n;store.set("japarty.arenaPref",AR.pref);arenaRender()},
+  "ar-send":d=>arenaChallenge(d.k),
+  "ar-post":()=>arenaPostOpen(),
+  "ar-unpost":()=>{AR.open=null;arenaAnnounce(true);arenaRender()},
+  "ar-joinopen":d=>arenaJoinOpen(d.k),
   "ar-cancel":()=>{if(AR.out){AR.send(AR.out.to,{t:"can",id:AR.out.id});AR.out=null;arenaRender()}},
   "ar-accept":d=>arenaAccept(d.id),
   "ar-decline":d=>arenaDecline(d.id),
-  "ar-rename":()=>{live.nick="";store.set("japarty.nick","");arenaAnnounce(true);arenaRender()},
-  "duel-pick":d=>duelPick(+d.k),
-  "ar-rematch":()=>{const D=AR.duel;if(!D)return;const o=D.opp,m=D.mode;AR.duel=null;arenaAnnounce(true);openArena();setTimeout(()=>{const p=arPeer(o.k);if(p&&p.s==="a")arenaChallenge(o.k,m);else{AR.note=`${o.n} is busy right now.`;arenaRender()}},400)},
+  "ar-dnd":()=>{AR.dnd=!AR.dnd;store.set("japarty.dnd",AR.dnd);if(AR.dnd){AR.inv.forEach(x=>AR.send(x.from,{t:"dec",id:x.id,why:"dnd"}));AR.inv=[];AR.open=null}arenaAnnounce(true);arenaRender()},
+  "ar-avail":()=>{AR.availOnly=!AR.availOnly;arenaRender()},
+  "ar-rename":()=>{live.nick="";store.set("japarty.nick","");if(LIVE.mode==="org")live.defaultNick="";arenaAnnounce(true);arenaRender()},
+  "duel-pick":d=>{if(AR.duel&&AR.duel.mode==="speed")speedPick(+d.k);else duelPick(+d.k)},
+  "duel-rx":d=>duelReact(+d.x),
+  "ar-rematch":()=>{const D=AR.duel;if(!D)return;const o=D.opp,sp=D.spec;AR.pref={...sp};AR.duel=null;arenaAnnounce(true);openArena();setTimeout(()=>{const p=arPeer(o.k);if(p&&p.s==="a")arenaChallenge(o.k);else{AR.note=`${o.n} is busy right now.`;arenaRender()}},400)},
   "ar-done":()=>{AR.duel=null;arenaAnnounce(true);lobbyMusic();arenaRender()},
   "open-party":()=>{audioInit();$("#party").hidden=false;$("#pa-status").textContent="";renderParty();$("#party-title").focus()},
   "party-close":()=>{if(PARTY.prev)partyPreview(PARTY.prev.id);$("#party").hidden=true},
@@ -2880,7 +2912,7 @@ document.addEventListener("click",e=>{if(performance.now()-dragEndAt<400)return;
 document.addEventListener("pointerdown",()=>audioInit());
 document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||"Team "+(+i+1);saveTeams()}});
 document.addEventListener("keydown",e=>{
-  if(mode==="arena"&&AR.duel&&AR.duel.stage==="q"&&/^[1-4a-dA-D]$/.test(e.key)&&!e.target.closest("input,textarea,select")){const k="1234".includes(e.key)?+e.key-1:"abcd".indexOf(e.key.toLowerCase());if(k<AR.duel.qs[AR.duel.i].opts.length)duelPick(k)}
+  if(mode==="arena"&&AR.duel&&(AR.duel.stage==="q"||AR.duel.stage==="sq")&&/^[1-4a-dA-D]$/.test(e.key)&&!e.target.closest("input,textarea,select")){const k="1234".includes(e.key)?+e.key-1:"abcd".indexOf(e.key.toLowerCase());if(k<AR.duel.qs[AR.duel.i].opts.length)ACT["duel-pick"]({k})}
   if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#party").hidden)ACT["party-close"]();else if(!$("#poster").hidden)ACT["poster-close"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
   if(e.key==="Enter"&&e.target.id==="dd-wager")ACT["dd-lock"]();
   if(live.role==="host"&&mode==="live"&&!e.target.closest("input,select,textarea,button")&&$$(".overlay").every(o=>o.hidden)){
@@ -2897,6 +2929,7 @@ document.addEventListener("change",async e=>{
   if(e.target.id==="pa-q"){prefs.partyQ=e.target.value==="pause"?"pause":"quiet";savePrefs();if(M.kind==="think")thinkMusic();else partySync();return}
   if(e.target.id==="party-file"){const f=[...e.target.files];e.target.value="";if(f.length)partyAddFiles(f);return}
   if(e.target.id==="p-song-file"){const f=e.target.files[0];e.target.value="";if(f)sendSong(f);return}
+  if(e.target.id==="ar-cat"){AR.pref.cat=e.target.value;store.set("japarty.arenaPref",AR.pref);return}
   if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";const c=e.target.value==="cash";$("#lh-cases-wrap").hidden=!c;$("#lh-n-wrap").hidden=c;return}
   if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(teams[k]&&teams[k].name)||"Team "+(k+1)):[];
     if(live.hs){const{rev,at,pin,kicked,teams:_t,...rest}=live.hs;broadcast(rest)}updateCloud(players());return}
@@ -2936,6 +2969,7 @@ document.addEventListener("change",async e=>{
 document.addEventListener("input",e=>{
   const tid=e.target.dataset&&e.target.dataset.tid;
   if(e.target.id==="roster-text"){rosterPreview();return}
+  if(e.target.id==="ar-search"){AR.q=e.target.value;arenaRender();return}
   if(e.target.id==="po-event"){$("#po-event-out").textContent=e.target.value;store.set("japarty.event",e.target.value);return}
   if(e.target.id==="p-find"){filterRoster(e.target.value);return}
   if(tid){const r=TUNES.find(t=>t.id===tid);if(!r)return;const f=e.target.dataset.f;
@@ -3229,13 +3263,23 @@ async function sendSong(file){
 }
 
 /* ---------- Arena: who's online, challenges and head-to-head duels ---------- */
-const AR={on:false,kind:null,me:null,peers:new Map(),inv:[],out:null,acc:null,duel:null,note:"",pickFor:null,lastAnn:0,lastSt:"",mb:{},mseq:0,seen:{},rto:null,
-  rec:Object.assign({w:0,l:0},store.get("japarty.arena",{}))};
+const AR={on:false,kind:null,peers:new Map(),inv:[],out:null,acc:null,open:null,duel:null,note:"",pickFor:null,lastAnn:0,lastSt:"",mb:{},mseq:0,seen:{},rto:null,rxAt:0,q:"",availOnly:false,
+  rec:Object.assign({w:0,l:0,t:0,streak:0,best:0,speed:0,hist:[]},store.get("japarty.arena",{})),
+  pref:Object.assign({mode:"quiz",n:7,cat:""},store.get("japarty.arenaPref",{})),dnd:!!store.get("japarty.dnd",false)};
+if(!Array.isArray(AR.rec.hist))AR.rec.hist=[];
 const ARENA_CODE=(()=>{let h=0;const t=location.origin+location.pathname;for(let i=0;i<t.length;i++)h=Math.imul(h^t.charCodeAt(i),16777619)>>>0;return h.toString(36)})();
 const arKey=()=>LIVE.mode==="org"?LIVE.myPeer:SB.pid;
-const arName=()=>live.nick||store.get("japarty.nick","")||"";
-function arStatus(){return AR.duel&&!AR.duel.done?"d":live.role==="host"?"h":live.role==="player"&&live.joined?"g":"a"}
-function arPresence(){const st=arStatus();return{k:arKey(),n:arName()||"Guest "+String(arKey()||"0000").slice(-4).toUpperCase(),g:!arName(),s:st,w:AR.rec.w|0,l:AR.rec.l|0,vs:st==="d"&&AR.duel?AR.duel.opp.n.slice(0,20):"",v:APP_VERSION,at:Date.now()}}
+const arName=()=>live.nick||store.get("japarty.nick","")||(LIVE.mode==="org"?live.defaultNick:"")||"";
+function arStatus(){return AR.duel&&!AR.duel.done?"d":live.role==="host"?"h":live.role==="player"&&live.joined?"g":AR.dnd?"b":"a"}
+const ARCATS=()=>[...new Set(BUILTIN.map(i=>i.cat))];
+const titleCase=t=>String(t).toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
+function arSpec(m){const mode=["quiz","tf","speed"].includes(m&&m.mode)?m.mode:"quiz";
+  return{mode,n:mode==="quiz"?([5,7,10].includes(+m.n)?+m.n:7):mode==="tf"?10:0,cat:mode!=="tf"&&m&&typeof m.cat==="string"&&ARCATS().includes(m.cat)?m.cat:""}}
+const specText=sp=>sp.mode==="speed"?`speed round${sp.cat?" in "+titleCase(sp.cat):""}`:sp.mode==="tf"?"true or false duel":`${sp.n}-question quiz duel${sp.cat?" in "+titleCase(sp.cat):""}`;
+const DUEL_DESC={quiz:"Same questions at the same moment. Faster right answers score more.",tf:"10 quick true or false statements, 10 seconds each.",speed:"60 seconds to answer as many as you can. Most right answers wins."};
+const RX=["Nice!","So close!","Too fast!","Good game","Wow"];
+function arPresence(){const st=arStatus(),o=AR.open&&st==="a"?{id:AR.open.id,mode:AR.open.mode,n:AR.open.n,cat:AR.open.cat}:null;
+  return{k:arKey(),n:arName()||"Guest "+String(arKey()||"0000").slice(-4).toUpperCase(),g:!arName(),s:st,w:AR.rec.w|0,l:AR.rec.l|0,vs:st==="d"&&AR.duel?AR.duel.opp.n.slice(0,20):"",o,v:APP_VERSION,at:Date.now()}}
 function mqSub(topic,f,qos){const c=MQ.client;if(!c)return()=>{};let set=MQ.handlers.get(topic);if(!set){set=new Set();MQ.handlers.set(topic,set);c.subscribe(topic,{qos:qos||0})}set.add(f);
   return()=>{set.delete(f);if(!set.size){MQ.handlers.delete(topic);try{c.unsubscribe(topic)}catch(e){}}}}
 function mqPub(topic,d,qos){try{MQ.client&&MQ.client.publish(topic,JSON.stringify(d),{qos:qos||0})}catch(e){}}
@@ -3247,7 +3291,7 @@ async function arenaInit(){
     ch.on("broadcast",{event:"p"},({payload})=>arenaPres(payload));
     ch.on("broadcast",{event:"hi"},()=>arenaHello());
     ch.on("broadcast",{event:"m"},({payload})=>{if(payload&&payload.to===arKey())arenaMsg(payload.from,payload)});
-    await new Promise(r=>{ch.subscribe(st=>{if(st==="SUBSCRIBED"||st==="CHANNEL_ERROR"||st==="TIMED_OUT")r()});setTimeout(r,8000)});
+    await new Promise(r=>{ch.subscribe(st=>{if(st==="SUBSCRIBED"){r();arenaAnnounce(true)}else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT")r()});setTimeout(r,8000)});
     AR.pub=d=>ch.send({type:"broadcast",event:"p",payload:d}).catch(()=>{});AR.hi=()=>ch.send({type:"broadcast",event:"hi",payload:{}}).catch(()=>{});
     AR.send=(to,m)=>ch.send({type:"broadcast",event:"m",payload:{...m,to,from:arKey()}}).catch(()=>{});
   }else if(LIVE.mode==="org"&&LIVE.room){
@@ -3263,10 +3307,11 @@ async function arenaInit(){
   window.addEventListener("pagehide",()=>{if(AR.duel&&!AR.duel.done)AR.send(AR.duel.opp.k,{t:"bye",id:AR.duel.id});if(AR.kind!=="org")AR.pub({k:arKey(),off:1})});
 }
 function arenaBindMqtt(){
-  const base="jp/v1/a/"+ARENA_CODE,key=arKey();
+  const base="jp/v1/a/"+ARENA_CODE,key=arKey(),c=MQ.client;
   mqSub(base+"/p",d=>arenaPres(d));mqSub(base+"/hi",d=>{if(d&&d.k!==arKey())arenaHello()});
   mqSub(base+"/u/"+key,d=>{if(d&&typeof d.from==="string")arenaMsg(d.from,d)},1);
   AR.pub=d=>mqPub(base+"/p",d);AR.hi=()=>mqPub(base+"/hi",{k:arKey()});AR.send=(to,m)=>mqPub(base+"/u/"+to,{...m,from:arKey()},1);
+  if(c&&!c.__arenaHook){c.__arenaHook=true;c.on("connect",()=>{if(AR.on){arenaAnnounce(true);AR.hi()}})}
 }
 function arenaHello(){setTimeout(()=>{if(Date.now()-AR.lastAnn>4000)arenaAnnounce(true)},300+Math.random()*1500)}
 function arenaAnnounce(now){
@@ -3278,7 +3323,9 @@ function arenaPres(d){
   if(!d||typeof d!=="object"||typeof d.k!=="string"||d.k.length>40||d.k===arKey())return;
   if(d.off){if(AR.peers.delete(d.k))arenaRender();return}
   if(typeof d.n!=="string"||!d.n.trim())return;
-  AR.peers.set(d.k,{k:d.k,n:d.n.trim().slice(0,24),g:!!d.g,s:["a","d","h","g"].includes(d.s)?d.s:"a",w:Math.max(0,Math.min(9999,d.w|0)),l:Math.max(0,Math.min(9999,d.l|0)),vs:typeof d.vs==="string"?d.vs.slice(0,24):"",v:typeof d.v==="string"?d.v.slice(0,12):"",seen:Date.now()});
+  const o=d.o&&typeof d.o==="object"&&typeof d.o.id==="string"&&d.o.id.length<=16?{id:d.o.id,...arSpec(d.o)}:null;
+  AR.peers.set(d.k,{k:d.k,n:d.n.trim().slice(0,24),g:!!d.g,s:["a","d","h","g","b"].includes(d.s)?d.s:"a",w:Math.max(0,Math.min(9999,d.w|0)),l:Math.max(0,Math.min(9999,d.l|0)),
+    vs:typeof d.vs==="string"?d.vs.slice(0,24):"",o,v:typeof d.v==="string"?d.v.slice(0,12):"",seen:Date.now()});
   arenaRender();
 }
 function arenaOrgPeers(list){
@@ -3291,57 +3338,85 @@ function arenaOrgPeers(list){
 }
 const arPeer=k=>AR.peers.get(k);
 const newId=()=>Math.random().toString(36).slice(2,10);
-function arenaChallenge(k,modeKey){
-  const p=arPeer(k);if(!p||p.s!=="a"||AR.duel||AR.out)return;
-  if(!arName()){AR.note="Pick a name first so your opponent knows who's challenging them.";return arenaRender()}
-  AR.out={id:newId(),to:k,n:p.n,mode:modeKey,at:Date.now()};AR.pickFor=null;AR.note="";
-  AR.send(k,{t:"inv",id:AR.out.id,mode:modeKey,n:arName()});sfx("lock");arenaRender();
+function arNeedName(){if(arName())return false;AR.note="Pick a name first so people know who's challenging them.";arenaRender();return true}
+function arenaChallenge(k){
+  const p=arPeer(k);if(!p||p.s!=="a"||AR.duel||AR.out||arNeedName())return;
+  const sp=arSpec(AR.pref);AR.out={id:newId(),to:k,n:p.n,spec:sp,at:Date.now()};AR.pickFor=null;AR.note="";
+  AR.send(k,{t:"inv",id:AR.out.id,...sp,n2:arName()});sfx("lock");arenaRender();
+}
+function arenaPostOpen(){
+  if(AR.duel||arNeedName())return;AR.open={id:newId(),...arSpec(AR.pref),at:Date.now()};AR.pickFor=null;AR.note="";arenaAnnounce(true);sfx("lock");arenaRender();
+}
+function arenaJoinOpen(k){
+  const p=arPeer(k);if(!p||!p.o||p.s!=="a"||AR.duel||AR.acc||arNeedName())return;
+  if(AR.out){AR.send(AR.out.to,{t:"can",id:AR.out.id});AR.out=null}
+  AR.acc={id:p.o.id,from:k,n:p.n,at:Date.now()};AR.send(k,{t:"qacc",id:p.o.id,n2:arName()});arenaRender();
+}
+function arGo(to,toName,id,spec){
+  const qs=duelBuild(spec);AR.send(to,{t:"go",id,...spec,qs,v:APP_VERSION});
+  duelStart({id,spec,qs,opp:{k:to,n:toName},role:"a"});
 }
 function arenaMsg(from,m){
   if(!m||typeof m!=="object"||typeof m.t!=="string"||(m.id!=null&&(typeof m.id!=="string"||m.id.length>16)))return;
-  const p=arPeer(from),nm=(p&&p.n)||(typeof m.n==="string"?m.n.slice(0,24):"Someone");
+  const p=arPeer(from),nm=(p&&p.n)||(typeof m.n2==="string"?m.n2.trim().slice(0,24):"")||"Someone";
   if(m.t==="inv"){
-    if(arStatus()!=="a"||AR.out||AR.acc||AR.inv.length>=5){AR.send(from,{t:"dec",id:m.id,why:"busy"});return}
+    if(arStatus()!=="a"||AR.out||AR.acc||AR.inv.length>=5){AR.send(from,{t:"dec",id:m.id,why:AR.dnd?"dnd":"busy"});return}
     if(AR.inv.some(x=>x.id===m.id))return;
-    if(!p)AR.peers.set(from,{k:from,n:nm,g:false,s:"a",w:0,l:0,vs:"",v:APP_VERSION,seen:Date.now()});
-    AR.inv.push({id:m.id,from,n:nm,mode:m.mode==="tf"?"tf":"quiz",at:Date.now()});sfx("dd");arenaRender();return}
+    if(!p)AR.peers.set(from,{k:from,n:nm,g:false,s:"a",w:0,l:0,vs:"",o:null,v:APP_VERSION,seen:Date.now()});
+    AR.inv.push({id:m.id,from,n:nm,spec:arSpec(m),at:Date.now()});sfx("dd");arenaRender();return}
   if(m.t==="can"){AR.inv=AR.inv.filter(x=>x.id!==m.id);arenaRender();return}
-  if(m.t==="dec"){if(AR.out&&AR.out.id===m.id){AR.note=`${AR.out.n} ${m.why==="busy"?"is busy right now. Try again in a moment.":"said no thanks this time."}`;AR.out=null;arenaRender()}return}
+  if(m.t==="dec"){
+    if(AR.out&&AR.out.id===m.id){AR.note=`${AR.out.n} ${m.why==="busy"?"is busy right now. Try again in a moment.":m.why==="dnd"?"isn't taking challenges right now.":"said no thanks this time."}`;AR.out=null;arenaRender()}
+    if(AR.acc&&AR.acc.id===m.id){AR.note=m.why==="taken"?`Someone else got to ${AR.acc.n}'s challenge first.`:`${AR.acc.n} can't play right now.`;AR.acc=null;arenaRender()}
+    return}
   if(m.t==="acc"){
     if(!AR.out||AR.out.id!==m.id||AR.out.to!==from||AR.duel||arStatus()!=="a"){AR.send(from,{t:"dec",id:m.id,why:"busy"});return}
-    const o=AR.out;AR.out=null;const qs=duelBuild(o.mode);AR.send(from,{t:"go",id:o.id,mode:o.mode,qs,v:APP_VERSION});
-    duelStart({id:o.id,mode:o.mode,qs,opp:{k:from,n:nm},role:"a"});return}
+    const o=AR.out;AR.out=null;arGo(from,nm,o.id,o.spec);return}
+  if(m.t==="qacc"){
+    if(!AR.open||AR.open.id!==m.id||AR.duel||arStatus()!=="a"){AR.send(from,{t:"dec",id:m.id,why:"taken"});return}
+    const o=AR.open;AR.open=null;if(AR.out){AR.send(AR.out.to,{t:"can",id:AR.out.id});AR.out=null}arGo(from,nm,o.id,arSpec(o));return}
   if(m.t==="go"){
     if(!AR.acc||AR.acc.id!==m.id||AR.acc.from!==from||AR.duel)return;AR.acc=null;
     if(m.v!==APP_VERSION){AR.note=`${nm} is on a different version of Japarty. Both of you refresh the page, then try again.`;AR.send(from,{t:"bye",id:m.id});return arenaRender()}
-    duelStart({id:m.id,mode:m.mode==="tf"?"tf":"quiz",qs:m.qs,opp:{k:from,n:nm},role:"b"});return}
+    duelStart({id:m.id,spec:arSpec(m),qs:m.qs,opp:{k:from,n:nm},role:"b"});return}
   const D=AR.duel;if(!D||D.id!==m.id||D.opp.k!==from)return;
-  if(m.t==="ans"){const i=m.i;if(!Number.isInteger(i)||i<0||i>=D.qs.length||D.op.ans[i])return;
+  if(m.t==="ans"){const i=m.i;if(D.mode==="speed"||!Number.isInteger(i)||i<0||i>=D.qs.length||D.op.ans[i])return;
     const pts=Math.max(0,Math.min(1000,m.pts|0));D.op.ans[i]={k:Number.isInteger(m.k)?m.k:-1,pts};D.op.tot+=pts;duelCheck();arenaRender();return}
-  if(m.t==="bye"){if(!D.done){D.done=true;D.forfeit="opp";D.stage="end";lobbyMusic();AR.rec.w++;store.set("japarty.arena",AR.rec);clearInterval(D.iv);sfx("fanfare");arenaAnnounce(true);arenaRender()}}
+  if(m.t==="sp"||m.t==="spend"){if(D.mode!=="speed")return;const c=Math.max(0,Math.min(99,m.c|0)),a=Math.max(c,Math.min(99,m.a|0));if(a>=D.op.a){D.op.c=c;D.op.a=a}
+    if(m.t==="spend"){D.op.fin=true;if(D.stage==="swait")duelEnd()}arenaRender();return}
+  if(m.t==="rx"){const x=m.x|0;if(x>=0&&x<RX.length){D.rx={x,at:Date.now()};arenaRender();setTimeout(arenaRender,3200)}return}
+  if(m.t==="bye"){if(!D.done){D.done=true;D.forfeit="opp";D.stage="end";clearInterval(D.iv);arRecord("win",D);lobbyMusic();sfx("fanfare");arenaAnnounce(true);arenaRender()}}
 }
 function arenaAccept(id){
   const i=AR.inv.findIndex(x=>x.id===id);if(i<0)return;const v=AR.inv[i];AR.inv.splice(i,1);
   if(arStatus()!=="a"||AR.duel){AR.send(v.from,{t:"dec",id,why:"busy"});return}
   AR.inv.forEach(x=>AR.send(x.from,{t:"dec",id:x.id,why:"busy"}));AR.inv=[];
   if(AR.out){AR.send(AR.out.to,{t:"can",id:AR.out.id});AR.out=null}
-  AR.acc={id,from:v.from,n:v.n,at:Date.now()};AR.send(v.from,{t:"acc",id});
+  AR.acc={id,from:v.from,n:v.n,at:Date.now()};AR.send(v.from,{t:"acc",id,n2:arName()});
   if(mode!=="arena")openArena();arenaRender();
 }
 function arenaDecline(id){const i=AR.inv.findIndex(x=>x.id===id);if(i<0)return;AR.send(AR.inv[i].from,{t:"dec",id});AR.inv.splice(i,1);arenaRender()}
 function arenaTick(){
   const now=Date.now();
   AR.inv=AR.inv.filter(x=>now-x.at<45000&&AR.peers.has(x.from));
-  if(AR.out&&(now-AR.out.at>45000||!AR.peers.has(AR.out.to))){AR.note=`${AR.out.n} didn't answer. Try someone else.`;AR.send(AR.out.to,{t:"can",id:AR.out.id});AR.out=null}
+  if(AR.out&&(now-AR.out.at>45000||!AR.peers.has(AR.out.to))){AR.note=`${AR.out.n} didn't answer. Try someone else, or post an open challenge.`;AR.send(AR.out.to,{t:"can",id:AR.out.id});AR.out=null}
   if(AR.acc&&now-AR.acc.at>12000){AR.note=`${AR.acc.n} didn't start the duel. Try again.`;AR.acc=null}
+  if(AR.open&&now-AR.open.at>180000){AR.note="Nobody took your open challenge. Post it again anytime.";AR.open=null;arenaAnnounce(true)}
   arenaRender();
+}
+function arRecord(r,D){
+  const R=AR.rec;if(r==="win"){R.w++;R.streak=Math.max(1,(R.streak>0?R.streak:0)+1)}else if(r==="lose"){R.l++;R.streak=Math.min(-1,(R.streak<0?R.streak:0)-1)}else{R.t=(R.t|0)+1;R.streak=0}
+  if(D.mode==="speed")R.speed=Math.max(R.speed|0,D.my.c|0);else R.best=Math.max(R.best|0,D.my.tot|0);
+  R.hist.unshift({o:D.opp.n,m:specText(D.spec),r,my:D.mode==="speed"?D.my.c:D.my.tot,op:D.mode==="speed"?D.op.c:D.op.tot,sp:D.mode==="speed",at:Date.now()});R.hist=R.hist.slice(0,8);
+  store.set("japarty.arena",R);
 }
 
 /* the duel itself: same questions, scored on each device, answers swapped after every question */
-const DUEL={quiz:{n:7,T:15,name:"Quiz duel"},tf:{n:10,T:10,name:"True or false duel"}};
-function duelBuild(m){
-  if(m==="tf")return shuffle(TF.map((_,i)=>i)).slice(0,DUEL.tf.n).map(i=>[i]);
-  return shuffle(BUILTIN.map((_,i)=>i)).slice(0,DUEL.quiz.n).map(i=>[i,shuffle([...Array(1+BUILTIN[i].w.length).keys()])]);
+const DUEL_T={quiz:15,tf:10,speed:60};
+function duelBuild(sp){
+  if(sp.mode==="tf")return shuffle(TF.map((_,i)=>i)).slice(0,10).map(i=>[i]);
+  const pool=BUILTIN.map((_,i)=>i).filter(i=>!sp.cat||BUILTIN[i].cat===sp.cat);
+  return shuffle(pool).slice(0,sp.mode==="speed"?45:sp.n).map(i=>[i,shuffle([...Array(1+BUILTIN[i].w.length).keys()])]);
 }
 function duelQ(m,e){
   if(!Array.isArray(e)||!Number.isInteger(e[0]))return null;
@@ -3351,11 +3426,12 @@ function duelQ(m,e){
   return{cat:it.cat,q:it.q,opts:perm.map(j=>base[j]),correct:perm.indexOf(0),fact:it.f||""};
 }
 function duelStart(o){
-  const qs=(Array.isArray(o.qs)?o.qs:[]).slice(0,12).map(e=>duelQ(o.mode,e));
+  const sp=arSpec(o.spec),qs=(Array.isArray(o.qs)?o.qs:[]).slice(0,45).map(e=>duelQ(sp.mode,e));
   if(!qs.length||qs.some(q=>!q)){AR.note="That duel couldn't start. Both of you refresh the page, then try again.";AR.send(o.opp.k,{t:"bye",id:o.id});return arenaRender()}
-  AR.duel={id:o.id,mode:o.mode,T:DUEL[o.mode].T,qs,opp:o.opp,i:-1,my:{tot:0,ans:[]},op:{tot:0,ans:[]},stage:"ready",done:false};
+  if(AR.open)AR.open=null;
+  AR.duel={id:o.id,spec:sp,mode:sp.mode,T:DUEL_T[sp.mode],qs,opp:o.opp,i:-1,my:{tot:0,ans:[],c:0,a:0},op:{tot:0,ans:[],c:0,a:0,fin:false},stage:"ready",done:false};
   AR.note="";AR.pickFor=null;arenaAnnounce(true);if(mode!=="arena")openArena();silence();sfx("dd");
-  arenaRender();setTimeout(()=>duelNext(),2200);
+  arenaRender();setTimeout(()=>{if(AR.duel&&AR.duel.id===o.id)sp.mode==="speed"?speedStart():duelNext()},2400);
 }
 function duelNext(){
   const D=AR.duel;if(!D||D.done)return;D.i++;
@@ -3375,16 +3451,37 @@ function duelCheck(){
   D.stage="rev";silence();const mine=D.my.ans[D.i];sfx(mine.pts>0?"correct":"wrong");arenaRender();
   setTimeout(()=>{if(AR.duel===D&&!D.done)duelNext()},3200);
 }
+/* speed round: each player races through the questions on their own clock for 60 seconds */
+function speedStart(){
+  const D=AR.duel;if(!D||D.done)return;D.stage="sq";D.i=0;D.endAt=performance.now()+D.T*1000;clearInterval(D.iv);
+  D.iv=setInterval(()=>{if(AR.duel!==D||D.stage!=="sq")return clearInterval(D.iv);const left=(D.endAt-performance.now())/1000,c=$("#duel-clock");if(c)c.textContent=Math.max(0,Math.ceil(left))+"s";
+    if(left<=10&&left>0&&Math.ceil(left)!==D.lastTick){D.lastTick=Math.ceil(left);sfx("tick")}if(left<=0)speedEnd()},200);
+  thinkMusic();sfx("whoosh");arenaRender();
+}
+function speedPick(k){
+  const D=AR.duel;if(!D||D.stage!=="sq"||D.flash)return;const q=D.qs[D.i],ok=k===q.correct;
+  D.my.a++;if(ok)D.my.c++;D.flash={ok,k,c:q.correct};sfx(ok?"correct":"wrong");
+  AR.send(D.opp.k,{t:"sp",id:D.id,c:D.my.c,a:D.my.a});arenaRender();
+  setTimeout(()=>{if(AR.duel!==D||D.stage!=="sq")return;D.flash=null;D.i++;if(D.i>=D.qs.length)speedEnd();else arenaRender()},ok?280:650);
+}
+function speedEnd(){
+  const D=AR.duel;if(!D||D.stage!=="sq")return;clearInterval(D.iv);D.flash=null;D.stage="swait";D.waitAt=Date.now();silence();sfx("timesup");
+  AR.send(D.opp.k,{t:"spend",id:D.id,c:D.my.c,a:D.my.a});if(D.op.fin)return duelEnd();arenaRender();
+}
 function duelEnd(){
   const D=AR.duel;if(!D||D.done)return;D.done=true;D.stage="end";clearInterval(D.iv);
-  const r=D.my.tot===D.op.tot?"tie":D.my.tot>D.op.tot?"win":"lose";D.result=r;
-  if(r==="win")AR.rec.w++;else if(r==="lose")AR.rec.l++;store.set("japarty.arena",AR.rec);
+  let r;if(D.mode==="speed")r=D.my.c!==D.op.c?(D.my.c>D.op.c?"win":"lose"):D.my.a!==D.op.a?(D.my.a<D.op.a?"win":"lose"):"tie";
+  else r=D.my.tot===D.op.tot?"tie":D.my.tot>D.op.tot?"win":"lose";
+  D.result=r;arRecord(r,D);
   lobbyMusic();sfx(r==="win"?"fanfare":r==="lose"?"wrong":"lock");if(r==="win")confetti();arenaAnnounce(true);arenaRender();
 }
-setInterval(()=>{const D=AR.duel;if(!D||D.done||D.stage!=="wait"||!D.waitAt)return;const w=Date.now()-D.waitAt;
-  if(w>30000&&!AR.peers.has(D.opp.k)){D.done=true;D.forfeit="opp";D.stage="end";AR.rec.w++;store.set("japarty.arena",AR.rec);arenaAnnounce(true);arenaRender()}
+setInterval(()=>{const D=AR.duel;if(!D||D.done||!D.waitAt)return;const w=Date.now()-D.waitAt;
+  if(D.stage==="swait"){if(w>12000){D.op.fin=true;duelEnd()}return}
+  if(D.stage!=="wait")return;
+  if(w>30000&&!AR.peers.has(D.opp.k)){D.done=true;D.forfeit="opp";D.stage="end";arRecord("win",D);arenaAnnounce(true);arenaRender()}
   else if(w>45000){D.op.ans[D.i]={k:-1,pts:0};duelCheck()}else if(w>12000)arenaRender()},2000);
-function duelLeave(){const D=AR.duel;if(!D)return;if(!D.done){AR.send(D.opp.k,{t:"bye",id:D.id});AR.rec.l++;store.set("japarty.arena",AR.rec)}clearInterval(D.iv);AR.duel=null;arenaAnnounce(true);lobbyMusic();arenaRender()}
+function duelLeave(){const D=AR.duel;if(!D)return;if(!D.done){AR.send(D.opp.k,{t:"bye",id:D.id});D.result="lose";arRecord("lose",D)}clearInterval(D.iv);AR.duel=null;arenaAnnounce(true);lobbyMusic();arenaRender()}
+function duelReact(x){const D=AR.duel;if(!D||Date.now()-AR.rxAt<1500||x<0||x>=RX.length)return;AR.rxAt=Date.now();AR.send(D.opp.k,{t:"rx",id:D.id,x});D.myRx={x,at:Date.now()};sfx("select");arenaRender();setTimeout(arenaRender,3200)}
 
 /* rendering */
 function openArena(){
@@ -3392,52 +3489,90 @@ function openArena(){
   if(!AR.duel)lobbyMusic();arenaRender();
 }
 function renderArenaCard(){
-  const n=AR.peers.size+(AR.on?1:0),named=[...AR.peers.values()].filter(p=>!p.g).length,txt=`${n} online now`;
+  const n=AR.peers.size+(AR.on?1:0),avail=[...AR.peers.values()].filter(p=>p.s==="a").length,opens=[...AR.peers.values()].filter(p=>p.o&&p.s==="a").length,txt=`${n} online now`;
   const pill=$("#online-pill");if(pill){pill.hidden=!AR.on;$("#online-n").textContent=txt}
   const ao=$("#ar-online");if(ao)ao.textContent=txt;
-  const c=$("#arena-online");if(c)c.textContent=!AR.on?(LIVE.status==="connecting"?"Checking who's online…":"The Arena needs a live connection."):n>1?`${txt}${named?` · ${named} with a name`:""}`:"You're the only one here right now. Share the link to invite people.";
+  const c=$("#arena-online");if(c)c.textContent=!AR.on?(LIVE.status==="connecting"?"Checking who's online…":"The Arena needs a live connection."):n>1?`${txt} · ${avail} available${opens?` · ${opens} open challenge${opens===1?"":"s"}`:""}`:"You're the only one here right now. Share the link to invite people.";
   const b=$("#arena-btn");if(b)b.disabled=!AR.on;
   const t=$("#ar-toast"),v=AR.inv[0];
   if(t){const show=!!v&&mode!=="arena"&&!(AR.duel&&!AR.duel.done)&&arStatus()==="a";t.hidden=!show;
-    if(show){$("#ar-toast-msg").textContent=`${v.n} challenges you to a ${DUEL[v.mode].name.toLowerCase()}!`;$("#ar-toast-yes").dataset.id=v.id;$("#ar-toast-no").dataset.id=v.id}}
+    if(show){$("#ar-toast-msg").textContent=`${v.n} challenges you to a ${specText(v.spec)}!`;$("#ar-toast-yes").dataset.id=v.id;$("#ar-toast-no").dataset.id=v.id}}
 }
 function arenaRender(){clearTimeout(AR.rto);AR.rto=setTimeout(arenaRenderNow,60)}
 function arenaRenderNow(){
   renderArenaCard();if(mode!=="arena")return;const el=$("#ar-body");
-  const keep=$("#ar-name");const kv=keep?keep.value:null,kf=keep&&document.activeElement===keep;
+  const keep={};["ar-name","ar-search"].forEach(id=>{const e=$("#"+id);if(e)keep[id]={v:e.value,f:document.activeElement===e,s:e.selectionStart}});
   el.innerHTML=AR.duel?duelHTML():arenaListHTML();
-  const nk=$("#ar-name");if(nk&&kv!=null){nk.value=kv;if(kf)nk.focus()}
+  Object.entries(keep).forEach(([id,k])=>{const e=$("#"+id);if(!e)return;e.value=k.v;if(k.f){e.focus();try{e.setSelectionRange(k.s,k.s)}catch(x){}}});
   $("#ar-back").textContent=AR.duel&&!AR.duel.done?"Leave duel":"Back";
 }
-const ST_TXT={a:"Available",d:"In a duel",h:"Hosting a live game",g:"Playing a live game"};
+const ST_TXT={a:"Available",d:"In a duel",h:"Hosting a live game",g:"Playing a live game",b:"Not taking challenges"};
+function pickerHTML(target){
+  const p=arSpec(AR.pref),open=target==="open";
+  return `<div class="ar-picker">
+    <div class="seg" role="group" aria-label="Duel type">${[["quiz","Quiz duel"],["tf","True or false"],["speed","Speed round"]].map(([m,l])=>`<button data-act="ar-pm" data-m="${m}" aria-pressed="${p.mode===m}">${l}</button>`).join("")}</div>
+    ${p.mode==="quiz"?`<div class="seg" role="group" aria-label="Number of questions">${[5,7,10].map(n=>`<button data-act="ar-pn" data-n="${n}" aria-pressed="${p.n===n}">${n} questions</button>`).join("")}</div>`:""}
+    ${p.mode!=="tf"?`<label class="ar-cat" for="ar-cat"><span class="label">Category</span><select id="ar-cat"><option value="">All categories</option>${ARCATS().map(c=>`<option value="${esc(c)}"${p.cat===c?" selected":""}>${esc(titleCase(c))}</option>`).join("")}</select></label>`:""}
+    <p class="muted" style="font-size:13px">${esc(DUEL_DESC[p.mode])}</p>
+    <div class="row"><button class="btn small" data-act="${open?"ar-post":"ar-send"}" data-k="${esc(target)}">${open?"Post open challenge":"Send challenge"}</button><button class="btn ghost small" data-act="ar-pickoff">Cancel</button></div></div>`;
+}
+function statsHTML(){
+  const R=AR.rec,st=R.streak>1?`${R.streak} wins in a row`:R.streak<-1?`${-R.streak} losses in a row`:R.streak===1?"Won the last one":R.streak===-1?"Lost the last one":"No streak yet";
+  return `<div class="ar-stats"><div><b>${R.w}</b><span>Wins</span></div><div><b>${R.l}</b><span>Losses</span></div><div><b>${R.t|0}</b><span>Ties</span></div><div><b>${fmt(R.best|0)}</b><span>Best quiz score</span></div><div><b>${R.speed|0}</b><span>Best speed round</span></div></div>
+    <p class="muted" style="font-size:14px">${st}</p>
+    ${R.hist.length?`<details class="more"><summary>Recent duels</summary><div class="more-body">${R.hist.map(h=>`<div class="ar-hist"><span class="${h.r}">${h.r==="win"?"Won":h.r==="lose"?"Lost":"Tied"}</span><span>vs ${esc(h.o)} · ${esc(h.m)}</span><b>${fmt(h.my)}–${fmt(h.op)}</b></div>`).join("")}</div></details>`:""}`;
+}
 function arenaListHTML(){
   if(!AR.on)return `<div class="duel-card"><h2>The Arena needs a live connection</h2><p class="muted">Open Japarty from its website link while online.</p></div>`;
-  const me=arName(),list=[...AR.peers.values()].sort((a,b)=>(a.s==="a"?0:1)-(b.s==="a"?0:1)||(a.g?1:0)-(b.g?1:0)||b.w-a.w||a.n.localeCompare(b.n));
-  const top=[...AR.peers.values(),{k:"me",n:me||"You",w:AR.rec.w,l:AR.rec.l,me:true}].filter(p=>p.w>0).sort((a,b)=>b.w-a.w||a.l-b.l).slice(0,5);
-  return `${me?`<div class="ar-me"><div style="flex:1;min-width:0"><span class="label">You</span><br><b>${esc(me)}</b></div><span class="ar-rec">${AR.rec.w} win${AR.rec.w===1?"":"s"} · ${AR.rec.l} loss${AR.rec.l===1?"":"es"}</span><button class="linkish" data-act="ar-rename">Change name</button></div>`
+  const me=arName(),all=[...AR.peers.values()],qq=AR.q.trim().toLowerCase();
+  const list=all.filter(p=>(!qq||p.n.toLowerCase().includes(qq))&&(!AR.availOnly||p.s==="a")).sort((a,b)=>(a.s==="a"?0:1)-(b.s==="a"?0:1)||(a.g?1:0)-(b.g?1:0)||b.w-a.w||a.n.localeCompare(b.n));
+  const opens=all.filter(p=>p.o&&p.s==="a"&&p.v===APP_VERSION);
+  const top=[...all,{k:"me",n:me||"You",w:AR.rec.w,l:AR.rec.l,me:true}].filter(p=>p.w>0).sort((a,b)=>b.w-a.w||a.l-b.l).slice(0,5);
+  const busy=!!(AR.out||AR.acc||AR.open);
+  return `${me?`<div class="ar-me"><div style="flex:1 1 140px;min-width:140px"><span class="label">You</span><br><b>${esc(me)}</b></div>
+        <button class="toggle" data-act="ar-dnd" aria-pressed="${!AR.dnd}"><span class="dot" aria-hidden="true"></span><span class="tlabel">${AR.dnd?"Not taking challenges":"Taking challenges"}</span></button>
+        <button class="linkish" data-act="ar-rename">Change name</button>${statsHTML()}</div>`
       :`<form class="ar-me" id="ar-join"><label for="ar-name" class="label" style="width:100%">Pick a name so people know who's challenging them</label><input id="ar-name" class="sv-input" maxlength="20" placeholder="Your name" style="flex:1;min-width:160px;font-family:var(--body)"><button class="btn" type="submit">Save</button></form>`}
     ${AR.note?`<div class="ar-note">${esc(AR.note)}</div>`:""}
     ${AR.acc?`<div class="ar-note">Starting your duel with ${esc(AR.acc.n)}…</div>`:""}
-    ${AR.out?`<div class="ar-inv"><span>Waiting for ${esc(AR.out.n)} to accept your ${DUEL[AR.out.mode].name.toLowerCase()}…</span><button class="btn ghost small" data-act="ar-cancel">Cancel</button></div>`:""}
-    ${AR.inv.map(v=>`<div class="ar-inv"><span>${esc(v.n)} challenges you to a ${DUEL[v.mode].name.toLowerCase()}!</span><button class="btn small" data-act="ar-accept" data-id="${v.id}" style="background:var(--ink);color:var(--gold);box-shadow:none">Accept</button><button class="btn ghost small" data-act="ar-decline" data-id="${v.id}">No thanks</button></div>`).join("")}
-    <div class="group"><span class="label">Online now · ${list.length+1}</span><div class="ar-list">
-      ${list.length?list.map(p=>`<div class="ar-row"><span class="dot ${p.s==="a"?"":"busy"}"></span><span class="nm">${esc(p.n)}<small>${p.s==="d"&&p.vs?`In a duel with ${esc(p.vs)}`:ST_TXT[p.s]}${p.w||p.l?` · ${p.w}–${p.l}`:""}${p.g?" · browsing":""}${p.v&&p.v!==APP_VERSION?" · needs to refresh":""}</small></span>
-        ${p.s==="a"&&!AR.out&&!AR.acc&&p.v===APP_VERSION?(AR.pickFor===p.k?`<div class="ar-pick"><button class="btn small" data-act="ar-go" data-k="${esc(p.k)}" data-m="quiz">Quiz duel · ${DUEL.quiz.n} questions</button><button class="btn small" data-act="ar-go" data-k="${esc(p.k)}" data-m="tf">True or false · ${DUEL.tf.n}</button><button class="btn ghost small" data-act="ar-pickoff">Cancel</button></div>`
-          :`<button class="btn small" data-act="ar-challenge" data-k="${esc(p.k)}">Challenge</button>`):""}</div>`).join("")
-        :`<p class="muted">Nobody else is here yet. Share the Japarty link, and anyone who opens it shows up here.</p>`}
+    ${AR.out?`<div class="ar-inv"><span>Waiting for ${esc(AR.out.n)} to accept your ${esc(specText(AR.out.spec))}…</span><button class="btn ghost small" data-act="ar-cancel">Cancel</button></div>`:""}
+    ${AR.inv.map(v=>`<div class="ar-inv"><span>${esc(v.n)} challenges you to a ${esc(specText(v.spec))}!</span><button class="btn small" data-act="ar-accept" data-id="${v.id}" style="background:var(--ink);color:var(--gold);box-shadow:none">Accept</button><button class="btn ghost small" data-act="ar-decline" data-id="${v.id}">No thanks</button></div>`).join("")}
+    <div class="ar-quick"><div style="flex:1;min-width:0"><span class="label">Quick match</span>
+        <p>${AR.open?`Your open ${esc(specText(AR.open))} is posted. The first person to accept plays you.`:"Post an open challenge. The first person who accepts plays you."}</p></div>
+      ${AR.open?`<button class="btn ghost small" data-act="ar-unpost">Take it down</button>`:AR.pickFor==="open"?"":`<button class="btn small" data-act="ar-openpick" ${busy||AR.dnd?"disabled":""}>Find an opponent</button>`}
+      ${AR.pickFor==="open"?pickerHTML("open"):""}</div>
+    ${opens.length?`<div class="group"><span class="label">Open challenges · ${opens.length}</span><div class="ar-list">${opens.map(p=>`<div class="ar-row open"><span class="dot"></span><span class="nm">${esc(p.n)}<small>Wants a ${esc(specText(p.o))}${p.w||p.l?` · ${p.w}–${p.l}`:""}</small></span><button class="btn small" data-act="ar-joinopen" data-k="${esc(p.k)}" ${busy||AR.dnd?"disabled":""}>Play</button></div>`).join("")}</div></div>`:""}
+    <div class="group"><div class="ar-filter"><span class="label" style="flex:1">Online now · ${all.length+1}</span>
+        <input id="ar-search" type="search" class="sv-input" placeholder="Search names" aria-label="Search names" style="font-family:var(--body);max-width:220px;padding:8px 12px">
+        <button class="toggle" data-act="ar-avail" aria-pressed="${AR.availOnly}"><span class="dot" aria-hidden="true"></span><span class="tlabel">Available only</span></button></div>
+      <div class="ar-list">
+      ${list.length?list.map(p=>`<div class="ar-row"><span class="dot ${p.s==="a"?"":p.s==="b"?"idle":"busy"}"></span><span class="nm">${esc(p.n)}<small>${p.s==="d"&&p.vs?`In a duel with ${esc(p.vs)}`:ST_TXT[p.s]}${p.w||p.l?` · ${p.w}–${p.l}`:""}${p.g?" · browsing":""}${p.v&&p.v!==APP_VERSION?" · needs to refresh":""}</small></span>
+        ${p.s==="a"&&!busy&&!AR.dnd&&p.v===APP_VERSION?(AR.pickFor===p.k?pickerHTML(p.k):`<button class="btn small" data-act="ar-challenge" data-k="${esc(p.k)}">Challenge</button>`):""}</div>`).join("")
+        :all.length?`<p class="muted">Nobody matches that search.</p>`:`<p class="muted">Nobody else is here yet. Share the Japarty link, and anyone who opens it shows up here.</p>`}
     </div></div>
     ${top.length?`<div class="group"><span class="label">Top duelists online</span><div class="mini-lb">${top.map((p,i)=>`<div><b>${i+1}</b><span>${esc(p.n)}${p.me?" (you)":""}</span><em>${p.w}–${p.l}</em></div>`).join("")}</div></div>`:""}
     <p class="muted" style="font-size:13px">Records are kept on each device. Duels use the built-in Black History questions.</p>`;
 }
+function rxBar(D){return `<div class="rx-bar" role="group" aria-label="Send a reaction">${RX.map((t,i)=>`<button data-act="duel-rx" data-x="${i}">${t}</button>`).join("")}</div>`}
 function duelHTML(){
-  const D=AR.duel,q=D.qs[Math.max(0,D.i)],c=clsFor(q),me=arName()||"You";
-  const upto=D.stage==="rev"||D.stage==="end"?D.i+1:D.i,opShown=D.stage==="end"?D.op.tot:D.op.ans.slice(0,Math.max(0,upto)).reduce((a,x)=>a+(x?x.pts:0),0);
-  const score=`<div class="duel-score"><div><span>${esc(me)}</span><b>${fmt(D.my.tot)}</b></div><em>vs</em><div><span>${esc(D.opp.n)}</span><b>${fmt(opShown)}</b></div></div>`;
-  if(D.stage==="ready")return score+`<div class="duel-card duel-res"><span class="label">${esc(DUEL[D.mode].name)} · ${D.qs.length} questions</span><h2>Get ready!</h2><p>You vs ${esc(D.opp.n)}. Faster right answers score more.</p></div>`;
+  const D=AR.duel,sp=D.mode==="speed",q=D.qs[Math.max(0,Math.min(D.qs.length-1,D.i))],c=clsFor(q),me=arName()||"You";
+  const upto=D.stage==="rev"||D.stage==="end"?D.i+1:D.i,opShown=sp?D.op.c:D.stage==="end"?D.op.tot:D.op.ans.slice(0,Math.max(0,upto)).reduce((a,x)=>a+(x?x.pts:0),0);
+  const myRx=D.myRx&&Date.now()-D.myRx.at<3000?`<i class="rx">${esc(RX[D.myRx.x])}</i>`:"",opRx=D.rx&&Date.now()-D.rx.at<3000?`<i class="rx">${esc(RX[D.rx.x])}</i>`:"";
+  const score=`<div class="duel-score"><div><span>${esc(me)}${myRx}</span><b>${fmt(sp?D.my.c:D.my.tot)}</b></div><em>${sp?"right":"vs"}</em><div><span>${opRx}${esc(D.opp.n)}</span><b>${fmt(opShown)}</b></div></div>`;
+  const label=`${titleCase(specText(D.spec))}`;
+  if(D.stage==="ready")return score+`<div class="duel-card duel-res"><span class="label">${esc(label)}</span><h2>Get ready!</h2><p>You vs ${esc(D.opp.n)}. ${esc(DUEL_DESC[D.mode])}</p></div>`;
   if(D.stage==="end"){const r=D.forfeit?"win":D.result;
     return score+`<div class="duel-card duel-res"><h2>${r==="win"?"You win!":r==="lose"?`${esc(D.opp.n)} wins`:"It's a tie!"}</h2>
-      <p>${D.forfeit?`${esc(D.opp.n)} left the duel.`:`${fmt(D.my.tot)} to ${fmt(D.op.tot)}`}</p><p class="ar-rec">Your record: ${AR.rec.w}–${AR.rec.l}</p>
+      <p>${D.forfeit?`${esc(D.opp.n)} left the duel.`:sp?`${D.my.c} right out of ${D.my.a} to ${D.op.c} out of ${D.op.a}`:`${fmt(D.my.tot)} to ${fmt(D.op.tot)}`}</p><p class="ar-rec">Your record: ${AR.rec.w}–${AR.rec.l}${AR.rec.streak>1?` · ${AR.rec.streak} wins in a row`:""}</p>
+      ${!D.forfeit&&AR.peers.has(D.opp.k)?rxBar(D):""}
       <div class="row center">${AR.peers.has(D.opp.k)&&!D.forfeit?`<button class="btn" data-act="ar-rematch">Rematch</button>`:""}<button class="btn ghost" data-act="ar-done">Back to the Arena</button></div></div>`}
+  if(sp){
+    if(D.stage==="swait")return score+`<div class="duel-card duel-res"><h2 style="font-size:clamp(26px,6vw,40px)">Time's up!</h2><p>You got ${D.my.c} right out of ${D.my.a}. Waiting for ${esc(D.opp.n)}'s final count…</p>${rxBar(D)}</div>`;
+    const f=D.flash;
+    return score+`<div class="duel-card"><div class="p-meta"><span>Speed round · question ${D.i+1}</span><span id="duel-clock" class="speed-clock">${Math.max(0,Math.ceil((D.endAt-performance.now())/1000))}s</span></div>
+      <p class="p-q">${esc(q.q)}</p><div class="p-answers">${q.opts.map((o,k)=>`<button class="p-btn ${c.c[k]}${f?(k===f.c?" right":k===f.k?"":" dim"):""}" data-act="duel-pick" data-k="${k}" ${f?"disabled":""}><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>
+      ${f?`<p class="center tl-result">${f.ok?"Right!":"Not quite"}</p>`:`<p class="muted center" style="font-size:13px">${esc(D.opp.n)} has ${D.op.c} right so far</p>`}</div>`;
+  }
   const head=`<div class="p-meta"><span>Question ${D.i+1} of ${D.qs.length}</span><span id="duel-clock">${D.stage==="q"?D.T+"s":""}</span></div>`;
   if(D.stage==="q")return score+`<div class="duel-card">${head}<p class="label">${esc(q.cat)}</p><p class="p-q">${esc(q.q)}</p>
     <div class="p-answers">${q.opts.map((o,k)=>`<button class="p-btn ${c.c[k]}" data-act="duel-pick" data-k="${k}"><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div></div>`;
@@ -3446,7 +3581,7 @@ function duelHTML(){
     <p>Waiting for ${esc(D.opp.n)}…${Date.now()-D.waitAt>12000?" They might have a slow connection.":""}</p></div>`;
   return score+`<div class="duel-card">${head}<p class="p-q">${esc(q.q)}</p><div class="p-answers">${q.opts.map((o,k)=>`<div class="p-btn ${c.c[k]} ${k===q.correct?"right":"dim"}"><b>${c.l[k]}</b><span>${esc(o)}</span>
       <span class="pick-tags">${mine.k===k?"<i>You</i>":""}${theirs&&theirs.k===k?`<i>${esc(D.opp.n.slice(0,10))}</i>`:""}</span></div>`).join("")}</div>
-    <p class="center tl-result">You ${mine.pts?"+"+fmt(mine.pts):"+0"} · ${esc(D.opp.n)} ${theirs&&theirs.pts?"+"+fmt(theirs.pts):"+0"}</p>${q.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(q.fact)}</span></div>`:""}</div>`;
+    <p class="center tl-result">You ${mine.pts?"+"+fmt(mine.pts):"+0"} · ${esc(D.opp.n)} ${theirs&&theirs.pts?"+"+fmt(theirs.pts):"+0"}</p>${q.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(q.fact)}</span></div>`:""}${rxBar(D)}</div>`;
 }
 
 /* printable poster */
@@ -3498,7 +3633,7 @@ async function checkUpdate(){
     const m=/const APP_VERSION="([^"]+)"/.exec(await r.text());
     if(m&&m[1]!==APP_VERSION&&m[1]!==updDismissed){
       $("#update-msg").textContent=`Japarty v${m[1]} is ready.`+(live.role==="host"&&live.H&&live.H.phase!=="lobby"?" Your game resumes after the refresh.":live.role==="player"&&live.joined?" You'll rejoin your game automatically.":"");
-      $("#update").hidden=false;$("#update").dataset.v=m[1]}}catch(e){}
+      $('#update [data-act="update-now"]').hidden=false;$('#update [data-act="update-later"]').textContent="Later";$("#update").hidden=false;$("#update").dataset.v=m[1]}}catch(e){}
 }
 function refreshPage(){try{const u=new URL(location.href);u.searchParams.set("r",Date.now().toString(36));location.replace(u.toString())}catch(e){location.reload()}}
 setTimeout(checkUpdate,20000);setInterval(checkUpdate,120000);
@@ -3514,6 +3649,9 @@ document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.te
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
+{const WHATS_NEW="New in the Arena: speed rounds, 5 to 10 question duels, category duels, quick match, reactions and your duel stats.";
+  const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
+  if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();show("home");initLive();loadTunes();
 </script>
 

@@ -11,7 +11,12 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 - **Timeline Shuffle**: drag four events into order (one shared screen).
 
 ## Arena
-Everyone who has the site open shows up as online, with a count on the home screen. Open **Enter the Arena** to see who's available and challenge anyone to a head-to-head duel on their own device: a 7-question quiz duel or a 10-question true or false duel. Both players get the same Black History questions at the same moment, faster right answers score more, and the scoreboard updates after every question. Challenges pop up anywhere in the app, and win–loss records are kept on each device.
+Everyone who has the site open shows up as online, with a count on the home screen. Open **Enter the Arena** to see who's around and challenge anyone on their own device:
+- **Quiz duel**: 5, 7 or 10 questions, from all categories or just one. Faster right answers score more.
+- **True or false duel**: 10 quick statements.
+- **Speed round**: 60 seconds to answer as many as you can. Most right answers wins.
+
+**Quick match** posts an open challenge that the first available person can take. You can search the online list, show only available people, switch off challenges, send quick reactions during a duel, and track your wins, streaks, best scores and recent duels. Records are kept on each device.
 
 ## Party playlist
 Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Songs stay on the host computer until the page is closed. Only play music you have the right to play at your event.
