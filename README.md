@@ -9,7 +9,7 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 - **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. Choose 16, 24, 32 or 40 cases. In live games everyone plays their own case on their phone.
 - **Japarty Board**: six categories with a Daily Double and Final Japarty (one shared screen).
 
-One-screen games can be played by **Players** (each person types or picks their own name, up to 8) or by **Teams**. Choose under **Play as** on the home screen.
+Press **Play** on any one-screen game and a **Who's playing?** box asks for your name. Add a box for each person playing on the same screen (up to 8), or choose **Play as teams instead**. Solo play works too.
 - **Timeline Shuffle**: drag four events into order (one shared screen).
 
 ## Arena

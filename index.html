@@ -896,6 +896,19 @@ button.case:disabled{opacity:.55;cursor:default}
   </div>
 </div>
 
+<!-- Who's playing -->
+<div class="overlay" id="who" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="who-title" style="width:min(520px,100%)">
+    <div class="modal-head"><div><div class="eyebrow" id="who-game"></div><h2 id="who-title" tabindex="-1">Who's playing?</h2></div><button class="icon-btn" data-act="who-close" aria-label="Close">×</button></div>
+    <p class="muted">Enter your name. Playing with friends on this screen? Add a box for each person, up to 8.</p>
+    <form id="who-form" class="group">
+      <div id="who-list" class="group"></div>
+      <div class="row"><button type="button" class="btn ghost small" data-act="who-add" id="who-add">+ Add a player</button><button type="button" class="linkish" data-act="who-teams">Play as teams instead</button></div>
+      <button class="btn" type="submit" id="who-go">Start</button>
+    </form>
+  </div>
+</div>
+
 <!-- Poster -->
 <div class="overlay" id="poster" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="poster-title" style="width:min(760px,100%)">
@@ -1017,7 +1030,7 @@ button.case:disabled{opacity:.55;cursor:default}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.5";
+const APP_VERSION="2.6";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1188,6 +1201,31 @@ function nameSuggestions(){
   if(live.rosterList)live.rosterList.names.forEach(add);
   (store.get("japarty.nameHist",[])||[]).forEach(add);
   return out.slice(0,300);
+}
+/* "Who's playing?": enter names right before a one-screen game starts */
+const WHO={mode:null,names:[]};
+function openWho(m){
+  WHO.mode=m;let me="";try{me=arName()}catch(e){}me=me||live.defaultNick||"";
+  WHO.names=playAs==="players"?teams.map(t=>isDefName(t.name)?"":t.name):[me];
+  if(!WHO.names.some(Boolean))WHO.names=[me];
+  $("#who-game").textContent=MODE_NAMES[m]||"Japarty";$("#who-go").textContent="Start "+(MODE_NAMES[m]||"the game");
+  $("#who").hidden=false;renderWho(0);
+}
+function whoRead(){return $$("#who-list input").map(i=>i.value.trim().replace(/\s+/g," ").slice(0,24))}
+function renderWho(focus){
+  const n=WHO.names,used=new Set(n.filter(Boolean).map(x=>x.toLowerCase()));
+  $("#who-list").innerHTML=n.map((v,i)=>`<div class="team-row"><span class="swatch" style="--tc:${TEAM_COLORS[i]}"></span><input id="who-${i}" value="${esc(v)}" placeholder="${i===0?"Your name":"Player "+(i+1)+"'s name"}" list="who-suggest" autocomplete="off" maxlength="24" aria-label="Player ${i+1} name"><button type="button" class="icon-btn" data-act="who-remove" data-i="${i}" aria-label="Remove player ${i+1}" ${n.length<=1?"disabled":""}>×</button></div>`).join("")
+    +`<datalist id="who-suggest">${nameSuggestions().filter(x=>!used.has(x.toLowerCase())).map(x=>`<option value="${esc(x)}"></option>`).join("")}</datalist>`;
+  $("#who-add").disabled=n.length>=MAX_SIDES;
+  if(focus!=null){const el=$("#who-"+focus);if(el){el.focus();el.select()}}
+}
+function whoStart(){
+  let names=whoRead().filter(Boolean);const seen={};
+  names=names.map(x=>{const k=x.toLowerCase();seen[k]=(seen[k]||0)+1;return seen[k]>1?(x.slice(0,21)+" "+seen[k]):x});
+  if(!names.length){const el=$("#who-0");if(el){el.focus();el.placeholder="Type your name to start"}return}
+  playAs="players";store.set("japarty.playAs","players");
+  teams=names.slice(0,MAX_SIDES).map((x,i)=>newTeam(x,i));saveTeams();renderSetup();
+  $("#who").hidden=true;launch(WHO.mode);
 }
 function rememberNames(){if(playAs!=="players")return;const h=store.get("japarty.nameHist",[])||[];teams.forEach(t=>{if(!isDefName(t.name)){const i=h.findIndex(x=>String(x).toLowerCase()===t.name.toLowerCase());if(i>=0)h.splice(i,1);h.unshift(t.name)}});store.set("japarty.nameHist",h.slice(0,40))}
 const savedPack=store.get("japarty.pack",null);
@@ -1399,7 +1437,7 @@ function renderSetup(){
   $$('[data-act="play-as"]').forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.v===playAs)));
   $("#setup-label").textContent=`${u.Many} · 2 to ${MAX_SIDES}`;$("#add-team").textContent=`+ Add a ${u.one}`;
   $("#sec-sub").textContent=`2 to ${MAX_SIDES} ${u.many} share one screen and a host runs the clicks.`;$("#setup-hint").hidden=!pl;
-  $("#team-list").innerHTML=teams.map((tm,i)=>`<div class="team-row"><span class="swatch" style="--tc:${tm.color}"></span><input id="team-name-${i}" data-i="${i}" value="${esc(pl&&isDefName(tm.name)?"":tm.name)}" placeholder="${pl?`Player ${i+1}: type or pick a name`:defName(i)}" list="${pl?"name-suggest":""}" autocomplete="off" maxlength="24" aria-label="${u.One} ${i+1} name"><button class="icon-btn" data-act="remove-team" data-i="${i}" aria-label="Remove ${esc(tm.name)}" ${teams.length<=2?"disabled":""}>×</button></div>`).join("");
+  $("#team-list").innerHTML=teams.map((tm,i)=>`<div class="team-row"><span class="swatch" style="--tc:${tm.color}"></span><input id="team-name-${i}" data-i="${i}" value="${esc(pl&&isDefName(tm.name)?"":tm.name)}" placeholder="${pl?`Player ${i+1}: type or pick a name`:defName(i)}" list="${pl?"name-suggest":""}" autocomplete="off" maxlength="24" aria-label="${u.One} ${i+1} name"><button class="icon-btn" data-act="remove-team" data-i="${i}" aria-label="Remove ${esc(tm.name)}" ${teams.length<=(pl?1:2)?"disabled":""}>×</button></div>`).join("");
   $("#add-team").disabled=teams.length>=MAX_SIDES;
   const used=new Set(teams.map(t=>t.name.toLowerCase()));
   $("#name-suggest").innerHTML=nameSuggestions().filter(n=>!used.has(n.toLowerCase())).map(n=>`<option value="${esc(n)}"></option>`).join("");
@@ -2751,14 +2789,19 @@ function parsePack(txt){
 
 /* ---------- actions ---------- */
 const ACT={
-  "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Guess the Song.";return}launch(d.mode)},
+  "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Guess the Song.";return}openWho(d.mode)},
+  "who-close":()=>{$("#who").hidden=true},
+  "who-add":()=>{WHO.names=whoRead();if(WHO.names.length>=MAX_SIDES)return;WHO.names.push("");renderWho(WHO.names.length-1)},
+  "who-remove":d=>{WHO.names=whoRead();if(WHO.names.length<=1)return;WHO.names.splice(+d.i,1);renderWho()},
+  "who-teams":()=>{$("#who").hidden=true;playAs="teams";store.set("japarty.playAs","teams");teams.forEach((t,i)=>{if(isDefName(t.name))t.name=defName(i)});
+    while(teams.length<2)teams.push(newTeam(defName(teams.length),teams.length));saveTeams();renderSetup();launch(WHO.mode)},
   "play-as":d=>{const v=d.v==="players"?"players":"teams";if(v===playAs)return;playAs=v;store.set("japarty.playAs",v);
     teams.forEach((t,i)=>{if(isDefName(t.name))t.name=defName(i)});
     if(v==="players"&&isDefName(teams[0].name)){let me="";try{me=arName()}catch(e){}me=me||live.defaultNick;if(me)teams[0].name=me.slice(0,24)}
     saveTeams();renderSetup();renderStrip()},
   "fill-roster":()=>{if(!rosterOn())return;const names=live.rosterList.names.slice(0,MAX_SIDES);teams=names.map((n,i)=>newTeam(n.slice(0,24),i));while(teams.length<2)teams.push(newTeam(defName(teams.length),teams.length));saveTeams();renderSetup()},
   "add-team":()=>{if(teams.length>=MAX_SIDES)return;teams.push(newTeam(defName(teams.length),teams.length));saveTeams();renderSetup();const el=$("#team-name-"+(teams.length-1));el.focus();el.select()},
-  "remove-team":d=>{if(teams.length<=2)return;teams.splice(+d.i,1);teams.forEach((t,i)=>t.color=TEAM_COLORS[i]);saveTeams();renderSetup()},
+  "remove-team":d=>{if(teams.length<=(playAs==="players"?1:2))return;teams.splice(+d.i,1);teams.forEach((t,i)=>t.color=TEAM_COLORS[i]);saveTeams();renderSetup()},
   "music":d=>{if(d.track==="party"){if(!PARTY.queue.length){ACT["open-party"]();return}partyStart();renderMusicUI();return}
     prefs.lobby=d.track;if(!prefs.music){prefs.music=true;setMusicGain()}savePrefs();if(M.kind==="lobby")lobbyMusic();renderMusicUI()},
   "music-think":d=>{prefs.think=d.track;savePrefs();if(M.kind==="think")thinkMusic();renderMusicUI()},
@@ -2944,7 +2987,7 @@ document.addEventListener("pointerdown",()=>audioInit());
 document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||defName(+i);saveTeams()}});
 document.addEventListener("keydown",e=>{
   if(mode==="arena"&&AR.duel&&(AR.duel.stage==="q"||AR.duel.stage==="sq")&&/^[1-4a-dA-D]$/.test(e.key)&&!e.target.closest("input,textarea,select")){const k="1234".includes(e.key)?+e.key-1:"abcd".indexOf(e.key.toLowerCase());if(k<AR.duel.qs[AR.duel.i].opts.length)ACT["duel-pick"]({k})}
-  if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#party").hidden)ACT["party-close"]();else if(!$("#poster").hidden)ACT["poster-close"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
+  if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#who").hidden)ACT["who-close"]();else if(!$("#party").hidden)ACT["party-close"]();else if(!$("#poster").hidden)ACT["poster-close"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
   if(e.key==="Enter"&&e.target.id==="dd-wager")ACT["dd-lock"]();
   if(live.role==="host"&&mode==="live"&&!e.target.closest("input,select,textarea,button")&&$$(".overlay").every(o=>o.hidden)){
     if(e.key===" "||e.key==="Enter"){const b=[...$$("#lh-body .actions .btn")].find(x=>!x.hidden&&!x.disabled&&!x.classList.contains("ghost"))||($("#lh-start")&&!$("#lh-start").disabled?$("#lh-start"):null);if(b){e.preventDefault();b.click()}}
@@ -3009,6 +3052,7 @@ document.addEventListener("input",e=>{
   if(e.target.id==="tn-random"||e.target.id==="tn-starters")return;
   if(e.target.id==="mx-vol"){prefs.vol=Math.max(0,Math.min(1,+e.target.value/100));setMusicGain();savePrefs()}});
 document.addEventListener("submit",e=>{
+  if(e.target.id==="who-form"){e.preventDefault();audioInit();whoStart();return}
   if(e.target.id==="ar-join"){e.preventDefault();audioInit();const v=$("#ar-name").value.trim().replace(/\s+/g," ").slice(0,20);if(!v){$("#ar-name").focus();return}
     live.nick=v;store.set("japarty.nick",v);AR.note="";arenaAnnounce(true);sfx("lock");arenaRender();return}
   const s=live.cur;
@@ -3680,7 +3724,7 @@ document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.te
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="One-screen games can now use each person's name instead of teams, for up to 8 players. Choose Players under Play as.";
+{const WHATS_NEW="Press Play on any one-screen game and type your name to start, or add a box for each person playing. You can still play as teams.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();show("home");initLive();loadTunes();
