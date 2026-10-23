@@ -7,10 +7,25 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 - **True or False Blitz**: 10-second rounds.
 - **Guess the Song**: add your own song clips, plus two public-domain starter tunes.
 - **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. Choose 16, 24, 32 or 40 cases. In live games everyone plays their own case on their phone.
+- **Who Am I?**: four clues about a famous figure appear one at a time, hardest first. Lock in early for 1,000 points, or wait for an easier clue and earn less.
+- **Map Round**: drop a pin where it happened on a map of the United States. The closer you are, the more points. On one screen players take turns; in live games everyone taps their own phone.
 - **Japarty Board**: six categories with a Daily Double and Final Japarty (one shared screen).
 
 Press **Play** on any one-screen game and a **Who's playing?** box asks for your name. Add a box for each person playing on the same screen (up to 8), or choose **Play as teams instead**. Solo play works too.
 - **Timeline Shuffle**: drag four events into order (one shared screen).
+
+## Daily warm-up
+Five questions a day, the same for everyone, from the home screen. Play once a day to build a streak, then copy your result to share it.
+
+## Hosting tools
+- **Phone remote**: in the live lobby, choose **Phone remote** and scan the code with your own phone to run the big screen from anywhere: next, reveal, pause, skip and music.
+- **Run of show**: line up games, live polls, music breaks and a prize drawing, then press **Start the show**. Japarty runs them in order and keeps an overall show leaderboard (10 points for 1st in a game, 8 for 2nd, 6 for 3rd, and so on).
+- **Live polls**: word clouds or multiple choice, answered on phones and shown live on the big screen. Polls don't score points.
+- **Prize drawing**: a spinning wheel with everyone in the live game, the show, the players on screen or names you paste. Optional extra entries for the top 3. The winner's phone shows "You won!"
+- **Nickname check**: rude nicknames, song names and poll words are always hidden. Turn on **OK each nickname** under More settings to approve players before they show on the big screen.
+- **Test with 100 phones**: under "Before your event", a 30-second network test sends the traffic of 100 phones through the live server in a practice room.
+- **Recap**: at the end of a game players see "What we learned" on their phones, and the big screen shows a QR code so anyone can keep the questions, answers and facts.
+- **Event report**: games, winners, the hardest and easiest questions, poll results and prize winners, downloadable as a web page or CSV.
 
 ## Score history
 Every finished game is saved: one-screen games, live games and Arena duels. Open **Score history** from the home screen (it shows the reigning champion) or from any results screen:
