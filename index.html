@@ -331,7 +331,7 @@ body.bigtext .clue-q{font-size:clamp(28px,5vw,52px)}
 body.bigtext .lb-name{font-size:clamp(20px,3vw,32px)}
 body.bigtext .live-count{font-size:clamp(20px,2.8vw,30px)}
 body.bigtext .fact{font-size:20px}
-.auto{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border-radius:999px;padding:8px 8px 8px 18px;box-shadow:0 8px 28px rgba(8,6,18,.45);max-width:calc(100% - 32px);animation:pop .25s both}
+.auto{position:fixed;left:0;right:0;margin-inline:auto;width:fit-content;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border-radius:999px;padding:8px 8px 8px 18px;box-shadow:0 8px 28px rgba(8,6,18,.45);max-width:calc(100% - 32px);animation:pop .25s both}
 .auto-label{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
 .auto-track{width:clamp(60px,14vw,140px);height:6px;border-radius:3px;background:var(--paper-2);overflow:hidden;flex:none}
 .auto-track i{display:block;height:100%;background:var(--clay);transform-origin:left;transform:scaleX(0)}
@@ -361,7 +361,7 @@ ol.more-body{padding-left:34px}
 .nick.bot{border-style:dashed}
 .nick.bot::after{content:" · test";font-weight:600;opacity:.6}
 .ver{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.04em}
-.update{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top,0px));z-index:45;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 10px;background:var(--gold);color:var(--ink);border-radius:16px;padding:10px 12px 10px 18px;font-weight:800;box-shadow:0 8px 28px rgba(8,6,18,.45);max-width:calc(100% - 32px);animation:pop .25s both}
+.update{position:fixed;left:0;right:0;margin-inline:auto;width:fit-content;top:calc(12px + env(safe-area-inset-top,0px));z-index:45;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 10px;background:var(--gold);color:var(--ink);border-radius:16px;padding:10px 12px 10px 18px;font-weight:800;box-shadow:0 8px 28px rgba(8,6,18,.45);max-width:calc(100% - 32px);animation:pop .25s both}
 .update .auto-btn{border-color:rgba(22,17,42,.35)}
 .mini-lb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .mini-lb div{display:flex;align-items:center;gap:8px;background:var(--stage2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
@@ -452,7 +452,7 @@ button.nick:hover{background:var(--bad);border-color:var(--bad);color:var(--ink)
 .ar-inv{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--gold);color:var(--ink);border-radius:12px;padding:12px 16px;font-weight:800}
 .ar-inv span{flex:1;min-width:180px}
 .ar-inv .btn.ghost{color:var(--ink);border-color:var(--ink-line)}
-.ar-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:46;display:grid;gap:10px;justify-items:center;text-align:center;background:var(--gold);color:var(--ink);border-radius:16px;padding:14px 18px;font-weight:800;box-shadow:0 10px 30px rgba(8,6,18,.5);width:min(420px,calc(100% - 32px));animation:pop .25s both}
+.ar-toast{position:fixed;left:0;right:0;margin-inline:auto;width:fit-content;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:46;display:grid;gap:10px;justify-items:center;text-align:center;background:var(--gold);color:var(--ink);border-radius:16px;padding:14px 18px;font-weight:800;box-shadow:0 10px 30px rgba(8,6,18,.5);width:min(420px,calc(100% - 32px));animation:pop .25s both}
 .ar-toast .btn.ghost{color:var(--ink);border-color:var(--ink-line)}
 .duel-score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;background:var(--stage2);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px}
 .duel-score div{display:grid;gap:2px;min-width:0}
@@ -617,6 +617,64 @@ button.case:disabled{opacity:.55;cursor:default}
 .po-steps b{display:inline-grid;place-items:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--po-ink);color:var(--po-paper);font-family:var(--display);font-weight:400;flex:none}
 .po-url{font-size:clamp(9px,1.8vw,13px);overflow-wrap:anywhere;opacity:.8}
 .btn.ghost-ink{background:transparent;color:var(--ink);border:1px solid var(--ink-line);box-shadow:none}
+
+/* Phones and tablets */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden}
+select{max-width:100%}
+img,canvas,video{max-width:100%}
+.gamebar{position:relative}
+body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+.gb-tools{display:contents}
+.gb-menu-btn{display:none;align-items:center;gap:8px;position:relative}
+.burger{display:inline-grid;gap:3px;width:16px}
+.burger i{display:block;height:2px;border-radius:1px;background:currentColor;transition:transform .2s,opacity .2s}
+.gb-menu-btn[aria-expanded="true"] .burger i:nth-child(1){transform:translateY(5px) rotate(45deg)}
+.gb-menu-btn[aria-expanded="true"] .burger i:nth-child(2){opacity:0}
+.gb-menu-btn[aria-expanded="true"] .burger i:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+.gb-menu-btn.has-new::after{content:"";position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--stage)}
+@media(max-width:1199px){
+  .gb-top{flex-wrap:nowrap;gap:8px 12px;min-width:0}
+  .gb-top>*{flex:none}
+  .gb-top .logo{font-size:clamp(22px,2.6vw,26px)}
+  .gb-mode,.gb-progress{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+  .gb-np{display:none!important}
+  .gb-players{flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .gb-menu-btn{display:inline-flex;margin-left:auto;min-height:40px}
+  .gb-tools{display:none;position:absolute;right:0;top:calc(100% - 8px);z-index:40;width:min(280px,calc(100vw - 32px));flex-direction:column;align-items:stretch;gap:8px;padding:12px;background:var(--stage2);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px rgba(8,6,18,.55);animation:pop .18s both}
+  .gb-tools.open{display:flex}
+  .gb-tools .toggle,.gb-tools .btn{justify-content:flex-start;text-align:left;min-height:44px;width:100%;display:flex;align-items:center}
+  .gb-tools .gb-quit{margin-top:4px;border-color:color-mix(in srgb,var(--bad) 60%,var(--line));color:var(--paper)}
+  .gamebar{gap:10px;padding-block:0 12px;margin-bottom:16px}
+  .strip{gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-overflow-scrolling:touch}
+  .strip::-webkit-scrollbar{display:none}
+  .strip>*{flex:none}
+}
+@media(max-width:860px){.gb-ver{display:none!important}}
+@media(max-width:560px){
+  .gb-progress{display:none}
+  .gb-top{flex-wrap:wrap}
+  .gb-mode{order:5;flex-basis:100%;font-size:14px;color:var(--muted);margin-top:-4px}
+  .gb-top .conn{order:4}
+  .chip{padding:5px 12px 5px 7px;font-size:14px}
+  .linkbox{flex-wrap:wrap}
+  .linkbox input{flex-basis:100%}
+  .linkbox .btn{flex:1 1 auto}
+  .pin-row{gap:12px}
+  .panel select{width:100%}
+  .sec-title{flex-wrap:wrap}
+  .sec-title .auto-set{margin-left:0}
+  .cat{font-size:clamp(8px,2.4vw,11px);letter-spacing:0;overflow-wrap:anywhere;word-break:normal;hyphens:manual;-webkit-hyphens:manual;padding:6px 3px}
+  .auto{gap:6px;padding:6px 6px 6px 14px;max-width:calc(100% - 24px);bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  .auto-track{display:none}
+  .auto-label{font-size:14px;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+  .auto .auto-btn{padding:7px 10px;font-size:13px;flex:none}
+  .hero{padding-block:12px 0;gap:12px}
+}
+@media(pointer:coarse){
+  .btn.small,.toggle,.seg button{min-height:40px}
+  input,select,textarea{font-size:max(16px,1em)}
+}
 @media print{
   @page{size:letter portrait;margin:0}
   body{background:#fff!important}
@@ -631,7 +689,7 @@ button.case:disabled{opacity:.55;cursor:default}
 </head>
 <body>
 
-<div id="app">
+<div id="app" lang="en">
   <!-- Shared game bar -->
   <div class="gamebar" id="gamebar" hidden>
     <div class="gb-top">
@@ -642,14 +700,17 @@ button.case:disabled{opacity:.55;cursor:default}
       <span class="conn" id="gb-conn" hidden><i></i><span>Connected</span></span>
       <span class="ver gb-ver">v<span class="ver-n"></span></span>
       <span class="gb-spacer"></span>
-      <button class="toggle" data-act="toggle-music" aria-pressed="true"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="tlabel">Music on</span></button>
-      <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
       <span class="gb-np" id="gb-np" hidden><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="gb-np-t"></span></span>
-      <button class="btn ghost small" data-act="open-party" id="gb-party">Playlist</button>
-      <button class="btn ghost small" data-act="open-music">Music</button>
-      <button class="btn ghost small" data-act="bigtext" id="bigtext-btn" aria-pressed="false">Bigger text</button>
-      <button class="btn ghost small" data-act="fullscreen" id="fs-btn">Full screen</button>
-      <button class="btn ghost small" data-act="quit">Quit game</button>
+      <button class="btn ghost small gb-menu-btn" data-act="gb-menu" id="gb-menu-btn" aria-expanded="false" aria-controls="gb-tools"><span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>Menu</button>
+      <div class="gb-tools" id="gb-tools">
+        <button class="toggle" data-act="toggle-music" aria-pressed="true"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="tlabel">Music on</span></button>
+        <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
+        <button class="btn ghost small" data-act="open-party" id="gb-party">Playlist</button>
+        <button class="btn ghost small" data-act="open-music">Music</button>
+        <button class="btn ghost small" data-act="bigtext" id="bigtext-btn" aria-pressed="false">Bigger text</button>
+        <button class="btn ghost small" data-act="fullscreen" id="fs-btn">Full screen</button>
+        <button class="btn ghost small gb-quit" data-act="quit">Quit game</button>
+      </div>
     </div>
     <div class="strip" id="strip"></div>
   </div>
@@ -1077,7 +1138,7 @@ button.case:disabled{opacity:.55;cursor:default}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.7";
+const APP_VERSION="2.8";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1467,7 +1528,9 @@ function sfx(name){
 }
 
 /* ---------- rendering helpers ---------- */
-function show(id){$$(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
+function softHy(t){const v=c=>/[aeiouy]/i.test(c||"");return t.replace(/[A-Za-z]{8,}/g,w=>{const parts=[];let cur="";for(let i=0;i<w.length;i++){cur+=w[i];const rest=w.length-i-1;const cc=!v(w[i])&&!v(w[i+1])&&v(w[i-1])&&v(w[i+2]),vc=v(w[i])&&!v(w[i+1])&&v(w[i+2]);if(cur.length>=4&&rest>=4&&(cc||vc)){parts.push(cur);cur=""}}parts.push(cur);return parts.join("&shy;")})}
+function show(id){gbMenu(false);$$(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
+function gbMenu(open){const t=$("#gb-tools"),b=$("#gb-menu-btn");if(!t||!b)return;t.classList.toggle("open",!!open);b.setAttribute("aria-expanded",String(!!open))}
 const progress=txt=>$("#gb-progress").textContent=txt;
 const ranked=()=>teams.map((_,i)=>i).sort((a,b)=>teams[b].score-teams[a].score||a-b);
 function activeTeam(){return mode==="board"&&B?B.active:mode==="timeline"&&TL?TL.team:-1}
@@ -1671,7 +1734,7 @@ function startBoard(){
 }
 function renderBoard(){
   const g=$("#board-grid");g.style.setProperty("--cols",B.cats.length);
-  let h=B.cats.map(c=>`<div class="cat">${esc(c.name)}</div>`).join("");
+  let h=B.cats.map(c=>`<div class="cat">${softHy(esc(c.name))}</div>`).join("");
   for(let r=0;r<5;r++)B.cats.forEach((c,ci)=>{
     const it=c.items[r],id=ci+"-"+r;
     if(!it){h+='<div class="tile empty" aria-hidden="true"></div>';return}
@@ -1840,7 +1903,7 @@ function submitTL(){cancelAuto();
 }
 
 /* ---------- Podium ---------- */
-function podium(){cancelAuto();
+function podium(){if(mode==="podium")return;cancelAuto();
   stopClock();clearTimeout(readyTO);$("#clue").hidden=true;mode="podium";
   show("podium");progress("Final results");renderStrip();
   const r=ranked(),top=r.slice(0,3),tie=r.length>1&&teams[r[0]].score===teams[r[1]].score;
@@ -2865,6 +2928,7 @@ const ACT={
   "music":d=>{if(d.track==="party"){if(!PARTY.queue.length){ACT["open-party"]();return}partyStart();renderMusicUI();return}
     prefs.lobby=d.track;if(!prefs.music){prefs.music=true;setMusicGain()}savePrefs();if(M.kind==="lobby")lobbyMusic();renderMusicUI()},
   "music-think":d=>{prefs.think=d.track;savePrefs();if(M.kind==="think")thinkMusic();renderMusicUI()},
+  "gb-menu":()=>gbMenu(!$("#gb-tools").classList.contains("open")),
   "toggle-music":()=>{prefs.music=!prefs.music;setMusicGain();savePrefs();renderMusicUI()},
   "open-music":()=>{renderMusicUI();$("#music").hidden=false;$("#music-title").focus()},
   "music-close":()=>{$("#music").hidden=true},
@@ -3014,7 +3078,7 @@ const ACT={
   "confirm-no":()=>{$("#confirm").hidden=true;confirmCb=null},
   "pick":d=>pick(+d.t,+d.k),
   "q-skip":()=>reveal(),
-  "q-next":()=>Q.i+1>=Q.items.length?podium():leaderboard(nextQ,"Next question"),
+  "q-next":()=>{if(!Q)return;Q.i+1>=Q.items.length?podium():leaderboard(nextQ,"Next question")},
   "lb-next":()=>leaderNext&&leaderNext(),
   "set-active":d=>{if(B&&!B.cur){B.active=+d.t;sfx("select");renderBoard();renderStrip()}},
   "tile":d=>openTile(+d.c,+d.r),
@@ -3034,7 +3098,7 @@ const ACT={
   "tl-card":d=>{if(TL.phase!=="play")return;const k=+d.k,j=TL.seq.indexOf(null);if(j<0||TL.seq.includes(k))return;TL.seq[j]=k;sfx("select");renderTL()},
   "tl-slot":d=>{if(TL.phase!=="play")return;const j=+d.j;if(TL.seq[j]==null)return;TL.seq[j]=null;sfx("select");renderTL()},
   "tl-submit":()=>submitTL(),
-  "tl-next":()=>TL.i+1>=TL.sets.length?podium():leaderboard(nextTL,"Next team"),
+  "tl-next":()=>{if(!TL)return;TL.i+1>=TL.sets.length?podium():leaderboard(nextTL,"Next team")},
   "pod-again":()=>launch(lastMode),
   "pod-home":()=>goHome(),
   "edit-pack":()=>{$("#pack-text").value=serialize(pack);$("#pack-err").hidden=true;$("#pack").hidden=false;$("#pack-text").focus()},
@@ -3048,11 +3112,12 @@ const ACT={
     $("#pack").hidden=true;renderPackLabel();
   }
 };
-document.addEventListener("click",e=>{if(performance.now()-dragEndAt<400)return;const b=e.target.closest("[data-act]");if(!b||b.disabled)return;audioInit();const f=ACT[b.dataset.act];if(f)f(b.dataset,b)});
+document.addEventListener("click",e=>{const gt=$("#gb-tools");if(gt&&gt.classList.contains("open")&&!e.target.closest("#gb-menu-btn")&&(!e.target.closest("#gb-tools")||!e.target.closest(".toggle")))setTimeout(()=>gbMenu(false),0);if(performance.now()-dragEndAt<400)return;const b=e.target.closest("[data-act]");if(!b||b.disabled)return;audioInit();const f=ACT[b.dataset.act];if(f)f(b.dataset,b)});
 document.addEventListener("pointerdown",()=>audioInit());
 document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||defName(+i);saveTeams()}});
 document.addEventListener("keydown",e=>{
   if(mode==="arena"&&AR.duel&&(AR.duel.stage==="q"||AR.duel.stage==="sq")&&/^[1-4a-dA-D]$/.test(e.key)&&!e.target.closest("input,textarea,select")){const k="1234".includes(e.key)?+e.key-1:"abcd".indexOf(e.key.toLowerCase());if(k<AR.duel.qs[AR.duel.i].opts.length)ACT["duel-pick"]({k})}
+  if(e.key==="Escape"&&$("#gb-tools")?.classList.contains("open")){gbMenu(false);$("#gb-menu-btn").focus();return}
   if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#who").hidden)ACT["who-close"]();else if(!$("#party").hidden)ACT["party-close"]();else if(!$("#poster").hidden)ACT["poster-close"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
   if(e.key==="Enter"&&e.target.id==="dd-wager")ACT["dd-lock"]();
   if(live.role==="host"&&mode==="live"&&!e.target.closest("input,select,textarea,button")&&$$(".overlay").every(o=>o.hidden)){
@@ -3304,7 +3369,7 @@ function partyBroadcast(now){
 function renderPartyBits(){
   const c=partyCur(),playing=!!(c&&PARTY.el&&!PARTY.el.paused&&PARTY.level>0);
   const np=$("#gb-np");if(np){np.hidden=!playing;if(playing)$("#gb-np-t").textContent=c.name+(c.src==="player"?" · from "+c.by:"")}
-  const b=$("#gb-party");if(b){const n=PARTY.pending.length;b.textContent=n?`Playlist · ${n} new`:"Playlist";b.classList.toggle("has-new",n>0)}
+  const b=$("#gb-party");if(b){const n=PARTY.pending.length;b.textContent=n?`Playlist · ${n} new`:"Playlist";b.classList.toggle("has-new",n>0);const mb=$("#gb-menu-btn");if(mb)mb.classList.toggle("has-new",n>0)}
   const pb=$("#pa-play");if(pb)pb.textContent=partyActive()&&PARTY.el&&!PARTY.el.paused?"Pause":"Play";
   const bar=$("#pa-bar i");if(bar&&PARTY.el&&PARTY.el.duration)bar.style.width=(PARTY.el.currentTime/PARTY.el.duration*100).toFixed(1)+"%";
 }
@@ -3889,7 +3954,7 @@ document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.te
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New: Score history, with an all-time leaderboard, recent games, record high scores and personal bests. Open it from the home screen.";
+{const WHATS_NEW="New: A cleaner layout on phones and tablets. Game controls now sit in one Menu button, so the question gets the screen.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
