@@ -813,6 +813,23 @@ details.recap .recap-list{margin:10px 0}
 .cs-stats b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--gold)}
 .cs-stats span{color:var(--muted);font-weight:600}
 
+/* v3.2: Japarty Board answers */
+.bc-locks{margin-top:4px}
+#clue .answers .ans{min-height:56px}
+.gain.neg{color:var(--bad)}
+.fj-type input{flex:1;min-width:0;background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--paper)}
+.fj-type .judge-row{grid-template-columns:auto minmax(0,1fr) minmax(0,1.4fr)}
+.judge-row .nm small{display:block;color:var(--muted);font-weight:600;font-size:12px}
+.lb-board .tile,.p-board .tile{min-height:clamp(44px,7vw,74px)}
+.board .tile.used{opacity:.25}
+div.tile{display:grid;place-items:center}
+.p-board{gap:4px;margin-top:4px}
+.p-board .cat{font-size:clamp(7px,2.2vw,10px);min-height:48px;padding:4px 2px;letter-spacing:0}
+.p-board .tile{font-size:15px;min-height:46px;padding:0}
+#lb-timer{flex:none}
+.ctl-card{border:2px solid var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--stage2))}
+.ctl-card h2{color:var(--gold)}
+
 /* Phones and tablets */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
@@ -993,8 +1010,10 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
         <article class="mode m-sky">
           <div class="mode-top"><h2>Japarty Board</h2><span>Classic</span></div>
           <div class="mode-body">
-            <p>Six categories, five clues each. Players or teams take turns picking, the host judges answers, and one hidden Daily Double lets someone bet big. Finish with Final Japarty wagers.</p>
-            <div class="opts"><label>Clue timer<select id="board-time"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option></select></label></div>
+            <p>Six categories, five clues each. The player or team in control picks a clue, then everyone locks in an answer and right answers earn the clue's value. One hidden Daily Double lets someone bet big, and Final Japarty ends it with typed answers and wagers. Also works in live games on phones.</p>
+            <div class="opts"><label>Clue timer<select id="board-time"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option></select></label>
+              <label for="board-mode">Answers<select id="board-mode"><option value="choices" selected>Everyone picks from 4 choices</option><option value="host">Host judges spoken answers</option></select></label></div>
+            <label class="check" for="board-neg"><input type="checkbox" id="board-neg" checked><span>Wrong answers lose the clue's value</span></label>
             <button class="btn" data-act="start" data-mode="board">Play the Board</button>
           </div>
         </article>
@@ -1459,7 +1478,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.1";
+const APP_VERSION="3.2";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2153,7 +2172,8 @@ function boardCats(){
 function startBoard(){
   const cats=boardCats(),ids=[];cats.forEach((c,ci)=>c.items.forEach((_,r)=>{if(r>=1)ids.push(ci+"-"+r)}));
   const total=cats.reduce((n,c)=>n+c.items.length,0);
-  B={cats,total,used:new Set(),active:0,dd:ids.length?ids[Math.floor(Math.random()*ids.length)]:null,cur:null,finalDone:false,T:+$("#board-time").value};
+  B={cats,total,used:new Set(),active:0,dd:ids.length?ids[Math.floor(Math.random()*ids.length)]:null,cur:null,finalDone:false,T:+$("#board-time").value,mode:$("#board-mode").value==="host"?"host":"choices",neg:$("#board-neg").checked};
+  store.set("japarty.boardOpts",{mode:B.mode,neg:B.neg});
   show("board");renderBoard();lobbyMusic();
 }
 function renderBoard(){
@@ -2185,18 +2205,19 @@ function openTile(c,r){
   }else{sfx("select");showClue()}
 }
 function showClue(){
+  if(B.mode==="choices")return showClueChoices();
   const it=B.cur.it,tm=teams[B.active];
   setClue(it.cat,B.cur.dd?`Daily Double · ${fmt(B.cur.value)} wagered by ${tm.name}`:`${fmt(B.cur.value)} points · picked by ${tm.name}`,true);
   body(`<p class="clue-q">${esc(it.q)}</p><div class="row center"><button class="btn" data-act="clue-reveal">Reveal answer</button></div>`);
   thinkMusic();startClock(B.T,$("#clue-timer"),()=>{sfx("timesup");clueReveal()});
 }
-function judgeRows(list){
-  return list.map(({t,amt})=>{const tm=teams[t];return `<div class="judge-row" style="--tc:${tm.color}"><i></i><span class="nm">${esc(tm.name)}</span><button class="jb ok" data-act="judge" data-t="${t}" data-v="1" aria-pressed="false">✓ Right +${fmt(amt)}</button><button class="jb no" data-act="judge" data-t="${t}" data-v="-1" aria-pressed="false">✗ Wrong −${fmt(amt)}</button></div>`}).join("");
+function judgeRows(list,noLose,sub){
+  return list.map(({t,amt})=>{const tm=teams[t],v=J[t]||0;return `<div class="judge-row" style="--tc:${tm.color}"><i></i><span class="nm">${esc(tm.name)}${sub&&sub[t]?`<small>${esc(sub[t])}</small>`:""}</span><button class="jb ok" data-act="judge" data-t="${t}" data-v="1" aria-pressed="${v===1}">✓ Right +${fmt(amt)}</button><button class="jb no" data-act="judge" data-t="${t}" data-v="-1" aria-pressed="${v===-1}">✗ Wrong${noLose?"":" −"+fmt(amt)}</button></div>`}).join("");
 }
 function clueReveal(){
   stopClock();silence();sfx("whoosh");J={};
   const it=B.cur.it,list=(B.cur.dd?[B.active]:teams.map((_,i)=>i)).map(t=>({t,amt:B.cur.value}));
-  body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">Mark every team that answered</span>${judgeRows(list)}</div><div class="row center"><button class="btn" data-act="judge-apply">Update scores</button><button class="btn ghost" data-act="clue-skip">Nobody answered</button></div>`);
+  body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">Mark every team that answered</span>${judgeRows(list,!B.neg)}</div><div class="row center"><button class="btn" data-act="judge-apply">Update scores</button><button class="btn ghost" data-act="clue-skip">Nobody answered</button></div>`);
 }
 function finishTile(){B.used.add(B.cur.id);B.cur=null;$("#clue").hidden=true;stopClock();lobbyMusic();renderBoard();renderStrip()}
 function startFinal(){
@@ -2207,8 +2228,9 @@ function startFinal(){
   body(`<p class="center">Everyone secretly decides a wager, from 0 up to their current score. Anyone at zero or below can only wager 0.</p><div class="judge">${teams.map((tm,i)=>{const mx=Math.max(0,tm.score);return `<div class="judge-row" style="--tc:${tm.color}"><i></i><label class="nm" for="fj-w-${i}">${esc(tm.name)}<small>up to ${fmt(mx)}</small></label><input id="fj-w-${i}" type="number" inputmode="numeric" min="0" max="${mx}" step="100" value="0" ${mx?"":"disabled"}></div>`}).join("")}</div><div class="row center"><button class="btn" data-act="fj-lock">Lock wagers</button></div>`);
 }
 function fjReveal(){
-  stopClock();silence();sfx("whoosh");J={};const it=B.fin.item;
-  body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">Mark each team's final answer</span>${judgeRows(teams.map((_,t)=>({t,amt:B.fin.w[t]})))}</div><div class="row center"><button class="btn" data-act="fj-apply">Show final scores</button></div>`);
+  stopClock();silence();sfx("whoosh");J={};const it=B.fin.item,typed={};
+  if(B.mode==="choices"){const acc=it.accept||[normAns(it.a)];teams.forEach((tm,t)=>{const el=$("#fj-a-"+t),v=el?el.value.trim():"";typed[t]=v?`Answered “${v.slice(0,60)}”`:"No answer";J[t]=v&&fjMatch(v,acc)?1:-1})}
+  body(`<p class="clue-q small">${esc(it.q)}</p><div class="answer"><span class="label">Correct response</span><h3>${esc(it.a)}</h3>${it.f?`<p>${esc(it.f)}</p>`:""}</div><div class="judge"><span class="label">${B.mode==="choices"?"Answers that match are marked right. Check the rest.":"Mark each team's final answer"}</span>${judgeRows(teams.map((_,t)=>({t,amt:B.fin.w[t]})),false,B.mode==="choices"?typed:null)}</div><div class="row center"><button class="btn" data-act="fj-apply">Show final scores</button></div>`);
 }
 
 /* ---------- Cash or Case: one shared screen, teams take turns ---------- */
@@ -2361,7 +2383,7 @@ const LIVE={room:null,db:null,user:null,canHost:false,myId:null,myPeer:null,stat
 const live={role:null,cur:null,sc:{gid:null,seq:-1,map:{},players:0},nick:String(store.get("japarty.nick","")||"").slice(0,20),defaultNick:"",pick:null,openAt:0,closeAt:0,H:null,hs:null,rev:0,pTimer:null,lastScores:null,lastRe:0,pendingSfx:false,pin:null,g:null,named:false,subs:[],hashPin:null,pinErr:"",joining:false,party:null,myUps:[],kicked:new Set(),bots:[],lobbyAt:0,teamNames:[],team:null,stage:"pin",rk:null,freeNick:false,roster:null,rosterBuf:{},rosterList:null,lastTaken:"",takenTO:null,ok:new Set(),rcKey:"",rcSeen:0,rcLast:0};
 {const r=store.get("japarty.roster",null);if(r&&Array.isArray(r.names)&&r.names.length)live.rosterList={rid:String(r.rid||Date.now().toString(36)),names:r.names.map(String).slice(0,300),teams:Array.isArray(r.teams)?r.teams.map(String):null,other:!!r.other}}
 const READY_MS=2600;
-const TIMED=new Set(["question","fjq","cpick","copen","cq","coffer","cfinal"]);
+const TIMED=new Set(["question","fjq","cpick","copen","cq","coffer","cfinal","bpick"]);
 const JOIN_BASE="";
 /* LIVE SERVER so anyone can join (used by the standalone Japarty.html file).
    Paste your free Supabase project's URL and anon or publishable key here, or enter them under "Let anyone join". */
@@ -2665,6 +2687,7 @@ function hostLiveUpdate(){
     if(((rosterOn()&&computeTaken().join(",")!==live.lastTaken)||idsNow!==live.lastIds)&&!live.takenTO)live.takenTO=setTimeout(()=>{live.takenTO=null;if(live.H&&live.H.phase==="lobby"&&live.hs){const{rev,at,pin,kicked,teams:_t,ro,taken,ids,pc,...rest}=live.hs;broadcast(rest)}},700);
     return}
   if(H.phase==="poll"){pollRender();return}
+  if(H.phase==="bpick"){const p=players().find(x=>(x.by||x.peer)===H.ctl),v=p&&p.presence.bp;if(v&&typeof v==="object"&&v.g===H.gid&&v.s===H.seq)lbOpen(+v.c,+v.r);return}
   if(H.phase==="question"){
     const n=ps.filter(p=>validAns(p.presence.a,H)).length,c=$("#lq-count");
     if(c){c.textContent=n;$("#lq-total").textContent=ps.length}
@@ -2730,6 +2753,7 @@ async function hostResume(){
   const ph=H.phase;
   if(!H.items||ph==="lobby"||ph==="starting")return hostLobby();
   if(ph==="countdown"){H.i=-1;return hostCountdown()}
+  if(H.kind==="board"&&!/^fj/.test(ph)&&ph!=="podium")return lbPick();
   if(H.kind==="cash"&&ph!=="podium"){const r=Math.max(0,H.r);return ph==="cpick"?cashPick():ph==="copen"?cashOpen(r):ph==="cq"?cashQ(r):ph==="coffer"?cashOfferStage(r):ph==="csum"?cashSum(r):cashFinal()}
   if(ph==="question"){H.i--;return hostBoard()}
   if(ph==="reveal"||ph==="board")return hostBoard();
@@ -2755,7 +2779,7 @@ async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);
       ${link?`<div class="linkbox"><input id="lh-link" readonly value="${esc(link)}" aria-label="Join link"><button class="btn small" data-act="copy-link">Copy link</button><button class="btn small ghost-ink" data-act="poster">Make a poster</button><button class="btn small ghost-ink" data-act="open-remote">Phone remote</button></div>`:""}
       <div class="row" style="align-items:baseline;gap:14px"><span class="big-count" id="lh-count">0</span><span style="font-weight:800;font-size:18px" id="lh-count-label">players in the lobby</span><button class="linkish" data-act="new-pin" style="margin-left:auto">New PIN</button></div></div>
     <div class="panel">
-      <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Guess the Song · song clips</option><option value="cash">Cash or Case · everyone plays their own case</option><option value="who">Who Am I? · clue by clue</option><option value="map">Map Round · drop a pin on the map</option></select></div>
+      <div class="group"><label class="label" for="lh-kind">Game</label><select id="lh-kind"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Guess the Song · song clips</option><option value="cash">Cash or Case · everyone plays their own case</option><option value="board">Japarty Board · pick clues, everyone answers</option><option value="who">Who Am I? · clue by clue</option><option value="map">Map Round · drop a pin on the map</option></select></div>
       <div class="opts"><label for="lh-cases" id="lh-cases-wrap" hidden>Cases<select id="lh-cases"><option value="16" selected>16 · about 8 minutes</option><option value="24">24 · about 11 minutes</option><option value="32">32 · about 13 minutes</option><option value="40">40 · about 14 minutes</option></select></label><label for="lh-n" id="lh-n-wrap">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label></div>
       <button class="btn" data-act="lh-start" id="lh-start" disabled>Start the game</button>
       <p class="muted" style="font-size:13px;margin-top:-6px" id="lh-start-note">Start unlocks when the first player joins.</p>
@@ -2779,6 +2803,7 @@ async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);
         <p class="muted" style="font-size:13px;margin-top:-4px">Players pick a team on their phone. Team score is the average of its players, so team sizes don't matter.</p>
         <label for="lh-auto" class="label">Auto-advance</label><select id="lh-auto" class="auto-sel"></select>
         <label class="check" for="lh-dbl"><input type="checkbox" id="lh-dbl" checked><span>Double points on the final question</span></label>
+        <label class="check" for="lh-neg"><input type="checkbox" id="lh-neg" checked><span>Japarty Board: wrong answers lose the clue's value</span></label>
         <label class="check" for="lh-fj"><input type="checkbox" id="lh-fj" checked><span>Finish with Final Japarty</span></label>
         <label class="check" for="lh-appr"><input type="checkbox" id="lh-appr" ${prefs.approveNames?"checked":""}><span>OK each nickname before it shows on the big screen</span></label>
         <p class="muted" style="font-size:13px;margin-top:-4px">Nicknames with rude words are always hidden. Names picked from your player list skip the check.</p>
@@ -2811,26 +2836,29 @@ function hostStart(seg){
   if(kind==="cash"){const n=cashSize(seg.c),R=CASH[n].s.length;
     live.H={phase:"starting",gid,kind,n,R,items:buildItems("quiz",R,15),i:-1,seq:0,T:15,scores:{},fj:false,fjDone:true,dbl:false,r:-1,bonus:{},deals:{}};
     live.lastScores=null;$("#gb-mode").textContent=liveModeLabel("Cash or Case");return hostCountdown()}
+  if(kind==="board"){const rows=seg.n?Math.max(2,Math.min(5,Math.round(seg.n/6))):5,cats=boardCats(),ids=[];cats.forEach((c,ci)=>c.items.forEach((_,r)=>{if(r>=1&&r<rows)ids.push(ci+"-"+r)}));
+    live.H={phase:"starting",gid,kind,items:[],i:-1,seq:0,T:T0,scores:{},fj,fjDone:false,dbl:false,cats:cats.map(c=>({name:c.name,items:c.items.slice(0,rows)})),rows,used:[],dd:ids[Math.floor(Math.random()*ids.length)]||null,neg:SHOW.on?true:!!($("#lh-neg")||{checked:true}).checked,ctl:null};
+    live.lastScores=null;$("#gb-mode").textContent=liveModeLabel(MODE_NAMES.board);return hostCountdown()}
   const T=kind==="tf"?10:kind==="who"?WHO_CL*4:kind==="map"?Math.max(20,T0):T0;
   live.H={phase:"starting",gid,kind,items:buildItems(kind,seg.n,T),i:-1,seq:0,T,scores:{},fj:fj&&kind!=="map",fjDone:false,dbl};
   live.lastScores=null;$("#gb-mode").textContent=liveModeLabel(MODE_NAMES[kind]);hostCountdown();
 }
 function hostCountdown(){cancelAuto();
   const H=live.H;H.phase="countdown";progress("Starting");silence();
-  broadcast({phase:"countdown",gid:H.gid,seq:H.seq,total:H.items.length,kind:H.kind});
+  broadcast({phase:"countdown",gid:H.gid,seq:H.seq,total:H.kind==="board"?lbLeft(H):H.items.length,kind:H.kind});
   let n=3;$("#lh-body").innerHTML=`<p class="clue-q">Get ready! ${esc(MODE_NAMES[H.kind])} starts in</p><div class="count-big" id="lh-cd">3</div><p class="live-count">${players().length} players are in</p>`;sfx("tick");
-  const step=()=>{if(live.H!==H||H.phase!=="countdown")return;n--;if(n<=0){sfx("dd");return H.kind==="cash"?cashPick():hostNext()}
+  const step=()=>{if(live.H!==H||H.phase!=="countdown")return;n--;if(n<=0){sfx("dd");return H.kind==="cash"?cashPick():H.kind==="board"?lbPick():hostNext()}
     const el=$("#lh-cd");el.textContent=n;el.style.animation="none";void el.offsetWidth;el.style.animation="";sfx("tick");readyTO=setTimeout(step,1000)};
   clearTimeout(readyTO);readyTO=setTimeout(step,1000);
 }
 function hostNext(){cancelAuto();
   const H=live.H;H.i++;if(H.i>=H.items.length)return hostPodium();
-  H.curDbl=!!(H.dbl&&H.i===H.items.length-1&&H.items.length>1);
+  H.curDbl=H.kind==="board"?!!H.ddNow:!!(H.dbl&&H.i===H.items.length-1&&H.items.length>1);
   clearInterval(H.clueIv);if(H.kind==="map")return hostNextMap(H);
   const it=H.items[H.i],c=clsFor(it);H.seq++;H.phase="question";H.open=false;clearTimeout(H.allTO);H.allTO=null;
-  progress(`Question ${H.i+1} of ${H.items.length}`);
-  broadcast({phase:"question",gid:H.gid,seq:H.seq,kind:H.kind,i:H.i,total:H.items.length,cat:it.cat,q:it.q,opts:it.opts,T:H.T,readyMs:READY_MS,dbl:H.curDbl,...(it.clues?{clues:it.clues,CL:WHO_CL}:{})});
-  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">${esc(it.cat)}${H.curDbl?'<span class="dbl">Double points</span>':""}</div><div class="timer" id="lq-timer"><span>${H.T}</span></div><h2 class="q-text">${esc(it.q)}</h2>${it.clues?'<ol class="clues" id="lq-clues"></ol>':""}<div class="ready" id="lq-ready"><span>Read the question</span><div class="bar"><i></i></div></div></div>
+  progress(H.kind==="board"?`${it.cat} · ${fmt(H.curVal*(H.curDbl?2:1))}`:`Question ${H.i+1} of ${H.items.length}`);
+  broadcast({phase:"question",gid:H.gid,seq:H.seq,kind:H.kind,i:H.i,total:H.items.length,cat:it.cat,q:it.q,opts:it.opts,T:H.T,readyMs:READY_MS,dbl:H.curDbl,...(it.clues?{clues:it.clues,CL:WHO_CL}:{}),...(H.kind==="board"?{val:H.curVal*(H.curDbl?2:1)}:{})});
+  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">${esc(it.cat)}${H.kind==="board"?` · ${fmt(H.curVal*(H.curDbl?2:1))} points`:""}${H.curDbl?`<span class="dbl">${H.kind==="board"?"Daily Double":"Double points"}</span>`:""}</div><div class="timer" id="lq-timer"><span>${H.T}</span></div><h2 class="q-text">${esc(it.q)}</h2>${it.clues?'<ol class="clues" id="lq-clues"></ol>':""}<div class="ready" id="lq-ready"><span>Read the question</span><div class="bar"><i></i></div></div></div>
     <div class="answers${it.opts.length===2?" two":""}" id="lq-answers"></div>
     <div class="live-count"><b id="lq-count">0</b> of <span id="lq-total">${players().length}</span> players answered</div>
     <div class="actions">${H.kind==="tune"?'<button class="btn ghost" data-act="lh-replay" id="lh-replay" hidden>Play the clip again</button>':""}<button class="btn ghost" data-act="lh-reveal" id="lh-reveal" hidden>Reveal answer now</button></div>`;
@@ -2861,15 +2889,16 @@ function hostReveal(){cancelAuto();
     const key=p.by||p.peer;if(done.has(key))return;done.add(key);
     const e=H.scores[key]||(H.scores[key]={n:"",s:0,st:0,l:0});e.n=nickOf(p);e.t=teamOf(p);const a=p.presence.a;
     if(validAns(a,H)){counts[a.k]++;
-      if(a.k===it.correct){const sec=Math.min(H.T,Math.max(0,(+a.ms||0)/1000));e.st++;e.c=(e.c||0)+1;e.l=(H.kind==="who"?WHO_PTS[Math.min(3,Math.floor(sec/WHO_CL))]:Math.round(1000*(1-(sec/H.T)/2))+Math.min(500,(e.st-1)*100))*(H.curDbl?2:1);e.s+=e.l;right++;if(H.kind==="who")byClue[Math.min(3,Math.floor(sec/WHO_CL))]++;
-        if(!fast||sec<fast.sec)fast={n:e.n,sec}}else e.st=0;
+      if(a.k===it.correct){const sec=Math.min(H.T,Math.max(0,(+a.ms||0)/1000));e.st++;e.c=(e.c||0)+1;e.l=(H.kind==="board"?H.curVal:H.kind==="who"?WHO_PTS[Math.min(3,Math.floor(sec/WHO_CL))]:Math.round(1000*(1-(sec/H.T)/2))+Math.min(500,(e.st-1)*100))*(H.curDbl?2:1);e.s+=e.l;right++;if(H.kind==="who")byClue[Math.min(3,Math.floor(sec/WHO_CL))]++;
+        if(!fast||sec<fast.sec)fast={n:e.n,sec,k:key}}else{e.st=0;if(H.kind==="board"&&H.neg){e.l=-H.curVal*(H.curDbl?2:1);e.s+=e.l}}
     }else e.st=0;
   });
   (H.qs||(H.qs=[])).push({q:it.clues?it.clues[0]:it.q,c:it.cat,a:it.opts[it.correct],f:it.fact||"",right,n:counts.reduce((a,b)=>a+b,0),of:done.size});
   const list=hostRanking().map(([k,e],r)=>[k,e.s,e.l,r+1,e.st]);
   live.lastScores={pin:live.pin,gid:H.gid,seq:H.seq,players:list.length,list};sendScoreChunks(live.lastScores);dbWrite("scores/"+live.pin,live.lastScores);
   broadcast({phase:"reveal",gid:H.gid,seq:H.seq,kind:H.kind,i:H.i,total:H.items.length,cat:it.cat,q:it.q,opts:it.opts,correct:it.correct,counts,right,players:done.size,fact:it.fact||""});
-  const max=Math.max(1,...counts),last=H.i+1>=H.items.length;
+  if(H.kind==="board"&&fast)H.ctl=fast.k;
+  const max=Math.max(1,...counts),last=H.kind==="board"?!lbLeft(H):H.i+1>=H.items.length;
   $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">${esc(it.cat)}</div><h2 class="q-text">${esc(it.q)}</h2>${it.clues?`<ol class="clues all">${clueLis(it.clues,4)}</ol>`:""}</div>
     <div class="dist" role="img" aria-label="Answers: ${it.opts.map((o,k)=>c.l[k]+" "+counts[k]).join(", ")}">${it.opts.map((o,k)=>`<div class="${c.c[k]}${k===it.correct?" right":""}"><b>${counts[k]}</b><span class="col"><i style="--h:${counts[k]/max*100}%"></i></span><span class="lt">${c.l[k]}</span></div>`).join("")}</div>
     <div class="answers revealed${it.opts.length===2?" two":""}">${it.opts.map((o,k)=>`<div class="ans ${c.c[k]}${k===it.correct?" right":""}"><b>${c.l[k]}</b><span>${esc(o)}</span></div>`).join("")}</div>
@@ -2877,9 +2906,9 @@ function hostReveal(){cancelAuto();
     ${it.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(it.fact)}</span></div>`:""}
     <div class="live-count"><b>${right}</b> of ${done.size} players got it right${fast?` · fastest: ${esc(fast.n)} in ${fast.sec.toFixed(1)}s`:""}</div>
     ${miniBoard(prevTop)}
-    <div class="actions"><button class="btn" data-act="lh-next">${last?(H.fj?"Final Japarty":"See final results"):"Leaderboard"}</button></div>`;
+    <div class="actions"><button class="btn" data-act="lh-next">${last?(H.fj?"Final Japarty":"See final results"):H.kind==="board"?"Back to the board":"Leaderboard"}</button></div>`;
   sfx(right?"correct":"wrong");
-  autoNext(ACT["lh-next"],last?(H.fj?"Final Japarty":"Final results"):"Leaderboard");
+  autoNext(ACT["lh-next"],last?(H.fj?"Final Japarty":"Final results"):H.kind==="board"?"Back to the board":"Leaderboard");
 }
 function hostBoard(){cancelAuto();
   const H=live.H;H.phase="board";const r=hostRanking(),top=r.slice(0,5).map(([,e])=>[e.n,e.s,e.l]);
@@ -3223,7 +3252,7 @@ function playerRenderInner(){
   if(tn.length&&!(Number.isInteger(live.team)&&live.team<tn.length)&&!(s.phase==="podium")){
     el.innerHTML=`<div class="p-card"><span class="label">Team game</span><h2>Pick your team</h2><div class="team-pick">${tn.map((t,k)=>`<button data-act="p-team" data-k="${k}" style="--tc:${TEAM_COLORS[k]}"><i></i>${esc(t)}</button>`).join("")}</div></div>`;return}
   const myTeam=tn.length&&Number.isInteger(live.team)?tn[live.team]:"";
-  if(s&&s.phase==="countdown"){el.innerHTML=`<div class="p-card"><span class="label">${esc(MODE_NAMES[s.kind]||"Japarty")}${myTeam?" · "+esc(myTeam):""}</span><h2>Get ready!</h2><div class="p-big">${s.total} ${s.kind==="map"?"places":s.kind==="who"?"people":"questions"}</div><p class="muted">Watch the big screen. The first question is coming.</p></div>`;return}
+  if(s&&s.phase==="countdown"){el.innerHTML=`<div class="p-card"><span class="label">${esc(MODE_NAMES[s.kind]||"Japarty")}${myTeam?" · "+esc(myTeam):""}</span><h2>${s.dd?"Daily Double!":"Get ready!"}</h2><div class="p-big">${s.dd?"Double points":`${s.total} ${s.kind==="map"?"places":s.kind==="who"?"people":s.kind==="board"?"clues":"questions"}`}</div><p class="muted">Watch the big screen. The first question is coming.</p></div>`;return}
   if(!s||!fresh||s.phase==="lobby"){if(myTeam)$("#p-who").textContent+=" · "+myTeam;
     const seen=lobbySeen(s);
     el.innerHTML=(seen?waitCard("You're in!",`Look for your name on the big screen. ${s&&s.pc>1?s.pc+" players are in the lobby. ":""}The game starts when the host is ready.`)
@@ -3233,7 +3262,7 @@ function playerRenderInner(){
   if((s.phase==="question"||s.phase==="reveal")&&s.kind==="map")return renderMapPhone(s,el,pk,me);
   if(s.phase==="question"){
     if(pk!=null){el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}</span></div><div class="p-result pick ${c.c[pk]}"><span class="p-letter">${c.l[pk]}</span><h2>Locked in</h2><p>${esc(s.opts[pk])}</p><p>Waiting for everyone else…</p></div>`;return}
-    el.innerHTML=`<div class="p-meta"><span>Question ${s.i+1} of ${s.total}${s.dbl?'<span class="dbl">Double points</span>':""}</span><span id="p-clock"></span></div>${s.kind==="tune"?'<p class="listen">Listen to the big screen</p>':""}<p class="p-q">${esc(s.q)}</p>${Array.isArray(s.clues)?'<ol class="clues p" id="p-clues"></ol><p class="clue-pts" id="p-clue-pts"></p>':""}
+    el.innerHTML=`<div class="p-meta"><span>${s.kind==="board"?`${esc(String(s.cat||""))} · ${fmt(+s.val||0)}`:`Question ${s.i+1} of ${s.total}`}${s.dbl?`<span class="dbl">${s.kind==="board"?"Daily Double":"Double points"}</span>`:""}</span><span id="p-clock"></span></div>${s.kind==="tune"?'<p class="listen">Listen to the big screen</p>':""}<p class="p-q">${esc(s.q)}</p>${Array.isArray(s.clues)?'<ol class="clues p" id="p-clues"></ol><p class="clue-pts" id="p-clue-pts"></p>':""}
       <div class="p-answers" id="p-answers">${s.opts.map((o,k)=>`<button class="p-btn ${c.c[k]}" data-act="p-pick" data-k="${k}" disabled><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`;
     playerTick();return;
   }
@@ -3241,6 +3270,7 @@ function playerRenderInner(){
     const ok=pk!=null&&pk===s.correct;
     const head=pk==null?`<div class="p-result bad"><h2>Time's up</h2><p>No answer this round.</p></div>`
       :ok?`<div class="p-result good"><h2>Correct!</h2><span class="p-pts">${me?"+"+fmt(me[2]):"Nice one"}</span>${s.kind==="who"&&live.pick&&live.pick.ms!=null?`<span class="streak">You got it on clue ${Math.min(4,1+Math.floor(live.pick.ms/(WHO_CL*1000)))}</span>`:me&&me[4]>1?`<span class="streak">${me[4]} in a row</span>`:""}</div>`
+      :s.kind==="board"?`<div class="p-result bad"><h2>Not this time</h2>${me&&me[2]<0?`<span class="p-pts">−${fmt(-me[2])}</span>`:"<p>Keep going!</p>"}</div>`
       :`<div class="p-result bad"><h2>Not this time</h2><p>Your streak resets. Keep going!</p></div>`;
     el.innerHTML=head+`<div class="p-card"><span class="label">Correct answer</span><p class="p-q">${esc(s.opts[s.correct]??"")}</p>${me?`<p>You're in <b>${ordinal(me[3])}</b> place of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:""}${s.fact?`<p class="muted">${esc(String(s.fact))}</p>`:""}</div>`;
     if(live.pendingSfx){live.pendingSfx=false;sfx(ok?"correct":"wrong")}
@@ -3271,7 +3301,7 @@ function playerRenderInner(){
     if(live.pendingSfx&&me){live.pendingSfx=false;sfx(ok?"correct":"wrong")}
     return;
   }
-  if(["poll","pollres","break","showend","draw","drawwait"].includes(s.phase))return renderExtraPhone(s,el);
+  if(["poll","pollres","break","showend","draw","drawwait","bpick"].includes(s.phase))return renderExtraPhone(s,el);
   const top=Array.isArray(s.top)?s.top.filter(t=>Array.isArray(t)&&typeof t[0]==="string"):[];
   const tt=Array.isArray(s.teamTop)?s.teamTop.filter(t=>Array.isArray(t)&&typeof t[0]==="string"):[];
   const myT=Number.isInteger(live.team)?tt.findIndex(t=>t[3]===live.team):-1;
@@ -3362,6 +3392,7 @@ function playerTick(){
   if(s.phase==="fjq"){const c=$("#p-clock"),b=$("#p-fa-btn");if(!c)return;const now=performance.now(),t=now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";
     if(c.textContent!==t)c.textContent=t;if(b&&now>live.closeAt+1500&&!b.disabled){b.disabled=true;b.textContent="Time's up"}return}
   if(/^c(pick|open|offer|final)$/.test(s.phase)){cashTick(s);return}
+  if(s.phase==="bpick"){const c=$("#p-clock");if(c){const now=performance.now(),t=now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s":"";if(c.textContent!==t)c.textContent=t}return}
   if(s.phase==="break"){const b=$("#p-brk");if(b){const t=mmss(Math.max(0,(+s.until||0)-Date.now()));if(b.textContent!==t)b.textContent=t}return}
   if(s.phase!=="question"&&s.phase!=="cq")return;
   if(s.kind==="map"){const c=$("#p-clock"),now=performance.now();if(c){const t=now<live.openAt?"Get ready…":now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";if(c.textContent!==t)c.textContent=t}
@@ -3436,7 +3467,7 @@ const ACT={
   "live-join":()=>{if(LIVE.status==="on")enterPlayer()},
   "lh-start":()=>{if(players().length)hostStart()},
   "lh-reveal":()=>hostReveal(),
-  "lh-next":()=>live.H&&(live.H.i+1>=live.H.items.length?(live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):hostBoard()),
+  "lh-next":()=>live.H&&(live.H.kind==="board"?(lbLeft(live.H)?lbPick():live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):live.H.i+1>=live.H.items.length?(live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):hostBoard()),
   "fj-clue":()=>hostFJClue(),
   "cs-case":d=>cashClick(+d.i),
   "cs-ans":d=>cashAnswer(+d.k),
@@ -3507,6 +3538,14 @@ const ACT={
     live.rosterList={rid:Date.now().toString(36),names:r.names,teams:r.teams,other:$("#roster-other").checked};store.set("japarty.roster",live.rosterList);$("#roster").hidden=true;afterRosterChange()},
   "roster-clear":()=>{live.rosterList=null;store.del("japarty.roster");$("#roster").hidden=true;afterRosterChange()},
   "lh-end":()=>goHome(),
+  "bpk":d=>bcPick(+d.t,+d.k),
+  "bc-reveal":()=>bcReveal(),
+  "bc-done":()=>{cancelAuto();if(B&&B.cur)finishTile()},
+  "lb-tile":d=>{const H=live.H;if(H&&H.phase==="bpick")lbOpen(+d.c,+d.r)},
+  "lb-random":()=>lbAutoPick(),
+  "lb-end":()=>{const H=live.H;if(!H||H.kind!=="board")return;askConfirm(H.fj&&!H.fjDone?"Skip the rest of the board and go to Final Japarty?":"End the board now and show final results?",()=>{clearTimeout(H.pickTO);H.fj&&!H.fjDone?hostFJWager():hostPodium()})},
+  "p-btile":d=>{const s=live.cur;if(!s||s.phase!=="bpick"||s.ctl!==myId6()||live.bpSeq===s.seq)return;const c=+d.c,r=+d.r;live.bpSeq=s.seq;
+    if(live.g)live.g.presence({bp:{g:s.gid,s:s.seq,c,r}}).catch(()=>{});sfx("lock");try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}playerRender()},
   "logo-home":()=>navHome(),
   "gb-back":()=>hostBack(),
   "p-back":()=>phoneBack(),
@@ -3635,13 +3674,13 @@ const ACT={
   "dd-lock":()=>{let v=Math.round(+$("#dd-wager").value||0);B.cur.value=Math.max(5,Math.min(B.cur.max,v));sfx("lock");showClue()},
   "clue-reveal":()=>clueReveal(),
   "judge":d=>{const t=+d.t,v=+d.v;J[t]=J[t]===v?0:v;sfx("select");$$(`[data-act="judge"][data-t="${t}"]`).forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.v===J[t])))},
-  "judge-apply":()=>{const v=B.cur.value,rights=[];let wrong=false;Object.entries(J).forEach(([t,m])=>{if(!m)return;teams[+t].score+=m*v;if(m===1)rights.push(+t);else wrong=true});
+  "judge-apply":()=>{const v=B.cur.value,rights=[];let wrong=false;Object.entries(J).forEach(([t,m])=>{if(!m)return;if(m<0&&!B.neg&&!B.cur.dd){wrong=true;return}teams[+t].score+=m*v;if(m===1)rights.push(+t);else wrong=true});
     sfx(rights.length?"correct":wrong?"wrong":"select");if(rights.length)B.active=rights[0];finishTile()},
   "clue-skip":()=>finishTile(),
   "final":()=>{if(!B||B.finalDone)return;const left=B.total-B.used.size;left?askConfirm(`${left} clue${left>1?"s are":" is"} still on the board. Go to Final Japarty anyway?`,startFinal):startFinal()},
   "fj-lock":()=>{B.fin.w=teams.map((tm,i)=>Math.max(0,Math.min(Math.max(0,tm.score),Math.round(+$("#fj-w-"+i).value||0))));
     sfx("lock");setClue("Final Japarty",B.fin.item.cat,true);
-    body(`<p class="clue-q">${esc(B.fin.item.q)}</p><div class="row center"><button class="btn" data-act="fj-reveal">Reveal answer</button></div>`);
+    body(`<p class="clue-q">${esc(B.fin.item.q)}</p>${B.mode==="choices"?`<div class="judge fj-type"><span class="label">Type each answer, then lock them in</span>${teams.map((tm,i)=>`<div class="judge-row" style="--tc:${tm.color}"><i></i><label class="nm" for="fj-a-${i}">${esc(tm.name)}<small>wager ${fmt(B.fin.w[i])}</small></label><input id="fj-a-${i}" maxlength="60" autocomplete="off" placeholder="Their answer"></div>`).join("")}</div>`:""}<div class="row center"><button class="btn" data-act="fj-reveal">${B.mode==="choices"?"Lock answers and reveal":"Reveal answer"}</button></div>`);
     thinkMusic();startClock(B.T,$("#clue-timer"),()=>{sfx("timesup");fjReveal()})},
   "fj-reveal":()=>fjReveal(),
   "fj-apply":()=>{Object.entries(J).forEach(([t,m])=>{if(m)teams[+t].score+=m*B.fin.w[+t]});B.finalDone=true;$("#clue").hidden=true;podium()},
@@ -4890,13 +4929,13 @@ function pollClose(){
 }
 
 /* ---------- run of show: games, polls, breaks and a drawing in order ---------- */
-const SHOW_KINDS=[["quiz","Quiz Rush"],["tf","True or False Blitz"],["who","Who Am I?"],["map","Map Round"],["tune","Guess the Song"],["cash","Cash or Case"],["poll","Live poll"],["break","Break with music"],["draw","Prize drawing"]];
+const SHOW_KINDS=[["quiz","Quiz Rush"],["board","Japarty Board"],["tf","True or False Blitz"],["who","Who Am I?"],["map","Map Round"],["tune","Guess the Song"],["cash","Cash or Case"],["poll","Live poll"],["break","Break with music"],["draw","Prize drawing"]];
 const SHOW={on:false,plan:[],i:-1,pts:{},T:20,dbl:true,fj:false,lastQuiz:-1,brIv:null};
-const validSeg=x=>!!x&&typeof x==="object"&&(x.t==="game"?["quiz","tf","who","map","tune","cash"].includes(x.k):x.t==="poll"?!!(x.p&&typeof x.p.q==="string"):x.t==="break"||x.t==="draw");
+const validSeg=x=>!!x&&typeof x==="object"&&(x.t==="game"?["quiz","tf","who","map","tune","cash","board"].includes(x.k):x.t==="poll"?!!(x.p&&typeof x.p.q==="string"):x.t==="break"||x.t==="draw");
 {const pl=store.get("japarty.show",null);if(Array.isArray(pl))SHOW.plan=pl.filter(validSeg).slice(0,30)}
 const saveShow=()=>store.set("japarty.show",SHOW.plan);
 function segLabel(x){
-  if(x.t==="game"){const nm=MODE_NAMES[x.k];return x.k==="cash"?`${nm} · ${cashSize(x.c)} cases`:`${nm} · ${x.n?x.n:"all"} ${x.k==="map"?"places":x.k==="who"?"people":x.k==="tune"?"songs":"questions"}`}
+  if(x.t==="game"){const nm=MODE_NAMES[x.k];return x.k==="cash"?`${nm} · ${cashSize(x.c)} cases`:x.k==="board"?`${nm} · ${x.n?6*Math.max(2,Math.min(5,Math.round(x.n/6))):30} clues`:`${nm} · ${x.n?x.n:"all"} ${x.k==="map"?"places":x.k==="who"?"people":x.k==="tune"?"songs":"questions"}`}
   if(x.t==="poll")return"Poll: "+x.p.q;if(x.t==="break")return`Break · ${x.m} minute${x.m===1?"":"s"}`;return"Prize drawing";
 }
 const segShort=x=>x.t==="game"?MODE_NAMES[x.k]:x.t==="poll"?"Live poll":x.t==="break"?"Break":"Prize drawing";
@@ -5072,6 +5111,7 @@ function renderExtraPhone(s,el){
     const my=s.ranks&&typeof s.ranks==="object"?s.ranks[myId6()]:null,mine=Array.isArray(my)?`<p>You're <b>${ordinal(+my[0]||1)}</b> of ${+s.n||0} in the show with <b>${+my[1]||0}</b> points.</p>`:"";
     el.innerHTML=s.phase==="break"?`<div class="p-card"><span class="label">Break time</span><div class="p-big" id="p-brk">${mmss(Math.max(0,(+s.until||0)-Date.now()))}</div><p>Up next: <b>${esc(String(s.next||""))}</b></p>${mine}${pairList(s.top," pts")}</div>`
       :`<div class="p-card"><span class="label">The show is over</span>${Array.isArray(my)?`<div class="p-big">${ordinal(+my[0]||1)}</div>`:"<h2>Thanks for playing!</h2>"}${mine}${pairList(s.top," pts")}<p class="muted">Thanks for playing Japarty!</p><button class="linkish" data-act="open-hof">See your score history</button></div>`;return}
+  if(s.phase==="bpick")return renderBoardPickPhone(s,el);
   if(s.phase==="drawwait"){el.innerHTML=waitCard("Prize drawing","Watch the big screen. Good luck!");return}
   if(s.phase==="draw"){
     if(s.st==="spin"){el.innerHTML=waitCard("The wheel is spinning…","Fingers crossed!");return}
@@ -5276,14 +5316,93 @@ function phoneBack(){
   clearSeat();goHome();
 }
 
+
+/* ---------- Japarty Board: everyone locks in an answer on the shared screen ---------- */
+function showClueChoices(){
+  const C=B.cur,it=C.it,tm=teams[B.active],opts=shuffle([it.a,...it.w]),c=clsFor({opts});
+  C.opts=opts;C.correct=opts.indexOf(it.a);C.locks={};C.done=false;C.who=C.dd?[B.active]:teams.map((_,i)=>i);
+  setClue(it.cat,C.dd?`Daily Double · ${fmt(C.value)} wagered by ${tm.name}`:`${fmt(C.value)} points · picked by ${tm.name}`,true);
+  body(`<p class="clue-q">${esc(it.q)}</p><div class="answers${opts.length===2?" two":""}" id="bc-ans">${opts.map((o,k)=>`<div class="ans ${c.c[k]}"><b>${c.l[k]}</b><span>${esc(o)}</span><em class="pickers" id="bpk-${k}"></em></div>`).join("")}</div>
+    <div class="locks bc-locks">${C.who.map(t=>{const m=teams[t];return `<div class="lock" id="bl-${t}" style="--tc:${m.color}"><div class="lock-name"><i></i>${esc(m.name)}</div><div class="lock-btns" style="--n:${opts.length}">${opts.map((o,k)=>`<button class="pick ${c.c[k]}" data-act="bpk" data-t="${t}" data-k="${k}" aria-label="${esc(m.name)} picks ${c.l[k]}, ${esc(o)}">${c.l[k]}</button>`).join("")}</div><div class="lock-state">Pick an answer</div></div>`}).join("")}</div>
+    <p class="muted center" style="font-size:14px">${C.dd?`Only ${esc(tm.name)} answers the Daily Double.`:`Right answers earn ${fmt(C.value)}${B.neg?`, wrong answers lose ${fmt(C.value)}`:""}. The fastest right answer takes control of the board.`}</p>
+    <div class="row center"><button class="btn ghost" data-act="bc-reveal">Reveal answer now</button></div>`);
+  thinkMusic();C.t0=startClock(B.T,$("#clue-timer"),()=>{sfx("timesup");bcReveal()});
+}
+function bcPick(t,k){
+  const C=B&&B.cur;if(!C||!C.locks||C.done||C.locks[t]||!C.who.includes(t))return;
+  C.locks[t]={k,s:performance.now()};sfx("lock");const el=$("#bl-"+t);if(el){el.classList.add("locked");el.querySelector(".lock-state").textContent="Locked in ✓"}
+  if(C.who.every(x=>C.locks[x]))setTimeout(bcReveal,400);
+}
+function bcReveal(){
+  const C=B&&B.cur;if(!C||!C.locks||C.done)return;C.done=true;stopClock();silence();cancelAuto();
+  let first=null;const neg=B.neg||C.dd;
+  C.who.forEach(t=>{const L=C.locks[t],tm=teams[t];let d=0;
+    if(L&&L.k===C.correct){d=C.value;if(!first||L.s<first.s)first={t,s:L.s}}else if(L&&neg)d=-C.value;
+    tm.score+=d;tm.last=d;
+    if(L)$("#bpk-"+L.k).insertAdjacentHTML("beforeend",`<i style="--tc:${tm.color}" title="${esc(tm.name)}"></i>`);
+    const el=$("#bl-"+t);if(el){el.classList.add("locked");el.querySelector(".lock-state").innerHTML=d>0?`<span class="gain">+${fmt(d)}</span>${first&&first.t===t?'<span class="streak">Takes control</span>':""}`:d<0?`<span class="gain neg">−${fmt(-d)}</span>`:`<span class="gain zero">${L?"Wrong answer":"No answer"}</span>`}});
+  $$("#clue-body .pick").forEach(b=>b.disabled=true);
+  $$("#bc-ans .ans").forEach((el,k)=>el.classList.toggle("right",k===C.correct));$("#bc-ans").classList.add("revealed");
+  if(first)B.active=first.t;
+  const it=C.it,act=$("#clue-body .row.center");
+  if(act)act.outerHTML=`${it.f?`<div class="fact"><span class="label">Did you know</span><span>${esc(it.f)}</span></div>`:""}<div class="row center"><button class="btn" data-act="bc-done">Back to the board</button></div>`;
+  sfx(first?"correct":"wrong");renderStrip();
+  if(+prefs.auto)autoNext(()=>{if(B&&B.cur)finishTile()},"Back to the board",Math.max(5,+prefs.auto));
+}
+
+/* ---------- live Japarty Board: the player in control picks, everyone answers on their phone ---------- */
+function lbLeft(H){return H.cats.reduce((n,c,ci)=>n+c.items.filter((_,r)=>!H.used.includes(ci+"-"+r)).length,0)}
+function lbGrid(H,act){
+  return `<div class="board lb-board" style="--cols:${H.cats.length}">${H.cats.map(c=>`<div class="cat">${softHy(esc(c.name))}</div>`).join("")}${Array.from({length:H.rows},(_,r)=>H.cats.map((c,ci)=>{const id=ci+"-"+r,used=H.used.includes(id)||!c.items[r];
+    return act?`<button class="tile" data-act="${act}" data-c="${ci}" data-r="${r}" ${used?"disabled":""} aria-label="${esc(c.name)}, ${(r+1)*200} points">${used?"":(r+1)*200}</button>`:`<div class="tile${used?" used":""}">${used?"":(r+1)*200}</div>`}).join("")).join("")}</div>`;
+}
+function lbPick(){
+  const H=live.H;if(!H||H.kind!=="board")return;cancelAuto();stopClock();clearTimeout(H.pickTO);clearTimeout(readyTO);
+  if(!lbLeft(H))return H.fj&&!H.fjDone?hostFJWager():hostPodium();
+  H.phase="bpick";H.seq++;
+  const ps=players(),byKey=k=>ps.find(x=>(x.by||x.peer)===k);let ctl=byKey(H.ctl);
+  if(!ctl)for(const[k]of hostRanking()){const p=byKey(k);if(p){ctl=p;break}}
+  if(!ctl&&ps.length)ctl=ps[Math.floor(Math.random()*ps.length)];
+  H.ctl=ctl?(ctl.by||ctl.peer):null;const nm=ctl?nickOf(ctl):"",T=15,left=lbLeft(H);
+  progress(`Japarty Board · ${left} clue${left===1?"":"s"} left`);lobbyMusic();
+  broadcast({phase:"bpick",gid:H.gid,seq:H.seq,kind:"board",cats:H.cats.map(c=>c.name),rows:H.rows,used:H.used,ctl:ctl?id6(ctl):"",ctlName:nm,T,readyMs:0});
+  $("#lh-body").innerHTML=`<div class="board-head"><div><h2>${nm?`${esc(nm)} picks the next clue`:"Pick the next clue"}</h2><div class="muted">${nm?`On their phone, or tap a clue here. A clue opens for them in ${T} seconds.`:"Tap a clue."} ${left} clue${left===1?"":"s"} left.</div></div><div class="timer" id="lb-timer"><span>${T}</span></div></div>
+    <div class="kente" aria-hidden="true"></div>${lbGrid(H,"lb-tile")}
+    ${miniBoard(null)}
+    <div class="actions"><button class="btn" data-act="lb-random">Pick a clue for them</button><button class="btn ghost" data-act="lb-end">${H.fj&&!H.fjDone?"Go to Final Japarty":"End the board"}</button></div>`;
+  startClock(T,$("#lb-timer"),()=>{if(live.H===H&&H.phase==="bpick")lbAutoPick()});
+  if(ctl&&ctl.isBot)H.pickTO=setTimeout(()=>{if(live.H===H&&H.phase==="bpick")lbAutoPick()},1500+Math.random()*2500);
+}
+function lbAutoPick(){const H=live.H;if(!H||H.phase!=="bpick")return;const free=[];H.cats.forEach((c,ci)=>c.items.forEach((_,r)=>{if(!H.used.includes(ci+"-"+r))free.push([ci,r])}));if(!free.length)return lbPick();
+  free.sort((a,b)=>a[1]-b[1]);const low=free.filter(f=>f[1]===free[0][1]),pick=Math.random()<.6?low[Math.floor(Math.random()*low.length)]:free[Math.floor(Math.random()*free.length)];lbOpen(pick[0],pick[1])}
+function lbOpen(c,r){
+  const H=live.H;if(!H||H.phase!=="bpick"||!Number.isInteger(c)||!Number.isInteger(r)||c<0||c>=H.cats.length||r<0||r>=H.rows)return;
+  const id=c+"-"+r,raw=H.cats[c].items[r];if(!raw||H.used.includes(id))return;
+  stopClock();clearTimeout(H.pickTO);H.used.push(id);H.phase="bopen";
+  const opts=shuffle([raw.a,...raw.w]);H.items.push({cat:raw.cat||H.cats[c].name,q:raw.q,opts,correct:opts.indexOf(raw.a),fact:raw.f||""});
+  H.i=H.items.length-2;H.curVal=(r+1)*200;H.ddNow=id===H.dd;sfx("select");
+  if(H.ddNow){silence();sfx("dd");$("#lh-body").innerHTML=`<div class="dd">Daily Double!</div><p class="clue-q">${esc(H.cats[c].name)} for ${fmt(H.curVal*2)}</p><p class="center muted">Double points for everyone on this clue${H.neg?", and double the loss for a wrong answer":""}.</p>`;
+    broadcast({phase:"countdown",gid:H.gid,seq:H.seq,total:lbLeft(H)+1,kind:"board",dd:1});clearTimeout(readyTO);readyTO=setTimeout(()=>{if(live.H===H)hostNext()},2600);return}
+  hostNext();
+}
+function renderBoardPickPhone(s,el){
+  const mine=!!s.ctl&&s.ctl===myId6(),cats=Array.isArray(s.cats)?s.cats.filter(x=>typeof x==="string").slice(0,6):[],rows=Math.max(1,Math.min(5,+s.rows||5)),used=new Set(Array.isArray(s.used)?s.used.filter(x=>typeof x==="string"):[]);
+  const e=live.sc.gid===s.gid?(live.sc.map[LIVE.myId||""]||live.sc.map[LIVE.myPeer||""]):null,sent=live.bpSeq===s.seq;
+  const grid=act=>`<div class="board p-board" style="--cols:${cats.length}">${cats.map(c=>`<div class="cat">${softHy(esc(c))}</div>`).join("")}${Array.from({length:rows},(_,r)=>cats.map((c,ci)=>{const u=used.has(ci+"-"+r);return act?`<button class="tile" data-act="p-btile" data-c="${ci}" data-r="${r}" ${u||sent?"disabled":""} aria-label="${esc(c)}, ${(r+1)*200} points">${u?"":(r+1)*200}</button>`:`<div class="tile${u?" used":""}">${u?"":(r+1)*200}</div>`}).join("")).join("")}</div>`;
+  el.innerHTML=mine?`<div class="p-meta"><span>Japarty Board</span><span id="p-clock"></span></div><div class="p-card ctl-card"><span class="label">Japarty Board</span><h2>${sent?"Opening your clue…":"You're in control!"}</h2><p>${sent?"Everyone answers on their phone.":"Pick the next clue for everyone."}</p></div>${grid(true)}`
+    :`<div class="p-meta"><span>Japarty Board</span><span id="p-clock"></span></div><div class="p-card"><span class="label">Up next</span><h2>${s.ctlName?esc(String(s.ctlName))+" is picking a clue":"The host is picking a clue"}</h2>${e?`<p>You're in <b>${ordinal(e[3])}</b> place with <b>${fmt(e[1])}</b> points.</p>`:""}</div>${grid(false)}`;
+  playerTick();
+}
+
 /* ---------- boot ---------- */
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in 3.1: Tap JAPARTY! to go home, and Back steps back in live games. Who Am I? and Map Round have more people and places, Map Round adds zoom and hints, and Cash or Case shows how good each offer is.";
+{const WHATS_NEW="New in 3.2: On the Japarty Board everyone now locks in an answer and right answers earn the clue's value. Live games can play the Board too, with the player in control picking clues on their phone.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
+{const bo=store.get("japarty.boardOpts",null);if(bo){$("#board-mode").value=bo.mode==="host"?"host":"choices";$("#board-neg").checked=bo.neg!==false}}
 renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();renderDaily();renderReportLink();show("home");initLive();loadTunes();
 </script>
 
