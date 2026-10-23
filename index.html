@@ -66,7 +66,9 @@ p{margin:0}
 @media(max-width:880px){.lobby{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--stage2);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:20px}
 .group{display:grid;gap:10px}
-.team-row{display:flex;gap:8px;align-items:center}
+.team-row{display:flex;gap:8px;align-items:center;min-width:0}
+.panel>*,.group{min-width:0}
+.team-row input{width:100%}
 .swatch{width:14px;height:14px;border-radius:50%;background:var(--tc);flex:none}
 .team-row input{flex:1;min-width:0;background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .icon-btn{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:18px;line-height:1}
@@ -621,7 +623,7 @@ button.case:disabled{opacity:.55;cursor:default}
     <header class="hero">
       <h1 class="logo">JAPARTY!</h1>
       <button class="online-pill" data-act="open-arena" id="online-pill" hidden><i aria-hidden="true"></i><span id="online-n">0 online</span></button>
-      <p><b>The Black History party quiz.</b> Host a live game where everyone answers from their own phone, or play team games together on one shared screen.</p>
+      <p><b>The Black History party quiz.</b> Host a live game where everyone answers from their own phone, or play together on one shared screen.</p>
     </header>
     <article class="live-card">
       <div>
@@ -643,14 +645,18 @@ button.case:disabled{opacity:.55;cursor:default}
         <p class="arena-online" id="arena-online">Checking who's online…</p></div>
       <div class="live-btns"><button class="btn" data-act="open-arena" id="arena-btn" disabled>Enter the Arena</button></div>
     </article>
-    <div class="sec-title"><h2>One-screen team games</h2><p>2 to 6 teams share one screen and a host runs the clicks.</p>
+    <div class="sec-title"><h2>One-screen games</h2><p id="sec-sub">2 to 8 players or teams share one screen and a host runs the clicks.</p>
       <label class="auto-set" for="auto-home">Auto-advance <select id="auto-home" class="auto-sel"></select></label></div>
     <div class="lobby">
       <aside class="panel">
         <div class="group">
-          <div class="label">Teams · 2 to 6</div>
+          <div class="label">Play as</div>
+          <div class="seg" role="group" aria-label="Play as"><button data-act="play-as" data-v="players" aria-pressed="false">Players</button><button data-act="play-as" data-v="teams" aria-pressed="true">Teams</button></div>
+          <div class="label" id="setup-label">Teams · 2 to 8</div>
           <div id="team-list" class="group"></div>
-          <button class="btn ghost small" data-act="add-team" id="add-team" style="justify-self:start">+ Add a team</button>
+          <datalist id="name-suggest"></datalist>
+          <div class="row"><button class="btn ghost small" data-act="add-team" id="add-team">+ Add a team</button><button class="btn ghost small" data-act="fill-roster" id="fill-roster" hidden>Use my player list</button></div>
+          <p class="muted" id="setup-hint" style="font-size:13px" hidden>Type a name, or pick one from the list that appears.</p>
         </div>
         <div class="group">
           <div class="label">Question pack</div>
@@ -675,7 +681,7 @@ button.case:disabled{opacity:.55;cursor:default}
         <article class="mode m-gold">
           <div class="mode-top"><h2>Quiz Rush</h2><span>Fastest wins</span></div>
           <div class="mode-body">
-            <p>Timed multiple choice. Every team locks in an answer on the shared screen. Faster correct answers score more, up to 1,000 points, plus a bonus for answer streaks.</p>
+            <p>Timed multiple choice. Every player or team locks in an answer on the shared screen. Faster correct answers score more, up to 1,000 points, plus a bonus for answer streaks.</p>
             <div class="opts">
               <label for="quiz-count">Questions<select id="quiz-count"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label>
               <label for="quiz-time">Timer<select id="quiz-time"><option value="10">10 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select></label>
@@ -686,7 +692,7 @@ button.case:disabled{opacity:.55;cursor:default}
         <article class="mode m-sky">
           <div class="mode-top"><h2>Japarty Board</h2><span>Classic</span></div>
           <div class="mode-body">
-            <p>Six categories, five clues each. Teams take turns picking, the host judges answers, and one hidden Daily Double lets a team bet big. Finish with Final Japarty wagers.</p>
+            <p>Six categories, five clues each. Players or teams take turns picking, the host judges answers, and one hidden Daily Double lets someone bet big. Finish with Final Japarty wagers.</p>
             <div class="opts"><label>Clue timer<select id="board-time"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option></select></label></div>
             <button class="btn" data-act="start" data-mode="board">Play the Board</button>
           </div>
@@ -702,7 +708,7 @@ button.case:disabled{opacity:.55;cursor:default}
         <article class="mode m-leaf">
           <div class="mode-top"><h2>Timeline Shuffle</h2><span>Take turns</span></div>
           <div class="mode-body">
-            <p>Teams take turns putting four historic moments in order, earliest first, before the clock runs out. 250 points per correct spot and a 500-point bonus for a perfect timeline.</p>
+            <p>Players or teams take turns putting four historic moments in order, earliest first, before the clock runs out. 250 points per correct spot and a 500-point bonus for a perfect timeline.</p>
             <div class="opts"><label>Turn timer<select id="tl-time"><option value="30">30 seconds</option><option value="45" selected>45 seconds</option><option value="60">60 seconds</option></select></label></div>
             <button class="btn" data-act="start" data-mode="timeline">Play Timeline</button>
           </div>
@@ -710,7 +716,7 @@ button.case:disabled{opacity:.55;cursor:default}
         <article class="mode m-paper">
           <div class="mode-top"><h2>Guess the Song</h2><span>Music round</span></div>
           <div class="mode-body">
-            <p>A short clip plays and teams pick the song title from four choices before time runs out. Add your own song files, or start with the two public-domain starter tunes Japarty plays itself. Also works in live games on phones.</p>
+            <p>A short clip plays and everyone picks the song title from four choices before time runs out. Add your own song files, or start with the two public-domain starter tunes Japarty plays itself. Also works in live games on phones.</p>
             <div class="opts">
               <label for="tune-count">Songs<select id="tune-count"><option value="5">5</option><option value="10" selected>10</option><option value="0">All</option></select></label>
               <label for="tune-time">Clip and timer<select id="tune-time"><option value="10">10 seconds</option><option value="15" selected>15 seconds</option><option value="20">20 seconds</option></select></label>
@@ -722,14 +728,14 @@ button.case:disabled{opacity:.55;cursor:default}
         <article class="mode m-plum">
           <div class="mode-top"><h2>Cash or Case</h2><span>Take a chance</span></div>
           <div class="mode-body">
-            <p>Each team picks a closed case, then opens the others round by round. After every round the Banker makes an offer: take the cash, or keep playing and hope your case holds more. A Black History question before each offer raises it 10% for a right answer. Also works in live games, where everyone plays their own case on their phone.</p>
+            <p>Each player or team picks a closed case, then opens the others round by round. After every round the Banker makes an offer: take the cash, or keep playing and hope your case holds more. A Black History question before each offer raises it 10% for a right answer. Also works in live games, where everyone plays their own case on their phone.</p>
             <div class="opts"><label for="cash-cases">Cases<select id="cash-cases"><option value="16" selected>16 · quickest</option><option value="24">24</option><option value="32">32</option><option value="40">40 · longest</option></select></label></div>
             <button class="btn" data-act="start" data-mode="cash">Play Cash or Case</button>
           </div>
         </article>
       </div>
     </div>
-    <footer class="foot"><b>HONORING THE PAST · CELEBRATING THE PRESENT · INSPIRING THE FUTURE</b><span>Team names, music choice and custom questions are saved in this browser. <span class="ver">Japarty v<span class="ver-n"></span></span></span></footer>
+    <footer class="foot"><b>HONORING THE PAST · CELEBRATING THE PRESENT · INSPIRING THE FUTURE</b><span>Names, music choice and custom questions are saved in this browser. <span class="ver">Japarty v<span class="ver-n"></span></span></span></footer>
   </section>
 
   <!-- Quiz / True-False -->
@@ -764,7 +770,7 @@ button.case:disabled{opacity:.55;cursor:default}
     </div>
     <div class="kente" aria-hidden="true"></div>
     <div class="board" id="board-grid"></div>
-    <p class="muted">Tap a team's score above to give them control. A team that answers correctly picks next.</p>
+    <p class="muted">Tap a score above to give that player or team control. Whoever answers correctly picks next.</p>
   </section>
 
   <!-- Timeline -->
@@ -1011,7 +1017,7 @@ button.case:disabled{opacity:.55;cursor:default}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="2.4";
+const APP_VERSION="2.5";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1166,11 +1172,24 @@ const TIMELINE=[
 ];
 
 /* ---------- state ---------- */
-const TEAM_COLORS=["#f2b632","#ff7a59","#3fd394","#5fb3f5","#c792ff","#ff8fc8"];
+const TEAM_COLORS=["#f2b632","#ff7a59","#3fd394","#5fb3f5","#c792ff","#ff8fc8","#e9e36b","#7fe3d8"];
+const MAX_SIDES=8;
+let playAs=store.get("japarty.playAs","teams")==="players"?"players":"teams";
+const U=()=>playAs==="players"?{one:"player",One:"Player",many:"players",Many:"Players"}:{one:"team",One:"Team",many:"teams",Many:"Teams"};
+const defName=i=>U().One+" "+(i+1);
+const isDefName=n=>/^(Team|Player) \d+$/.test(String(n||""));
 const newTeam=(name,i)=>({name,color:TEAM_COLORS[i],score:0,streak:0,last:0});
-let teams=(store.get("japarty.teams",null)||["Team 1","Team 2","Team 3"]).slice(0,6).map((n,i)=>newTeam(String(n||"Team "+(i+1)),i));
-while(teams.length<2)teams.push(newTeam("Team "+(teams.length+1),teams.length));
+let teams=(store.get("japarty.teams",null)||["Team 1","Team 2","Team 3"]).slice(0,MAX_SIDES).map((n,i)=>newTeam(String(n||defName(i)),i));
+while(teams.length<2)teams.push(newTeam(defName(teams.length),teams.length));
 const saveTeams=()=>store.set("japarty.teams",teams.map(t=>t.name));
+function nameSuggestions(){
+  const out=[],seen=new Set(),add=n=>{n=String(n||"").trim().slice(0,24);const k=n.toLowerCase();if(n&&!isDefName(n)&&!seen.has(k)){seen.add(k);out.push(n)}};
+  try{add(arName())}catch(e){}add(live.defaultNick);
+  if(live.rosterList)live.rosterList.names.forEach(add);
+  (store.get("japarty.nameHist",[])||[]).forEach(add);
+  return out.slice(0,300);
+}
+function rememberNames(){if(playAs!=="players")return;const h=store.get("japarty.nameHist",[])||[];teams.forEach(t=>{if(!isDefName(t.name)){const i=h.findIndex(x=>String(x).toLowerCase()===t.name.toLowerCase());if(i>=0)h.splice(i,1);h.unshift(t.name)}});store.set("japarty.nameHist",h.slice(0,40))}
 const savedPack=store.get("japarty.pack",null);
 let pack=savedPack&&Array.isArray(savedPack.items)&&savedPack.items.length?savedPack.items:BUILTIN;
 let packName=pack===BUILTIN?"Black History":"Custom pack";
@@ -1376,8 +1395,15 @@ function renderStrip(){
   }).join("");
 }
 function renderSetup(){
-  $("#team-list").innerHTML=teams.map((tm,i)=>`<div class="team-row"><span class="swatch" style="--tc:${tm.color}"></span><input id="team-name-${i}" data-i="${i}" value="${esc(tm.name)}" maxlength="24" aria-label="Team ${i+1} name"><button class="icon-btn" data-act="remove-team" data-i="${i}" aria-label="Remove ${esc(tm.name)}" ${teams.length<=2?"disabled":""}>×</button></div>`).join("");
-  $("#add-team").disabled=teams.length>=6;
+  const u=U(),pl=playAs==="players";
+  $$('[data-act="play-as"]').forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.v===playAs)));
+  $("#setup-label").textContent=`${u.Many} · 2 to ${MAX_SIDES}`;$("#add-team").textContent=`+ Add a ${u.one}`;
+  $("#sec-sub").textContent=`2 to ${MAX_SIDES} ${u.many} share one screen and a host runs the clicks.`;$("#setup-hint").hidden=!pl;
+  $("#team-list").innerHTML=teams.map((tm,i)=>`<div class="team-row"><span class="swatch" style="--tc:${tm.color}"></span><input id="team-name-${i}" data-i="${i}" value="${esc(pl&&isDefName(tm.name)?"":tm.name)}" placeholder="${pl?`Player ${i+1}: type or pick a name`:defName(i)}" list="${pl?"name-suggest":""}" autocomplete="off" maxlength="24" aria-label="${u.One} ${i+1} name"><button class="icon-btn" data-act="remove-team" data-i="${i}" aria-label="Remove ${esc(tm.name)}" ${teams.length<=2?"disabled":""}>×</button></div>`).join("");
+  $("#add-team").disabled=teams.length>=MAX_SIDES;
+  const used=new Set(teams.map(t=>t.name.toLowerCase()));
+  $("#name-suggest").innerHTML=nameSuggestions().filter(n=>!used.has(n.toLowerCase())).map(n=>`<option value="${esc(n)}"></option>`).join("");
+  $("#fill-roster").hidden=!(pl&&rosterOn());
 }
 function renderPackLabel(){$("#pack-name").textContent=packName;$("#pack-meta").textContent=`${pack.length} questions · ${new Set(pack.map(i=>i.cat)).size} categories`}
 function renderMusicUI(){
@@ -1424,7 +1450,7 @@ function resetClock(el,T){el.style.setProperty("--p",1);el.querySelector("span")
 
 /* ---------- launching ---------- */
 const MODE_NAMES={quiz:"Quiz Rush",tf:"True or False Blitz",board:"Japarty Board",timeline:"Timeline Shuffle",tune:"Guess the Song",cash:"Cash or Case"};
-function launch(m){
+function launch(m){rememberNames();
   lastMode=m;mode=m;prevRank=null;
   teams.forEach(t=>{t.score=0;t.streak=0;t.last=0});
   $("#gamebar").hidden=false;$("#gb-mode").textContent=MODE_NAMES[m];
@@ -1605,7 +1631,7 @@ function startFinal(){
   if(pack!==BUILTIN){const onBoard=new Set(B.cats.flatMap(c=>c.items));const spare=pack.filter(i=>!onBoard.has(i));const src=spare.length?spare:pack;item=src[Math.floor(Math.random()*src.length)]}
   B.fin={item,w:[]};$("#clue").hidden=false;silence();sfx("dd");
   setClue("Final Japarty","Category: "+item.cat,false);
-  body(`<p class="center">Each team secretly decides a wager, from 0 up to its current score. Teams at zero or below can only wager 0.</p><div class="judge">${teams.map((tm,i)=>{const mx=Math.max(0,tm.score);return `<div class="judge-row" style="--tc:${tm.color}"><i></i><label class="nm" for="fj-w-${i}">${esc(tm.name)}<small>up to ${fmt(mx)}</small></label><input id="fj-w-${i}" type="number" inputmode="numeric" min="0" max="${mx}" step="100" value="0" ${mx?"":"disabled"}></div>`}).join("")}</div><div class="row center"><button class="btn" data-act="fj-lock">Lock wagers</button></div>`);
+  body(`<p class="center">Everyone secretly decides a wager, from 0 up to their current score. Anyone at zero or below can only wager 0.</p><div class="judge">${teams.map((tm,i)=>{const mx=Math.max(0,tm.score);return `<div class="judge-row" style="--tc:${tm.color}"><i></i><label class="nm" for="fj-w-${i}">${esc(tm.name)}<small>up to ${fmt(mx)}</small></label><input id="fj-w-${i}" type="number" inputmode="numeric" min="0" max="${mx}" step="100" value="0" ${mx?"":"disabled"}></div>`}).join("")}</div><div class="row center"><button class="btn" data-act="fj-lock">Lock wagers</button></div>`);
 }
 function fjReveal(){
   stopClock();silence();sfx("whoosh");J={};const it=B.fin.item;
@@ -2726,7 +2752,12 @@ function parsePack(txt){
 /* ---------- actions ---------- */
 const ACT={
   "start":d=>{if(d.mode==="tune"&&tunePool().length<2){ACT["open-tunes"]();$("#tn-status").textContent="Add at least 2 songs to play Guess the Song.";return}launch(d.mode)},
-  "add-team":()=>{if(teams.length>=6)return;teams.push(newTeam("Team "+(teams.length+1),teams.length));saveTeams();renderSetup();const el=$("#team-name-"+(teams.length-1));el.focus();el.select()},
+  "play-as":d=>{const v=d.v==="players"?"players":"teams";if(v===playAs)return;playAs=v;store.set("japarty.playAs",v);
+    teams.forEach((t,i)=>{if(isDefName(t.name))t.name=defName(i)});
+    if(v==="players"&&isDefName(teams[0].name)){let me="";try{me=arName()}catch(e){}me=me||live.defaultNick;if(me)teams[0].name=me.slice(0,24)}
+    saveTeams();renderSetup();renderStrip()},
+  "fill-roster":()=>{if(!rosterOn())return;const names=live.rosterList.names.slice(0,MAX_SIDES);teams=names.map((n,i)=>newTeam(n.slice(0,24),i));while(teams.length<2)teams.push(newTeam(defName(teams.length),teams.length));saveTeams();renderSetup()},
+  "add-team":()=>{if(teams.length>=MAX_SIDES)return;teams.push(newTeam(defName(teams.length),teams.length));saveTeams();renderSetup();const el=$("#team-name-"+(teams.length-1));el.focus();el.select()},
   "remove-team":d=>{if(teams.length<=2)return;teams.splice(+d.i,1);teams.forEach((t,i)=>t.color=TEAM_COLORS[i]);saveTeams();renderSetup()},
   "music":d=>{if(d.track==="party"){if(!PARTY.queue.length){ACT["open-party"]();return}partyStart();renderMusicUI();return}
     prefs.lobby=d.track;if(!prefs.music){prefs.music=true;setMusicGain()}savePrefs();if(M.kind==="lobby")lobbyMusic();renderMusicUI()},
@@ -2910,7 +2941,7 @@ const ACT={
 };
 document.addEventListener("click",e=>{if(performance.now()-dragEndAt<400)return;const b=e.target.closest("[data-act]");if(!b||b.disabled)return;audioInit();const f=ACT[b.dataset.act];if(f)f(b.dataset,b)});
 document.addEventListener("pointerdown",()=>audioInit());
-document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||"Team "+(+i+1);saveTeams()}});
+document.addEventListener("input",e=>{const i=e.target.dataset&&e.target.dataset.i;if(e.target.id&&e.target.id.startsWith("team-name-")&&i!=null){teams[+i].name=e.target.value.trim()||defName(+i);saveTeams()}});
 document.addEventListener("keydown",e=>{
   if(mode==="arena"&&AR.duel&&(AR.duel.stage==="q"||AR.duel.stage==="sq")&&/^[1-4a-dA-D]$/.test(e.key)&&!e.target.closest("input,textarea,select")){const k="1234".includes(e.key)?+e.key-1:"abcd".indexOf(e.key.toLowerCase());if(k<AR.duel.qs[AR.duel.i].opts.length)ACT["duel-pick"]({k})}
   if(e.key==="Escape"){if(!$("#confirm").hidden)ACT["confirm-no"]();else if(!$("#party").hidden)ACT["party-close"]();else if(!$("#poster").hidden)ACT["poster-close"]();else if(!$("#roster").hidden)ACT["roster-cancel"]();else if(!$("#server").hidden)ACT["server-close"]();else if(!$("#tunes").hidden)ACT["tunes-close"]();else if(!$("#music").hidden)ACT["music-close"]();else if(!$("#pack").hidden)ACT["pack-cancel"]()}
@@ -2931,7 +2962,7 @@ document.addEventListener("change",async e=>{
   if(e.target.id==="p-song-file"){const f=e.target.files[0];e.target.value="";if(f)sendSong(f);return}
   if(e.target.id==="ar-cat"){AR.pref.cat=e.target.value;store.set("japarty.arenaPref",AR.pref);return}
   if(e.target.id==="lh-kind"){const b=$("#lh-songs");if(b)b.hidden=e.target.value!=="tune";const c=e.target.value==="cash";$("#lh-cases-wrap").hidden=!c;$("#lh-n-wrap").hidden=c;return}
-  if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(teams[k]&&teams[k].name)||"Team "+(k+1)):[];
+  if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(playAs==="teams"&&teams[k]&&teams[k].name)||"Team "+(k+1)):[];
     if(live.hs){const{rev,at,pin,kicked,teams:_t,...rest}=live.hs;broadcast(rest)}updateCloud(players());return}
   if(e.target.id==="roster-file"){const f=e.target.files[0];e.target.value="";if(!f)return;try{$("#roster-text").value=(await f.text()).replace(/^\uFEFF/,"");rosterPreview()}catch(err){}return}
   if(e.target.id==="pack-file"){const f=e.target.files[0];e.target.value="";if(!f)return;
@@ -3649,7 +3680,7 @@ document.addEventListener("fullscreenchange",()=>{const b=$("#fs-btn");if(b)b.te
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in the Arena: speed rounds, 5 to 10 question duels, category duels, quick match, reactions and your duel stats.";
+{const WHATS_NEW="One-screen games can now use each person's name instead of teams, for up to 8 players. Choose Players under Play as.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderSetup();renderPackLabel();renderMusicUI();renderTuneUI();renderAutoSel();show("home");initLive();loadTunes();
