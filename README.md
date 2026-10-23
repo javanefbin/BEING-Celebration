@@ -6,9 +6,9 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 - **Quiz Rush**: timed multiple choice, faster answers score more.
 - **True or False Blitz**: 10-second rounds.
 - **Guess the Song**: add your own song clips, plus two public-domain starter tunes.
-- **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. Choose 16, 24, 32 or 40 cases. In live games everyone plays their own case on their phone.
-- **Who Am I?**: four clues about a famous figure appear one at a time, hardest first. Lock in early for 1,000 points, or wait for an easier clue and earn less.
-- **Map Round**: drop a pin where it happened on a map of the United States. The closer you are, the more points. On one screen players take turns; in live games everyone taps their own phone.
+- **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. Each offer shows how it compares with the average of the cases still closed, how nervous the Banker is, and every offer so far. At the end you see whether you beat the Banker. Choose 16, 24, 32 or 40 cases. In live games everyone plays their own case on their phone.
+- **Who Am I?**: four clues about one of 41 famous figures appear one at a time, hardest first. Lock in early for 1,000 points, or wait for an easier clue and earn less. The reveal shows how many people got it on each clue.
+- **Map Round**: drop a pin where it happened on a map of the United States, with 40 places. The closer you are, the more points. Zoom in to place your pin exactly. Halfway through, a hint names the state, and pins after the hint score up to 600. On one screen players take turns; in live games everyone taps their own phone.
 - **Japarty Board**: six categories with a Daily Double and Final Japarty (one shared screen).
 
 Press **Play** on any one-screen game and a **Who's playing?** box asks for your name. Add a box for each person playing on the same screen (up to 8), or choose **Play as teams instead**. Solo play works too.
@@ -16,6 +16,9 @@ Press **Play** on any one-screen game and a **Who's playing?** box asks for your
 
 ## Daily warm-up
 Five questions a day, the same for everyone, from the home screen. Play once a day to build a streak, then copy your result to share it.
+
+## Getting around
+Tap **JAPARTY!** at the top of any screen to go home. In a live game, **Back** takes the big screen from a game back to the lobby, with the same PIN and players. From the lobby it goes home, and **Resume game** brings you back. On phones, **Back** leaves the game and returns to the PIN screen.
 
 ## Hosting tools
 - **Phone remote**: in the live lobby, choose **Phone remote** and scan the code with your own phone to run the big screen from anywhere: next, reveal, pause, skip and music.

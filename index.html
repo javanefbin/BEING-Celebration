@@ -663,7 +663,7 @@ button.case:disabled{opacity:.55;cursor:default}
 .map-wrap{width:100%;border-radius:var(--r);background:var(--stage2);border:1px solid var(--line);padding:clamp(6px,1.2vw,14px);line-height:0}
 .map-wrap.big{max-width:1040px;margin:0 auto}
 .map-wrap.phone{padding:4px;border-radius:14px}
-.usmap{width:100%;height:auto;display:block;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.usmap{width:100%;height:auto;display:block;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .usmap.tap{cursor:crosshair}
 .usmap .nation{fill:var(--stage3);stroke:color-mix(in srgb,var(--paper) 40%,transparent);stroke-width:1.2;stroke-linejoin:round}
 .usmap .borders{fill:none;stroke:color-mix(in srgb,var(--paper) 18%,transparent);stroke-width:.8;stroke-linejoin:round}
@@ -766,6 +766,53 @@ details.recap .recap-list{margin:10px 0}
 .rep-poll{display:grid;gap:2px;background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 #report-body{max-height:min(60vh,680px);overflow:auto}
 
+/* v3.1: navigation */
+.logo-btn{background:none;border:0;padding:0;cursor:pointer;border-radius:8px;transition:transform .12s}
+.logo-btn:hover{transform:translateY(-1px) rotate(-1deg)}
+.logo-btn:active{transform:translateY(1px)}
+.gb-back,.p-back{flex:none}
+.p-top .p-who{order:5;flex:1 1 100%;min-width:0;overflow-wrap:anywhere}
+/* v3.1: Who Am I? */
+.clue-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:min(760px,100%);margin:0 auto}
+.clue-stats span{display:grid;justify-items:center;gap:2px;background:var(--stage2);border:1px solid var(--line);border-radius:12px;padding:10px 6px;font-size:13px;font-weight:700;color:var(--muted);text-align:center}
+.clue-stats b{font-family:var(--display);font-weight:400;font-size:28px;color:var(--paper);line-height:1}
+.clue-stats small{color:var(--gold);font-weight:700}
+/* v3.1: Map Round */
+.map-hint{grid-column:1/-1;margin:0;display:inline-block;justify-self:start;background:var(--gold);color:var(--ink);font-weight:800;border-radius:999px;padding:6px 14px;animation:pop .3s both}
+.mg-turn .map-hint{grid-column:1/-1}
+.usmap .nation,.usmap .borders,.usmap .mring,.usmap .miss{vector-effect:non-scaling-stroke}
+.usmap .mring{fill:none;stroke:var(--good);stroke-width:1.5;stroke-dasharray:4 5;opacity:.75}
+.usmap .tlabel,.usmap .plabel{font-family:var(--body);font-weight:800;paint-order:stroke;stroke:var(--ink);stroke-width:5px;stroke-linejoin:round}
+.usmap .tlabel{font-size:24px;fill:var(--good)}
+.usmap .plabel{font-size:17px;fill:var(--paper)}
+.map-wrap.phone .tlabel{font-size:46px;stroke-width:9px}
+.map-wrap.zoomed{outline:2px solid var(--gold);outline-offset:-2px}
+.p-map-btns{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.mg-row.best{border-color:var(--gold)}
+.mg-row small.dbl{margin-left:6px}
+/* v3.1: Cash or Case */
+.cs-insight{font-weight:700;color:var(--paper);margin:0}
+.p-card .cs-insight{color:var(--paper)}
+.cs-mood{color:var(--gold);font-weight:700;margin:0;font-size:15px}
+#cs-sub{max-width:62ch}
+.offer-trail{display:grid;gap:6px;width:min(420px,100%);margin:0 auto}
+.offer-trail>div{display:flex;align-items:flex-end;gap:6px;height:84px}
+.offer-trail>div>span{flex:1;display:grid;grid-template-rows:1fr auto;height:100%;min-width:0;text-align:center}
+.offer-trail i{align-self:end;height:var(--h);background:color-mix(in srgb,var(--gold) 45%,var(--stage3));border-radius:6px 6px 2px 2px}
+.offer-trail .now i{background:var(--gold)}
+.offer-trail b{font-size:11px;color:var(--muted);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.offer-trail .now b{color:var(--gold)}
+.banker-call{display:flex;justify-content:center;gap:6px;height:22px;align-items:flex-end}
+.banker-call i{width:6px;border-radius:3px;background:var(--gold);animation:ringbar 0.9s ease-in-out infinite}
+.banker-call i:nth-child(1){height:10px}.banker-call i:nth-child(2){height:20px;animation-delay:.15s}.banker-call i:nth-child(3){height:14px;animation-delay:.3s}
+@keyframes ringbar{50%{transform:scaleY(.35)}}
+.cs-verdict{font-weight:800;margin:0}
+.cs-verdict.good{color:var(--good)}.cs-verdict.bad{color:var(--bad)}
+.cs-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;width:min(760px,100%);margin:0 auto}
+.cs-stats div{display:grid;gap:2px;background:var(--stage2);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.cs-stats b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--gold)}
+.cs-stats span{color:var(--muted);font-weight:600}
+
 /* Phones and tablets */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:hidden}
@@ -841,7 +888,8 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
   <!-- Shared game bar -->
   <div class="gamebar" id="gamebar" hidden>
     <div class="gb-top">
-      <span class="logo">JAPARTY!</span>
+      <button class="btn ghost small gb-back" data-act="gb-back" id="gb-back" hidden aria-label="Back">‹ Back</button>
+      <button class="logo logo-btn" data-act="logo-home" aria-label="Japarty home">JAPARTY!</button>
       <span class="gb-mode" id="gb-mode"></span>
       <span class="gb-progress" id="gb-progress"></span>
       <span class="gb-players" id="gb-players" hidden></span>
@@ -1075,7 +1123,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
     <div class="map-wrap" id="mg-map"></div>
     <div class="mg-res" id="mg-res"></div>
     <div class="fact" id="mg-fact" hidden></div>
-    <div class="actions"><button class="btn ghost" data-act="mg-reveal" id="mg-skip" hidden>Reveal now</button><button class="btn" data-act="mg-lock" id="mg-lock" disabled>Lock in</button><button class="btn" data-act="mg-next" id="mg-next" hidden>Leaderboard</button></div>
+    <div class="actions"><button class="btn ghost" data-act="mg-zoom" id="mg-zoom" hidden>Zoom in</button><button class="btn ghost" data-act="mg-hint" id="mg-hint" hidden>Show a hint (max 600)</button><button class="btn ghost" data-act="mg-reveal" id="mg-skip" hidden>Reveal now</button><button class="btn" data-act="mg-lock" id="mg-lock" disabled>Lock in</button><button class="btn" data-act="mg-next" id="mg-next" hidden>Leaderboard</button></div>
   </section>
 
   <!-- Live host (big screen) -->
@@ -1084,7 +1132,8 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
   <!-- Live player (phone) -->
   <section class="screen" id="player" hidden>
     <div class="p-top">
-      <span class="logo">JAPARTY!</span>
+      <button class="btn ghost small p-back" data-act="p-back" id="p-back" aria-label="Back">‹ Back</button>
+      <button class="logo logo-btn" data-act="logo-home" aria-label="Japarty home">JAPARTY!</button>
       <span class="p-who" id="p-who"></span>
       <span class="conn" id="p-conn" hidden><i></i><span>Connected</span></span>
       <button class="toggle" data-act="toggle-sfx" aria-pressed="true"><span class="dot" aria-hidden="true"></span><span class="tlabel">Sound effects on</span></button>
@@ -1098,7 +1147,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 
   <!-- Arena -->
   <section class="screen" id="arena" hidden>
-    <div class="ar-top"><span class="logo">JAPARTY!</span><span class="gb-mode">Arena</span><span class="gb-spacer"></span>
+    <div class="ar-top"><button class="logo logo-btn" data-act="logo-home" aria-label="Japarty home">JAPARTY!</button><span class="gb-mode">Arena</span><span class="gb-spacer"></span>
       <span class="online-pill static"><i aria-hidden="true"></i><span id="ar-online">0 online</span></span>
       <button class="btn ghost small" data-act="arena-back" id="ar-back">Back</button></div>
     <div id="ar-body" class="ar-body" aria-live="polite"></div>
@@ -1106,7 +1155,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 
   <!-- Score history -->
   <section class="screen" id="hof" hidden>
-    <div class="ar-top"><span class="logo">JAPARTY!</span><span class="gb-mode">Score history</span><span class="gb-spacer"></span>
+    <div class="ar-top"><button class="logo logo-btn" data-act="logo-home" aria-label="Japarty home">JAPARTY!</button><span class="gb-mode">Score history</span><span class="gb-spacer"></span>
       <button class="btn ghost small" data-act="hof-back">Back</button></div>
     <div class="hof-body" id="hof-body"></div>
   </section>
@@ -1410,7 +1459,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.0";
+const APP_VERSION="3.1";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1568,32 +1617,47 @@ const TIMELINE=[
 /* Who Am I?: four clues each, hardest first */
 const WHO_CL=5,WHO_PTS=[1000,750,500,250];
 const WHOS=[
-{a:"Harriet Tubman",c:["In 1863 I helped lead the Combahee River Raid, which freed more than 700 people.","I was born Araminta Ross in Maryland around 1822.","During the Civil War I served the Union Army as a scout and spy.","I escaped slavery and went back again and again to guide others north on the Underground Railroad."],w:["Sojourner Truth","Ida B. Wells","Mary McLeod Bethune"],f:"Tubman is often called the Moses of her people."},
-{a:"Frederick Douglass",c:["I served as U.S. Marshal for the District of Columbia and later as U.S. minister to Haiti.","I published an abolitionist newspaper called The North Star.","My 1852 speech asked, \"What to the slave is the Fourth of July?\"","I escaped slavery in 1838 and became the most famous abolitionist speaker of my time."],w:["Booker T. Washington","W.E.B. Du Bois","Nat Turner"],f:"Douglass was one of the most photographed Americans of the 19th century."},
-{a:"Rosa Parks",c:["I worked as secretary of the Montgomery chapter of the NAACP.","I later moved to Detroit and worked for Congressman John Conyers.","Congress called me the first lady of civil rights.","In 1955 I refused to give up my bus seat in Montgomery, Alabama."],w:["Claudette Colvin","Coretta Scott King","Ella Baker"],f:"Her arrest sparked the 381-day Montgomery Bus Boycott."},
-{a:"Martin Luther King Jr.",c:["I earned a doctorate in systematic theology from Boston University.","In 1963 I wrote a famous letter from a Birmingham jail.","In 1964 I became the youngest man at the time to win the Nobel Peace Prize.","I gave the \"I Have a Dream\" speech at the March on Washington."],w:["Ralph Abernathy","John Lewis","Andrew Young"],f:"His birthday became a federal holiday in 1986."},
-{a:"Malcolm X",c:["In 1964 I made a pilgrimage to Mecca that changed my views on race.","I was a national spokesman for the Nation of Islam.","In 1964 I gave a famous speech called \"The Ballot or the Bullet.\"","I was born Malcolm Little in Omaha, Nebraska."],w:["Stokely Carmichael","Huey P. Newton","Elijah Muhammad"],f:"His autobiography, written with Alex Haley, came out in 1965."},
-{a:"Mary McLeod Bethune",c:["I was the 15th of 17 children, born to formerly enslaved parents in South Carolina.","In 1935 I founded the National Council of Negro Women.","I advised President Franklin D. Roosevelt as part of his Black Cabinet.","In 1904 I opened a school for Black girls in Daytona Beach, Florida, that grew into a university carrying my name."],w:["Madam C.J. Walker","Mary Church Terrell","Nannie Helen Burroughs"],f:"Her statue stands in Lincoln Park in Washington, D.C."},
-{a:"George Washington Carver",c:["I was the first Black student at Iowa State.","I taught and researched at Tuskegee Institute for 47 years.","I urged Southern farmers to rotate crops to restore soil worn out by cotton.","I developed hundreds of uses for the peanut and the sweet potato."],w:["Percy Julian","Benjamin Banneker","Lewis Latimer"],f:"In 1943 his birthplace became the first national monument honoring a Black American."},
-{a:"Katherine Johnson",c:["I was one of the first Black students to integrate West Virginia University's graduate school.","I calculated the flight path for Alan Shepard's 1961 trip into space.","John Glenn asked for me to check the computer's numbers before his orbit.","The 2016 film Hidden Figures told my story."],w:["Dorothy Vaughan","Mary Jackson","Mae Jemison"],f:"She received the Presidential Medal of Freedom in 2015."},
-{a:"Jackie Robinson",c:["I was the first athlete at UCLA to earn varsity letters in four sports.","I served as an Army lieutenant during World War II.","I was named baseball's first Rookie of the Year in 1947.","I broke Major League Baseball's color barrier with the Brooklyn Dodgers."],w:["Satchel Paige","Larry Doby","Hank Aaron"],f:"Every major league team retired his number 42 in 1997."},
-{a:"Shirley Chisholm",c:["I worked as an early childhood educator before I went into politics.","My campaign slogan was \"Unbought and Unbossed.\"","In 1968 I became the first Black woman elected to the U.S. Congress.","In 1972 I became the first Black woman to run for a major party's presidential nomination."],w:["Barbara Jordan","Fannie Lou Hamer","Maxine Waters"],f:"She represented Brooklyn, New York, in Congress for seven terms."},
-{a:"Thurgood Marshall",c:["Segregation kept me out of the University of Maryland's law school, so I studied at Howard.","In 1940 I founded the NAACP Legal Defense and Educational Fund.","I argued Brown v. Board of Education before the Supreme Court.","In 1967 I became the first Black justice on the U.S. Supreme Court."],w:["Charles Hamilton Houston","Clarence Thomas","Constance Baker Motley"],f:"He won 29 of the 32 cases he argued before the Supreme Court."},
-{a:"Maya Angelou",c:["I was the first Black woman streetcar conductor in San Francisco.","I read my poem \"On the Pulse of Morning\" at President Clinton's 1993 inauguration.","I wrote the poem \"Still I Rise.\"","My 1969 memoir is I Know Why the Caged Bird Sings."],w:["Toni Morrison","Nikki Giovanni","Gwendolyn Brooks"],f:"In 2022 she became the first Black woman pictured on a U.S. quarter."},
-{a:"Langston Hughes",c:["I wrote a newspaper column about a Harlem character named Jesse B. Semple.","I wrote \"The Negro Speaks of Rivers\" as a teenager, on a train headed to Mexico.","My poem \"Harlem\" asks what happens to a dream deferred.","I was a leading poet of the Harlem Renaissance."],w:["Countee Cullen","Claude McKay","Paul Laurence Dunbar"],f:"His Harlem home on East 127th Street is a city landmark."},
-{a:"Madam C.J. Walker",c:["I trained thousands of sales agents across the country.","I was born Sarah Breedlove in Louisiana in 1867.","I built a business selling hair care products for Black women.","Guinness World Records names me the first female self-made millionaire in America."],w:["Annie Malone","Maggie L. Walker","Mary McLeod Bethune"],f:"Her mansion, Villa Lewaro, stands in Irvington, New York."},
-{a:"Ida B. Wells",c:["In 1884 I sued a railroad after I was dragged from a first-class car.","I co-owned a Memphis newspaper called Free Speech.","I was one of the founders of the NAACP in 1909.","I led a crusade against lynching through investigative journalism."],w:["Mary Church Terrell","Sojourner Truth","Anna Julia Cooper"],f:"In 2020 she received a special Pulitzer Prize citation for her reporting."},
-{a:"Barack Obama",c:["I was the first Black president of the Harvard Law Review.","I worked as a community organizer in Chicago.","I represented Illinois in the U.S. Senate.","In 2008 I was elected the first Black president of the United States."],w:["Jesse Jackson","Colin Powell","Deval Patrick"],f:"He won the Nobel Peace Prize in 2009."},
-{a:"Mae Jemison",c:["I appeared in an episode of Star Trek: The Next Generation.","I served as a Peace Corps doctor in Sierra Leone and Liberia.","I earned my medical degree at Cornell.","In 1992 I became the first Black woman to travel into space."],w:["Katherine Johnson","Bessie Coleman","Stephanie Wilson"],f:"She flew aboard the space shuttle Endeavour."},
-{a:"Bessie Coleman",c:["I learned French so I could go to flight school in France.","I was born in Atlanta, Texas, in 1892.","Crowds at my air shows called me Queen Bess.","In 1921 I became the first Black woman to earn a pilot's license."],w:["Mae Jemison","Willa Brown","Janet Harmon Bragg"],f:"No flight school in the United States would accept her at the time."},
-{a:"Muhammad Ali",c:["In 1967 I refused to be drafted into the Army and was stripped of my title.","I won a gold medal at the 1960 Rome Olympics.","I said I could float like a butterfly and sting like a bee.","I was born Cassius Clay in Louisville, Kentucky."],w:["Joe Louis","Joe Frazier","Sugar Ray Robinson"],f:"The Supreme Court overturned his draft conviction in 1971."},
-{a:"Jesse Owens",c:["I was born in Oakville, Alabama, and grew up in Cleveland.","In 1935 I set three world records and tied a fourth in about 45 minutes.","I ran track for Ohio State University.","I won four gold medals at the 1936 Olympics in Berlin."],w:["Ralph Metcalfe","Carl Lewis","Wilma Rudolph"],f:"He received the Presidential Medal of Freedom in 1976."},
-{a:"Sojourner Truth",c:["I was born Isabella Baumfree in New York around 1797.","In 1828 I went to court to free my son and won.","I helped recruit Black soldiers for the Union Army.","I'm remembered for the speech known as \"Ain't I a Woman?\" in Akron, Ohio, in 1851."],w:["Harriet Tubman","Phillis Wheatley","Ida B. Wells"],f:"She chose the name Sojourner Truth in 1843."},
-{a:"Booker T. Washington",c:["I was born into slavery in Virginia and later studied at Hampton Institute.","In 1895 I gave the speech that became known as the Atlanta Compromise.","My autobiography is called Up from Slavery.","In 1881 I became the first leader of Tuskegee Institute in Alabama."],w:["W.E.B. Du Bois","Frederick Douglass","George Washington Carver"],f:"In 1901 he became the first Black American invited to dine at the White House."},
-{a:"W.E.B. Du Bois",c:["For 24 years I edited The Crisis, the NAACP's magazine.","I was the first Black American to earn a Ph.D. from Harvard.","In 1903 I wrote The Souls of Black Folk.","I was one of the founders of the NAACP in 1909."],w:["Booker T. Washington","Marcus Garvey","Carter G. Woodson"],f:"He wrote about the \"double consciousness\" of Black Americans."},
-{a:"Carter G. Woodson",c:["I was the second Black American to earn a Ph.D. from Harvard.","In 1916 I founded the Journal of Negro History.","People call me the Father of Black History.","In 1926 I launched Negro History Week, which grew into Black History Month."],w:["W.E.B. Du Bois","Arturo Schomburg","John Hope Franklin"],f:"He chose February to honor the birthdays of Frederick Douglass and Abraham Lincoln."},
-{a:"Fannie Lou Hamer",c:["I worked as a sharecropper in Sunflower County, Mississippi.","I helped found the Mississippi Freedom Democratic Party.","My testimony at the 1964 Democratic convention was broadcast on national TV.","I said I was \"sick and tired of being sick and tired.\""],w:["Ella Baker","Septima Clark","Diane Nash"],f:"She was badly beaten in a Mississippi jail in 1963 after a voter registration workshop."},
-{a:"John Lewis",c:["I was one of the original 13 Freedom Riders in 1961.","I chaired the Student Nonviolent Coordinating Committee.","I was beaten on the Edmund Pettus Bridge on Bloody Sunday in 1965.","I represented Georgia in Congress for more than 30 years and urged people to get into good trouble."],w:["Julian Bond","Andrew Young","Hosea Williams"],f:"At 23, he was the youngest speaker at the 1963 March on Washington."}
+{a:"Harriet Tubman",t:"Freedom fighters",c:["In 1863 I helped lead the Combahee River Raid, which freed more than 700 people.","I was born Araminta Ross in Maryland around 1822.","During the Civil War I served the Union Army as a scout and spy.","I escaped slavery and went back again and again to guide others north on the Underground Railroad."],w:["Sojourner Truth","Ida B. Wells","Mary McLeod Bethune"],f:"Tubman is often called the Moses of her people."},
+{a:"Frederick Douglass",t:"Freedom fighters",c:["I served as U.S. Marshal for the District of Columbia and later as U.S. minister to Haiti.","I published an abolitionist newspaper called The North Star.","My 1852 speech asked, \"What to the slave is the Fourth of July?\"","I escaped slavery in 1838 and became the most famous abolitionist speaker of my time."],w:["Booker T. Washington","W.E.B. Du Bois","Nat Turner"],f:"Douglass was one of the most photographed Americans of the 19th century."},
+{a:"Rosa Parks",t:"Civil rights",c:["I worked as secretary of the Montgomery chapter of the NAACP.","I later moved to Detroit and worked for Congressman John Conyers.","Congress called me the first lady of civil rights.","In 1955 I refused to give up my bus seat in Montgomery, Alabama."],w:["Claudette Colvin","Coretta Scott King","Ella Baker"],f:"Her arrest sparked the 381-day Montgomery Bus Boycott."},
+{a:"Martin Luther King Jr.",t:"Civil rights",c:["I earned a doctorate in systematic theology from Boston University.","In 1963 I wrote a famous letter from a Birmingham jail.","In 1964 I became the youngest man at the time to win the Nobel Peace Prize.","I gave the \"I Have a Dream\" speech at the March on Washington."],w:["Ralph Abernathy","John Lewis","Andrew Young"],f:"His birthday became a federal holiday in 1986."},
+{a:"Malcolm X",t:"Civil rights",c:["In 1964 I made a pilgrimage to Mecca that changed my views on race.","I was a national spokesman for the Nation of Islam.","In 1964 I gave a famous speech called \"The Ballot or the Bullet.\"","I was born Malcolm Little in Omaha, Nebraska."],w:["Stokely Carmichael","Huey P. Newton","Elijah Muhammad"],f:"His autobiography, written with Alex Haley, came out in 1965."},
+{a:"Mary McLeod Bethune",t:"Education",c:["I was the 15th of 17 children, born to formerly enslaved parents in South Carolina.","In 1935 I founded the National Council of Negro Women.","I advised President Franklin D. Roosevelt as part of his Black Cabinet.","In 1904 I opened a school for Black girls in Daytona Beach, Florida, that grew into a university carrying my name."],w:["Madam C.J. Walker","Mary Church Terrell","Nannie Helen Burroughs"],f:"Her statue stands in Lincoln Park in Washington, D.C."},
+{a:"George Washington Carver",t:"Science and invention",c:["I was the first Black student at Iowa State.","I taught and researched at Tuskegee Institute for 47 years.","I urged Southern farmers to rotate crops to restore soil worn out by cotton.","I developed hundreds of uses for the peanut and the sweet potato."],w:["Percy Julian","Benjamin Banneker","Lewis Latimer"],f:"In 1943 his birthplace became the first national monument honoring a Black American."},
+{a:"Katherine Johnson",t:"Science and invention",c:["I was one of the first Black students to integrate West Virginia University's graduate school.","I calculated the flight path for Alan Shepard's 1961 trip into space.","John Glenn asked for me to check the computer's numbers before his orbit.","The 2016 film Hidden Figures told my story."],w:["Dorothy Vaughan","Mary Jackson","Mae Jemison"],f:"She received the Presidential Medal of Freedom in 2015."},
+{a:"Jackie Robinson",t:"Sports",c:["I was the first athlete at UCLA to earn varsity letters in four sports.","I served as an Army lieutenant during World War II.","I was named baseball's first Rookie of the Year in 1947.","I broke Major League Baseball's color barrier with the Brooklyn Dodgers."],w:["Satchel Paige","Larry Doby","Hank Aaron"],f:"Every major league team retired his number 42 in 1997."},
+{a:"Shirley Chisholm",t:"Politics and law",c:["I worked as an early childhood educator before I went into politics.","My campaign slogan was \"Unbought and Unbossed.\"","In 1968 I became the first Black woman elected to the U.S. Congress.","In 1972 I became the first Black woman to run for a major party's presidential nomination."],w:["Barbara Jordan","Fannie Lou Hamer","Maxine Waters"],f:"She represented Brooklyn, New York, in Congress for seven terms."},
+{a:"Thurgood Marshall",t:"Politics and law",c:["Segregation kept me out of the University of Maryland's law school, so I studied at Howard.","In 1940 I founded the NAACP Legal Defense and Educational Fund.","I argued Brown v. Board of Education before the Supreme Court.","In 1967 I became the first Black justice on the U.S. Supreme Court."],w:["Charles Hamilton Houston","Clarence Thomas","Constance Baker Motley"],f:"He won 29 of the 32 cases he argued before the Supreme Court."},
+{a:"Maya Angelou",t:"Arts and letters",c:["I was the first Black woman streetcar conductor in San Francisco.","I read my poem \"On the Pulse of Morning\" at President Clinton's 1993 inauguration.","I wrote the poem \"Still I Rise.\"","My 1969 memoir is I Know Why the Caged Bird Sings."],w:["Toni Morrison","Nikki Giovanni","Gwendolyn Brooks"],f:"In 2022 she became the first Black woman pictured on a U.S. quarter."},
+{a:"Langston Hughes",t:"Arts and letters",c:["I wrote a newspaper column about a Harlem character named Jesse B. Semple.","I wrote \"The Negro Speaks of Rivers\" as a teenager, on a train headed to Mexico.","My poem \"Harlem\" asks what happens to a dream deferred.","I was a leading poet of the Harlem Renaissance."],w:["Countee Cullen","Claude McKay","Paul Laurence Dunbar"],f:"His Harlem home on East 127th Street is a city landmark."},
+{a:"Madam C.J. Walker",t:"Business",c:["I trained thousands of sales agents across the country.","I was born Sarah Breedlove in Louisiana in 1867.","I built a business selling hair care products for Black women.","Guinness World Records names me the first female self-made millionaire in America."],w:["Annie Malone","Maggie L. Walker","Mary McLeod Bethune"],f:"Her mansion, Villa Lewaro, stands in Irvington, New York."},
+{a:"Ida B. Wells",t:"Civil rights",c:["In 1884 I sued a railroad after I was dragged from a first-class car.","I co-owned a Memphis newspaper called Free Speech.","I was one of the founders of the NAACP in 1909.","I led a crusade against lynching through investigative journalism."],w:["Mary Church Terrell","Sojourner Truth","Anna Julia Cooper"],f:"In 2020 she received a special Pulitzer Prize citation for her reporting."},
+{a:"Barack Obama",t:"Politics and law",c:["I was the first Black president of the Harvard Law Review.","I worked as a community organizer in Chicago.","I represented Illinois in the U.S. Senate.","In 2008 I was elected the first Black president of the United States."],w:["Jesse Jackson","Colin Powell","Deval Patrick"],f:"He won the Nobel Peace Prize in 2009."},
+{a:"Mae Jemison",t:"Science and invention",c:["I appeared in an episode of Star Trek: The Next Generation.","I served as a Peace Corps doctor in Sierra Leone and Liberia.","I earned my medical degree at Cornell.","In 1992 I became the first Black woman to travel into space."],w:["Katherine Johnson","Bessie Coleman","Stephanie Wilson"],f:"She flew aboard the space shuttle Endeavour."},
+{a:"Bessie Coleman",t:"Flight and exploration",c:["I learned French so I could go to flight school in France.","I was born in Atlanta, Texas, in 1892.","Crowds at my air shows called me Queen Bess.","In 1921 I became the first Black woman to earn a pilot's license."],w:["Mae Jemison","Willa Brown","Janet Harmon Bragg"],f:"No flight school in the United States would accept her at the time."},
+{a:"Muhammad Ali",t:"Sports",c:["In 1967 I refused to be drafted into the Army and was stripped of my title.","I won a gold medal at the 1960 Rome Olympics.","I said I could float like a butterfly and sting like a bee.","I was born Cassius Clay in Louisville, Kentucky."],w:["Joe Louis","Joe Frazier","Sugar Ray Robinson"],f:"The Supreme Court overturned his draft conviction in 1971."},
+{a:"Jesse Owens",t:"Sports",c:["I was born in Oakville, Alabama, and grew up in Cleveland.","In 1935 I set three world records and tied a fourth in about 45 minutes.","I ran track for Ohio State University.","I won four gold medals at the 1936 Olympics in Berlin."],w:["Ralph Metcalfe","Carl Lewis","Wilma Rudolph"],f:"He received the Presidential Medal of Freedom in 1976."},
+{a:"Sojourner Truth",t:"Freedom fighters",c:["I was born Isabella Baumfree in New York around 1797.","In 1828 I went to court to free my son and won.","I helped recruit Black soldiers for the Union Army.","I'm remembered for the speech known as \"Ain't I a Woman?\" in Akron, Ohio, in 1851."],w:["Harriet Tubman","Phillis Wheatley","Ida B. Wells"],f:"She chose the name Sojourner Truth in 1843."},
+{a:"Booker T. Washington",t:"Education",c:["I was born into slavery in Virginia and later studied at Hampton Institute.","In 1895 I gave the speech that became known as the Atlanta Compromise.","My autobiography is called Up from Slavery.","In 1881 I became the first leader of Tuskegee Institute in Alabama."],w:["W.E.B. Du Bois","Frederick Douglass","George Washington Carver"],f:"In 1901 he became the first Black American invited to dine at the White House."},
+{a:"W.E.B. Du Bois",t:"Civil rights",c:["For 24 years I edited The Crisis, the NAACP's magazine.","I was the first Black American to earn a Ph.D. from Harvard.","In 1903 I wrote The Souls of Black Folk.","I was one of the founders of the NAACP in 1909."],w:["Booker T. Washington","Marcus Garvey","Carter G. Woodson"],f:"He wrote about the \"double consciousness\" of Black Americans."},
+{a:"Carter G. Woodson",t:"Education",c:["I was the second Black American to earn a Ph.D. from Harvard.","In 1916 I founded the Journal of Negro History.","People call me the Father of Black History.","In 1926 I launched Negro History Week, which grew into Black History Month."],w:["W.E.B. Du Bois","Arturo Schomburg","John Hope Franklin"],f:"He chose February to honor the birthdays of Frederick Douglass and Abraham Lincoln."},
+{a:"Fannie Lou Hamer",t:"Civil rights",c:["I worked as a sharecropper in Sunflower County, Mississippi.","I helped found the Mississippi Freedom Democratic Party.","My testimony at the 1964 Democratic convention was broadcast on national TV.","I said I was \"sick and tired of being sick and tired.\""],w:["Ella Baker","Septima Clark","Diane Nash"],f:"She was badly beaten in a Mississippi jail in 1963 after a voter registration workshop."},
+{a:"John Lewis",t:"Civil rights",c:["I was one of the original 13 Freedom Riders in 1961.","I chaired the Student Nonviolent Coordinating Committee.","I was beaten on the Edmund Pettus Bridge on Bloody Sunday in 1965.","I represented Georgia in Congress for more than 30 years and urged people to get into good trouble."],w:["Julian Bond","Andrew Young","Hosea Williams"],f:"At 23, he was the youngest speaker at the 1963 March on Washington."},
+{a:"Zora Neale Hurston",t:"Arts and letters",c:["I studied anthropology at Barnard College with Franz Boas.","I collected folklore in Florida, Louisiana, Jamaica and Haiti.","I grew up in Eatonville, Florida, one of the first incorporated Black towns.","I wrote the 1937 novel Their Eyes Were Watching God."],w:["Nella Larsen","Dorothy West","Alice Walker"],f:"Alice Walker helped bring new attention to her work in the 1970s."},
+{a:"Ella Baker",t:"Civil rights",c:["I traveled the South as a field secretary and director of branches for the NAACP.","I helped run the first office of the Southern Christian Leadership Conference.","In 1960 I helped students form the Student Nonviolent Coordinating Committee.","I believed in group-centered leadership instead of a single leader at the top."],w:["Septima Clark","Fannie Lou Hamer","Diane Nash"],f:"Activists called her Fundi, a Swahili word for a person who passes on a craft."},
+{a:"Charles R. Drew",t:"Science and invention",c:["I was a star athlete at Amherst College.","My Columbia doctorate was about how to store blood.","In 1940 I directed the Blood for Britain program.","I pioneered large-scale blood banks and led the first American Red Cross blood bank."],w:["Daniel Hale Williams","Percy Julian","Ben Carson"],f:"He resigned over the military's policy of separating blood by race."},
+{a:"Garrett Morgan",t:"Science and invention",c:["I left school after sixth grade and taught myself much more.","In 1916 I wore my own breathing device to rescue workers trapped in a tunnel under Lake Erie.","I invented a safety hood, an early gas mask.","In 1923 I patented a traffic signal with a warning position."],w:["Lewis Latimer","Granville Woods","Elijah McCoy"],f:"He sold the rights to his traffic signal to General Electric."},
+{a:"Phillis Wheatley",t:"Arts and letters",c:["As a child I was kidnapped from West Africa and enslaved in Boston.","In 1773 I traveled to London, where my book was published.","George Washington invited me to visit him after I wrote a poem in his honor.","I was the first African American to publish a book of poetry."],w:["Lucy Terry","Frances Harper","Sojourner Truth"],f:"Her book was Poems on Various Subjects, Religious and Moral."},
+{a:"Louis Armstrong",t:"Music",c:["I learned to play the cornet at a home for boys in New Orleans.","Friends called me Satchmo and Pops.","In the 1920s I recorded with my Hot Five and Hot Seven bands.","My 1967 recording of \"What a Wonderful World\" became a classic."],w:["Duke Ellington","Dizzy Gillespie","Miles Davis"],f:"His home in Queens, New York, is now a museum."},
+{a:"Duke Ellington",t:"Music",c:["I was born Edward Kennedy Ellington in Washington, D.C.","My orchestra was the house band at Harlem's Cotton Club.","I wrote \"Mood Indigo\" and \"Sophisticated Lady.\"","Billy Strayhorn's \"Take the 'A' Train\" became my band's theme song."],w:["Count Basie","Cab Calloway","Louis Armstrong"],f:"He received the Presidential Medal of Freedom in 1969."},
+{a:"Marcus Garvey",t:"Civil rights",c:["I was born in Jamaica in 1887.","I founded the Universal Negro Improvement Association.","I started a shipping company called the Black Star Line.","I led a huge Pan-African movement from Harlem in the 1920s."],w:["W.E.B. Du Bois","A. Philip Randolph","Malcolm X"],f:"His newspaper, the Negro World, reached readers around the globe."},
+{a:"Benjamin Banneker",t:"Science and invention",c:["As a young man I built a wooden clock that kept time for decades.","I taught myself astronomy and predicted a solar eclipse.","I published almanacs in the 1790s.","I helped survey the boundaries of the new capital, Washington, D.C."],w:["Lewis Latimer","Prince Hall","George Washington Carver"],f:"In 1791 he wrote to Thomas Jefferson arguing against slavery."},
+{a:"Matthew Henson",t:"Flight and exploration",c:["I went to sea as a cabin boy when I was about 12.","I spoke Inuktitut and learned Arctic survival skills from the Inuit.","I traveled with explorer Robert Peary for more than 20 years.","In 1909 I was part of the expedition that claimed to reach the North Pole."],w:["York","James Beckwourth","Jean Baptiste Point du Sable"],f:"In 1988 he was reburied at Arlington National Cemetery."},
+{a:"Bayard Rustin",t:"Civil rights",c:["In 1947 I joined the Journey of Reconciliation, an early freedom ride.","I traveled to India in 1948 to learn about Gandhi's nonviolent methods.","I advised Martin Luther King Jr. on nonviolent protest.","I was the chief organizer of the 1963 March on Washington."],w:["A. Philip Randolph","Ralph Abernathy","Roy Wilkins"],f:"He was awarded the Presidential Medal of Freedom in 2013."},
+{a:"Ruby Bridges",t:"Civil rights",c:["I passed a test in kindergarten that helped decide which school I would attend.","Federal marshals walked me to school every day.","A famous Norman Rockwell painting shows me walking to school.","In 1960, at age six, I integrated William Frantz Elementary School in New Orleans."],w:["Elizabeth Eckford","Linda Brown","Claudette Colvin"],f:"For most of that year she was the only student in her class."},
+{a:"Wilma Rudolph",t:"Sports",c:["As a child I wore a leg brace after having polio.","I was one of 22 children in my family.","I ran track for Tennessee State University.","At the 1960 Rome Olympics I became the first American woman to win three track and field gold medals at one Games."],w:["Alice Coachman","Florence Griffith Joyner","Jackie Joyner-Kersee"],f:"Her hometown of Clarksville held its first integrated event for her homecoming parade."},
+{a:"James Baldwin",t:"Arts and letters",c:["I was a youth preacher in Harlem as a teenager.","In 1948 I moved to Paris.","I wrote the essay collection The Fire Next Time.","My first novel was Go Tell It on the Mountain."],w:["Richard Wright","Ralph Ellison","Langston Hughes"],f:"The 2016 documentary I Am Not Your Negro is built on his words."},
+{a:"Toni Morrison",t:"Arts and letters",c:["I worked as a book editor at Random House.","I taught at Princeton University.","My novel Beloved won the Pulitzer Prize.","In 1993 I became the first Black woman to win the Nobel Prize in Literature."],w:["Alice Walker","Maya Angelou","Gwendolyn Brooks"],f:"Her first novel, The Bluest Eye, came out in 1970."}
 ];
 /* Map Round: x,y on the 960x600 map */
 const MAPQ_RAW=[
@@ -1603,9 +1667,9 @@ const MAPQ_RAW=[
 ["Where was Greenwood, the district known as Black Wall Street, destroyed in 1921?","Tulsa, Oklahoma","Greenwood was one of the most prosperous Black communities in the country."],
 ["Which city's school case reached the Supreme Court as Brown v. Board of Education?","Topeka, Kansas","The Court ruled school segregation unconstitutional on May 17, 1954."],
 ["Where did nine Black students integrate Central High School in 1957?","Little Rock, Arkansas","President Eisenhower sent federal troops to protect the Little Rock Nine."],
-["Where did the 1963 March on Washington for Jobs and Freedom take place?","Washington, D.C.","About 250,000 people gathered at the Lincoln Memorial."],
+["Where did the 1963 March on Washington for Jobs and Freedom take place?","Washington, D.C.","About 250,000 people gathered at the Lincoln Memorial.","between Maryland and Virginia"],
 ["In which city was Martin Luther King Jr. born in 1929?","Atlanta, Georgia","His birth home on Auburn Avenue is part of a national historical park."],
-["Which New York City neighborhood gave its name to the 1920s Black arts movement?","Harlem, New York City","The Harlem Renaissance included Langston Hughes, Zora Neale Hurston and Duke Ellington."],
+["Which New York City neighborhood gave its name to the 1920s Black arts movement?","Harlem, New York City","The Harlem Renaissance included Langston Hughes, Zora Neale Hurston and Duke Ellington.","New York State"],
 ["Where did Union troops announce on June 19, 1865, that enslaved people in Texas were free?","Galveston, Texas","The day is celebrated as Juneteenth, a federal holiday since 2021."],
 ["Where did Huey P. Newton and Bobby Seale found the Black Panther Party in 1966?","Oakland, California","The Panthers ran free breakfast programs for children."],
 ["Where did the first Black military pilots of the U.S. Army Air Corps train during World War II?","Tuskegee, Alabama","They became known as the Tuskegee Airmen."],
@@ -1622,11 +1686,25 @@ const MAPQ_RAW=[
 ["Where is the oldest remaining Black town west of the Mississippi River, founded in 1877?","Nicodemus, Kansas","Its settlers left Kentucky after Reconstruction ended."],
 ["Which Florida town, one of the first incorporated Black towns in the U.S., was Zora Neale Hurston's hometown?","Eatonville, Florida","Eatonville was incorporated in 1887."],
 ["Where did civil rights leader Medgar Evers live and run the NAACP's state office?","Jackson, Mississippi","His home is now a national monument."],
-["Where was the 16th Street Baptist Church bombed in 1963?","Birmingham, Alabama","The attack killed four girls and built support for the Civil Rights Act of 1964."]
+["Where was the 16th Street Baptist Church bombed in 1963?","Birmingham, Alabama","The attack killed four girls and built support for the Civil Rights Act of 1964."],
+["Where did two men who had been enslaved found an all-Black town in the Mississippi Delta in 1887?","Mound Bayou, Mississippi","Isaiah T. Montgomery and Benjamin T. Green founded the town."],
+["Where is Boley, one of the best-known all-Black towns founded in what is now Oklahoma?","Boley, Oklahoma","It was one of more than 50 all-Black towns in Oklahoma."],
+["Where did Colonel Allen Allensworth found the first California town established by Black Americans, in 1908?","Allensworth, California","The town is now Colonel Allensworth State Historic Park."],
+["Where was Parrish Street, a business district also called Black Wall Street, home to North Carolina Mutual Life Insurance?","Durham, North Carolina","North Carolina Mutual was founded there in 1898."],
+["In which city was Thurgood Marshall born in 1908?","Baltimore, Maryland","The city's airport is named Baltimore/Washington International Thurgood Marshall Airport."],
+["Where was Malcolm X born in 1925?","Omaha, Nebraska","His birth site is on the National Register of Historic Places."],
+["Which city is Muhammad Ali's hometown, where the Muhammad Ali Center opened in 2005?","Louisville, Kentucky","He was born there as Cassius Clay in 1942."],
+["Where did Mary McLeod Bethune open her school for Black girls in 1904?","Daytona Beach, Florida","The school merged with Cookman Institute in 1923."],
+["Where did the Niagara Movement, a forerunner of the NAACP, hold its first meeting in the United States, in 1906?","Harpers Ferry, West Virginia","Members walked to the fort where John Brown made his stand in 1859."],
+["Which Ohio River city is home to the National Underground Railroad Freedom Center?","Cincinnati, Ohio","Freedom seekers crossed the Ohio River there from Kentucky."],
+["Where was Crispus Attucks killed in 1770, the first to die in the Boston Massacre?","Boston, Massachusetts","He is often called the first casualty of the American Revolution."],
+["Where did Bridget \"Biddy\" Mason win her freedom in court in 1856 and later become a landowner and philanthropist?","Los Angeles, California","She helped found the city's First African Methodist Episcopal Church in 1872."],
+["Near which Florida city was Fort Mose, the first legally recognized free Black settlement in what is now the U.S., founded in 1738?","St. Augustine, Florida","People who escaped slavery in the Carolinas found freedom there under Spanish rule."],
+["Where did the Albany Movement campaign against segregation in 1961 and 1962?","Albany, Georgia","The SNCC Freedom Singers formed there."]
 ];
 const MAP={N:"M663.6,469.2L663.6,469.2L663.6,469.2ZM786.1,444.8L792.2,462.9L800.3,476.6L810.2,488.8L809.2,492.6L823,517.3L825.6,525.8L826.5,544.5L822.8,556L810.9,559.4L805.1,548.3L797,546.1L792,535.7L783.7,528.9L773.1,514.9L777.8,507L769.3,507.7L770.8,495.2L769.2,485.6L754.5,474.7L749.2,467.6L737.3,464.6L724.5,476.9L707.1,465.1L694,463.1L678.2,467L673.8,467.8L668.7,459.3L667,467.1L662.3,466.5L653.2,466.7L642.1,472L643.6,488.6L649.3,489L650.9,496.4L637.6,490.4L630.9,495.8L626.8,490.5L620.2,497.3L610.3,492.4L599.6,481.6L592,488.3L576.2,483.8L564.2,485.8L547,492.8L548.6,484.7L542.9,486.8L548,493.7L536.1,503.6L516.6,514.6L510.1,513.6L498.2,535.8L498,553.3L502.9,564.4L498.5,566.7L490.5,562L482.9,561.9L465.7,553.5L459.8,541L459.5,531.2L445.1,514L438.9,496.6L425,481.5L410.1,478.5L403.6,481.1L393.9,496.2L375.7,486.4L369.6,480.4L362.6,457.6L355.9,453.4L337.9,431.8L308.2,428.3L307,437.7L292.1,435.7L256.2,430.4L195.2,394.5L197.8,390.1L155.6,385.1L152.8,367.1L138.7,348.5L128,343.5L123.6,336.6L108.6,331.9L106.4,328.4L109.6,317.4L102.4,303.7L95.8,283.8L100.2,277.9L92.5,267.1L94.2,254.7L99.1,263.3L96.6,251.3L87.7,247.9L89.8,243L82,225.2L85.7,206.8L80.5,195.7L92.4,173.2L93.6,161.2L93.8,142.6L104.1,127.5L116.4,98.7L123.6,78.4L129.1,78.1L121.7,75.7L127.9,67.7L125.4,60.3L124.5,35.1L126.9,30.9L134.7,38.2L151.1,43.5L152.7,52.6L147.9,62.7L152.5,61.1L157.6,47.8L156,26.3L200.9,38.5L233.5,46.3L246.9,49.2L305.7,60.5L343.9,66.3L383.8,71.2L412.5,73.9L453.2,76.7L507.6,78.5L536.6,78.6L536.5,70.6L541.1,72.4L543.8,83.9L555.8,88.3L567.1,85.8L585.3,93.9L587.5,97.1L597,92.4L598.9,95.3L615.7,96.5L599.8,105.2L581.2,123.6L582.4,125.3L597.2,119.6L605.7,127L619.4,120.4L636.5,106.2L643.2,106.8L636.2,111.6L636.4,117.2L644.8,118.5L649.5,124.6L661.2,124.8L667.2,119.8L684.1,115.9L683.7,122L695.1,119.5L698.4,128.3L706.4,131.2L688,134.4L677.6,130.9L675.7,133.8L656.2,138.5L649.2,154.8L644.6,167.1L657.2,154.2L652,166L647.8,194.3L650.9,209.8L656.6,225.9L667.3,223.8L674.6,208.6L673.8,196.5L667.7,183.4L669.8,161.4L678.1,150L687.9,144.5L689,136L708.8,142.7L713.1,149.2L714.1,163.6L706.4,177.1L710.9,179.9L721,168.3L725.8,172.3L731.6,189.5L731.2,198.1L726.7,198.4L719.5,218.4L735.6,223.7L746.7,219.8L763.8,206.6L774.4,198.6L786.3,185.4L781.2,176L789.5,172.1L812.8,169.8L822.4,162.2L818.3,148.7L830.2,132.4L836.3,127.1L857.8,122.2L884.3,115.4L888.7,107.9L897.2,92.8L896.3,75.6L902.6,57.1L908.7,61.5L916.8,55.2L924.7,59.1L933,87L938.4,87L939.9,93.7L950,100.9L943.6,110.9L931.4,118.7L925.9,115L923.3,128.6L913.9,134.3L909.1,141L906.6,152.1L905.9,156.4L910,161.6L905.9,166.6L915.9,176.8L925.8,176.8L909,185.7L906.9,182.4L906.2,181.8L904.2,189.7L898.8,192.3L883.4,197.9L873.1,206L896.8,200L881.7,211.6L870.9,216.2L868.6,213.5L868.3,214.2L866.2,218.2L871.3,219.8L872.3,232.8L862.5,253L862.8,248.2L850.2,241.2L850,240.8L850.6,239.4L850.4,244.4L861.1,256.3L863.5,263.4L862.4,272.9L858.6,280L856.7,292.7L853.2,291.6L855.9,276L842.8,267L847.4,264.4L840.7,259.7L841.6,249.3L838.1,252.7L842.6,274.2L836.5,273.8L829.6,266.6L828.7,273.4L839.9,275.1L847.1,279.2L846.3,289.9L859,305.7L859.4,312.2L848.4,321.3L862.6,317.8L864.8,325.5L859.9,332L844.4,331.2L854.7,334.6L851.3,342.6L859.2,340.6L856.5,348.8L847.8,348.9L840,355.8L835.4,368.8L825.6,370.7L817.7,380.1L814.7,390.9L805.1,401.2L797.2,405.6L791.6,415.6L788.4,422.8ZM166.2,517.9L166.2,517.9L166.2,517.9ZM165,531.3L165,531.3L165,531.3ZM162.2,532.8L162.2,532.8L162.2,532.8ZM161.5,532.9L161.5,532.9L161.5,532.9ZM161,532.7L161,532.7L161,532.7ZM161.1,539.7L161.1,539.7L161.1,539.7ZM160.2,534.5L160.2,534.5L160.2,534.5ZM159.9,524L159.9,524L159.9,524ZM159.2,534.6L159.2,534.6L159.2,534.6ZM157.9,525.4L157.9,525.4L157.9,525.4ZM155.2,541L158.1,537.2L160.7,538.7L156.9,541.5ZM154.6,531.2L154.6,531.2L154.6,531.2ZM152.3,551.1L152.3,551.1L152.3,551.1ZM151.5,552.2L151.5,552.2L151.5,552.2ZM149.9,546.1L155.1,541.7L158.9,541.7L159.5,545.6L157.9,545L153.1,550.7L153.7,547.7L151.8,550ZM149.7,553L149.7,553L149.7,553ZM145.7,557.4L145.7,557.4L145.7,557.4ZM141.7,555.7L141.7,555.7L141.7,555.7ZM141.5,554.5L141.5,554.5L141.5,554.5ZM139.5,551.9L139.5,551.9L139.5,551.9ZM137.1,553.2L137.1,553.2L137.1,553.2ZM132.8,556.7L132.8,556.7L132.8,556.7ZM131.8,556.3L131.8,556.3L131.8,556.3ZM130.5,563.4L130.5,563.4L130.5,563.4ZM130.7,557.1L130.7,557.1L130.7,557.1ZM129.9,563L129.9,563L129.9,563ZM129.2,563.9L129.2,563.9L129.2,563.9ZM129.2,561.1L129.2,561.1L129.2,561.1ZM128.3,563.8L128.3,563.8L128.3,563.8ZM128.3,562.1L128.3,562.1L128.3,562.1ZM127.4,559.9L127.4,559.9L127.4,559.9ZM126.6,562.8L126.6,562.8L126.6,562.8ZM128.9,535.2L128.9,535.2L128.9,535.2ZM126.5,559.1L126.5,559.1L126.5,559.1ZM128.5,535.2L128.5,535.2L128.5,535.2ZM124.3,559.7L124.3,559.7L124.3,559.7ZM125.9,535.7L125.9,535.7L125.9,535.7ZM121.9,560.2L121.9,560.2L121.9,560.2ZM120.7,560.1L120.7,560.1L120.7,560.1ZM119.8,560.7L119.8,560.7L119.8,560.7ZM117.4,561.8L117.4,561.8L117.4,561.8ZM124.7,498.4L124.7,498.4L124.7,498.4ZM115.2,565.1L115.2,565.1L115.2,565.1ZM114.8,557.8L114.8,557.8L114.8,557.8ZM106.4,565.6L106.4,565.6L106.4,565.6ZM104.7,566.1L104.7,566.1L104.7,566.1ZM103.6,566.1L103.6,566.1L103.6,566.1ZM103.1,566.2L103.1,566.2L103.1,566.2ZM102.9,564.7L102.9,564.7L102.9,564.7ZM101,565.1L101,565.1L101,565.1ZM100.4,566.2L100.4,566.2L100.4,566.2ZM104.3,520.2L109.3,519.4L110.7,520.8L110.6,523.7L108.2,524.4ZM92.4,569.6L97.1,567.5L98.5,565.6L100.6,567.2L97.3,569.6ZM110.4,480.4L118.2,476.9L122.6,475.8L124.4,476.3L123.8,479.9L129.5,480.9L132.2,479.6L129.4,476.3L130.5,473.4L128.4,473.7L125,472.1L124.7,469.1L121.7,465L118.4,462L120.4,458.4L125.6,458.9L128.7,456.6L129.8,453L133.1,449.7L134.6,450.1L139,446.9L143,447L146.2,443.9L150.4,445L151.5,447.3L157.3,447.3L156.9,448.8L160.1,450.4L164.3,449.1L169,451.1L173.6,450.8L176.1,452L180.2,450L186.5,452.5L199.8,519.8L203.6,519.9L206.6,518L206.6,520L213.8,524.7L215,527L217.6,524.3L217.6,521L220.4,518.7L226.7,524.1L230.8,526.1L239,534.1L240.9,536.9L248.7,537.9L251.4,543.5L250,548.4L247.2,545.7L243,544.8L238.7,541.5L239.6,539.4L237.8,536.8L233.1,535L231,530.9L228.5,528.6L226.6,528.8L221.7,522.2L220.9,522.6L224,526.7L223.4,528.6L219.4,531.1L214.6,529.2L211.6,526.7L205.1,524.5L205.4,521.9L203.2,523.7L198.2,522.7L193.3,522.6L188.8,524.1L179.9,520.1L177.5,517.1L176.5,519L173.1,520.2L175.5,525.2L174,526.3L170.1,526.3L166.5,530.6L162,532.7L160.8,530.8L163.1,529.5L160.8,528.2L162.3,524.9L162.2,521.2L167.1,517.1L164.7,516.8L161.9,519L156.5,528.9L152.5,531.4L152,533L155.2,534.3L152.1,540.4L149.1,541.3L142.8,546.5L142.7,548.7L139.4,549.5L134.7,553.1L136.1,554L134.4,555.7L129,556.2L125.8,558.7L121.6,559.1L121.4,557.3L119.5,560.8L114.9,561.4L112.2,563.5L106.7,564L109,560.6L115.8,559.7L120.9,555.1L125.9,555L127.1,552.9L132.8,549.4L134.2,549.7L135.5,546.5L138.5,544.3L139.7,537.4L141.1,534.8L137.2,536.4L135.6,534.9L133.6,537.6L131.3,533.6L129.2,532.4L123.4,535.6L122.9,530.2L124.4,528.8L122.5,523.5L121.9,524.7L117.4,525.6L112,519.1L114.3,515.9L110.7,511.6L112.9,509.5L113.2,507.4L116.6,503.9L117.8,501L119.9,500.1L122.9,502.1L125.9,499.3L129.6,499.6L131,497.7L129.7,491.9L131.7,490.8L130.6,489.2L126,491.5L120.2,490.6L118.2,491.1L114.6,489.3L113.3,484.9L115.2,484.2L112.2,482.7ZM86.4,571.7L90.5,568L92.5,569.1ZM85.4,572.1L85.4,572.1L85.4,572.1ZM83.6,570.1L83.6,570.1L83.6,570.1ZM89.8,544.1L89.8,544.1L89.8,544.1ZM83.7,569.4L83.7,569.4L83.7,569.4ZM82.3,570.8L82.3,570.8L82.3,570.8ZM81.9,570.3L81.9,570.3L81.9,570.3ZM81.3,571.5L81.3,571.5L81.3,571.5ZM88.3,539.5L88.3,539.5L88.3,539.5ZM78.3,571.7L78.3,571.7L78.3,571.7ZM76.9,571.4L76.9,571.4L76.9,571.4ZM76,571.9L76,571.9L76,571.9ZM95.3,492.7L99.8,492.8L102.3,495.8L104.9,497L101.2,498.9L99.5,495.8ZM69.9,571.7L69.9,571.7L69.9,571.7ZM85.1,513.2L85.1,513.2L85.1,513.2ZM85.4,511.7L85.4,511.7L85.4,511.7ZM63.4,571L63.4,571L63.4,571ZM57.6,569.9L62.5,570.1L60.1,570.9ZM56.7,570L56.7,570L56.7,570ZM57.1,568.5L57.1,568.5L57.1,568.5ZM55.7,569.7L55.7,569.7L55.7,569.7ZM54.8,569.3L54.8,569.3L54.8,569.3ZM54,568.3L54,568.3L54,568.3ZM53.2,570L53.2,570L53.2,570ZM49.5,570.2L52.1,568.2L53.1,569.6ZM48.2,567.5L48.2,567.5L48.2,567.5ZM46.6,568.5L46.6,568.5L46.6,568.5ZM44.8,566.5L44.8,566.5L44.8,566.5ZM42.2,567.6L42.2,567.6L42.2,567.6ZM41.3,567.5L41.3,567.5L41.3,567.5ZM41.8,566L41.8,566L41.8,566ZM40.2,568.6L40.2,568.6L40.2,568.6ZM39.3,569L39.3,569L39.3,569ZM35.4,561.9L35.4,561.9L35.4,561.9ZM30.8,562.7L30.8,562.7L30.8,562.7ZM31.1,560.1L31.1,560.1L31.1,560.1ZM29.7,560.7L29.7,560.7L29.7,560.7ZM29.8,559.1L29.8,559.1L29.8,559.1ZM25.7,558.3L25.7,558.3L25.7,558.3ZM21.7,552.6L21.7,552.6L21.7,552.6ZM15.6,546.5L15.6,546.5L15.6,546.5ZM15.2,546.2L15.2,546.2L15.2,546.2ZM15,545.8L15,545.8L15,545.8ZM11.7,547.2L11.7,547.2L11.7,547.2ZM10,541.9L12.8,542.8L13.5,544.6ZM246.9,546.6L246.9,546.6L246.9,546.6ZM246.3,547.9L246.3,547.9L246.3,547.9ZM245.7,548.2L245.7,548.2L245.7,548.2ZM245.4,547.6L245.4,547.6L245.4,547.6ZM243.7,545.6L243.7,545.6L243.7,545.6ZM238.6,538.5L238.6,538.5L238.6,538.5ZM238.6,539.4L238.6,539.4L238.6,539.4ZM238,538.8L238,538.8L238,538.8ZM240.6,549.7L240.6,549.7L240.6,549.7ZM237.2,541.1L237.2,541.1L237.2,541.1ZM236.7,540.2L236.7,540.2L236.7,540.2ZM237.8,547.1L237.8,547.1L237.8,547.1ZM238.1,551.3L238.1,551.3L238.1,551.3ZM236.1,546.1L236.1,546.1L236.1,546.1ZM235.7,545.8L235.7,545.8L235.7,545.8ZM235.9,547.5L235.9,547.5L235.9,547.5ZM234.7,543.9L234.7,540.9L236.4,540.6L240.7,545L243.8,547L244.7,550.4L239,548.1L242.2,551.5L239.5,550.2L238.8,546.9ZM231.5,534.6L231.5,534.6L231.5,534.6ZM234.3,544.5L234.3,544.5L234.3,544.5ZM232.6,545L232.6,545L232.6,545ZM230.4,538.4L231.9,536.1L235.1,535.7L238.2,538L234.2,540.4L232.6,543.4ZM225.1,528L228.5,528.9L231.2,533.4L229.7,537.2L229.1,534.7ZM224.6,527.3L224.6,527.3L224.6,527.3ZM222.4,524.1L222.4,524.1L222.4,524.1ZM224.5,536.2L225.1,534.5L227.6,535L229.9,539.5L230.9,543.5L226.4,540.1L226,536.7ZM222.3,529.1L222.3,529.1L222.3,529.1ZM224.1,537.3L224.1,537.3L224.1,537.3ZM220.3,527.9L220.3,527.9L220.3,527.9ZM220.9,530.2L220.9,530.2L220.9,530.2ZM220,533.1L222.3,529.8L225.8,530.6L227.5,534.3L224.3,533.9L224.4,536.2ZM183.1,522.1L183.1,522.1L183.1,522.1ZM181.8,522L181.8,522L181.8,522ZM176.7,519L176.7,519L176.7,519ZM176.3,520.7L176.3,520.7L176.3,520.7ZM176.5,523.7L176.5,523.7L176.5,523.7ZM175.3,527.3L177.9,522.6L178.5,523.4ZM174.9,523.9L174.9,523.9L174.9,523.9ZM174.3,520.4L174.3,520.4L174.3,520.4ZM818,563.7L818,563.7L818,563.7ZM816.3,565.1L816.3,565.1L816.3,565.1ZM811.4,567.9L811.4,567.9L811.4,567.9ZM798.6,572.8L805,566.7L809.2,569ZM794.9,573.9L794.9,573.9L794.9,573.9ZM791.9,573.9L791.9,573.9L791.9,573.9ZM783.6,530.2L783.6,530.2L783.6,530.2ZM777,574.6L777,574.6L777,574.6ZM730.8,471.8L730.8,471.8L730.8,471.8ZM934,119.4L934,119.4L934,119.4ZM932.3,120.6L932.3,120.6L932.3,120.6ZM930.8,117L930.8,117L930.8,117ZM926.9,120.5L926.9,120.5L926.9,120.5ZM928.2,128.6L928.2,128.6L928.2,128.6ZM926.2,123.5L926.2,123.5L926.2,123.5ZM925,120.7L925,120.7L925,120.7ZM922.8,186.1L922.8,186.1L922.8,186.1ZM914.1,187.5L914.1,187.5L914.1,187.5ZM864,317.9L864,317.9L864,317.9ZM863.2,337L863.2,337L863.2,337ZM134.9,359.8L134.9,359.8L134.9,359.8ZM132.6,369L132.6,369L132.6,369ZM127.3,357.6L127.3,357.6L127.3,357.6ZM123.7,345L123.7,345L123.7,345ZM117.4,359.8L117.4,359.8L117.4,359.8ZM115.8,341.9L115.8,341.9L115.8,341.9ZM110,342.1L110,342.1L110,342.1ZM106.8,340.5L106.8,340.5L106.8,340.5ZM346.3,554.5L349.9,543.5L361.7,548.6L371.2,559L349.8,569.2ZM333.6,529.9L347.3,532.5L338.7,536.6ZM333.5,538L333.5,538L333.5,538ZM326.4,530.2L326.4,530.2L326.4,530.2ZM321.5,526.1L321.5,526.1L321.5,526.1ZM302.4,516.1L308.6,513.3L314.8,522L305.7,521.9ZM272.8,506.4L282.5,505L276.4,509.4ZM263.8,510.1L263.8,510.1L263.8,510.1ZM849.9,277.2L850.7,277L849.9,277.2ZM848.3,273.8L848.3,273.8L848.3,273.8ZM840.7,261.4L840.7,261.4L840.7,261.4ZM690.6,134.3L690.6,134.3L690.6,134.3ZM680,137.3L680,137.3L680,137.3ZM678,136.4L678,136.4L678,136.4ZM677,141.4L677,141.4L677,141.4ZM675.7,138.6L675.7,138.6L675.7,138.6ZM673.6,145L673.6,145L673.6,145ZM671.6,151.7L671.6,151.7L671.6,151.7ZM670.6,154.5L670.6,154.5L670.6,154.5ZM661.4,142.6L661.4,142.6L661.4,142.6ZM620.5,98.6L620.5,98.6L620.5,98.6ZM660.4,469.8L660.4,469.8L660.4,469.8ZM655.7,469.6L655.7,469.6L655.7,469.6ZM651.8,470.5L651.8,470.5L651.8,470.5ZM648.7,470.3L648.7,470.3L648.7,470.3ZM896.4,194.3L896.4,194.3L896.4,194.3ZM895.6,197.9L895.6,197.9L895.6,197.9ZM894.1,196.5L894.1,196.5L894.1,196.5ZM818.8,155.5L818.8,155.5L818.8,155.5ZM817.6,155.5L817.6,155.5L817.6,155.5ZM731,219.6L731,219.6L731,219.6ZM729.2,218.9L729.2,218.9L729.2,218.9ZM851.1,279.2L851.1,279.2L851.1,279.2ZM149.7,60.1L149.7,60.1L149.7,60.1ZM154.9,35.8L154.9,35.8L154.9,35.8ZM155,31.9L155,31.9L155,31.9ZM153.9,34.8L153.9,34.8L153.9,34.8ZM151.4,41.8L151.4,41.8L151.4,41.8ZM151.9,29.6L151.9,29.6L151.9,29.6ZM150.1,31.1L150.1,31.1L150.1,31.1ZM151.6,25L151.6,25L151.6,25ZM147.7,32.7L147.7,32.7L147.7,32.7ZM147.8,30.7L147.8,30.7L147.8,30.7ZM658.1,148.5L658.1,148.5L658.1,148.5ZM652.2,152.3L652.2,152.3L652.2,152.3ZM604.4,118L604.4,118L604.4,118ZM603.7,120.6L603.7,120.6L603.7,120.6ZM601.8,119.7L601.8,119.7L601.8,119.7ZM600.3,121.6L600.3,121.6L600.3,121.6ZM600.5,119L600.5,119L600.5,119ZM599.9,117.8L599.9,117.8L599.9,117.8ZM599.9,122.8L599.9,122.8L599.9,122.8ZM597,118.7L597,118.7L597,118.7ZM654,473.8L654,473.8L654,473.8ZM645.6,474.3L645.6,474.3L645.6,474.3ZM641.2,485.6L641.2,485.6L641.2,485.6ZM628,495.5L628,495.5L628,495.5ZM624.7,496L624.7,496L624.7,496ZM621.3,496.9L621.3,496.9L621.3,496.9ZM597.5,486.8L597.5,486.8L597.5,486.8ZM904.4,183.3L904.4,183.3L904.4,183.3ZM905,187.6L905,187.6L905,187.6ZM903.4,194.6L903.4,194.6L903.4,194.6Z",S:"M662.3,466.5L658.3,434.6L659.7,370.8L657.7,368.8L701.9,364.8L714.1,408.4L720.7,420.6L717.4,430L721.8,447.3L675.5,452.1L680.7,463.5L678.2,467M197.8,390.1L201.3,390L200.5,375.8L208.3,362.7L214.1,360L208.7,343L211.2,319.9L223.3,320.1L226.4,303.3L285.1,313.5L308.6,316.9L292.1,435.7M721.8,447.3L725,453L772.8,449.8L776.6,453.4L776.7,443.7L786.1,444.8M701.9,364.8L723.6,362.1L744.2,359.2L741.2,366.4L749.6,369.7L756.7,380.1L777.9,396.9L787.4,414.6L791.6,415.6M667.3,223.8L698.6,220.5L698.7,221.8L704.9,276.4L705.9,283L695.7,285.9L696.7,289.4L689.7,301.2L675.5,303.4L670.5,308.2L662.4,305L655.7,309.2L654.4,307.2L662.7,288.5L656.6,225.9M428.2,264.9L488.9,267.6L535.8,268L542.7,271.6L539.1,277.9L547.2,286.5L547.7,331.6L485.6,331.3L424.4,328.7M906.6,152.1L900.6,146.7L888.7,107.9M906.2,181.8L902.2,176.1L896,177.9L870.4,183.4L870.3,168.3L882.4,165.7L899.9,161.9L905.9,156.4M909,185.7L906.9,182.4M582.4,125.3L578.4,126.3L578.9,138.7L570.6,149.4L572.3,166.4L585.8,175L596,185L597.3,192.1L567.7,193.3L517.9,193.9L518,155.9L512.1,149.5L516.5,142.6L513.2,127.3L512.5,107.5L508.7,96.4L507.6,78.5M850.6,239.4L851.5,236.7L860.7,227L850.7,217.6L855.4,202L869.2,206.7L868.6,213.5M868.3,214.2L866.2,218.2M850.2,241.2L850,240.8M723.6,362.1L731.4,348.9L736.2,348.1L755.7,332.7L758.9,332.9L763.3,322.4L786.3,319.7L815.7,314.6L859,305.7M825.6,370.7L802.8,354.3L783.8,357.2L778.6,350.9L757.4,353.1L744.2,359.2M516.5,142.6L489.4,142.2L437,139.7L407.2,137.5L412.5,73.9M547.7,331.6L547.9,342.1L551.4,365.5L551,402.8L538.1,396.1L522.2,398.7L519.2,401.8L509.1,396.3L504.5,400.9L484,391.5L481.8,393.4L456.1,382L457.8,340.9L407.6,338L408.5,327.4M774.4,198.6L775.4,204.2L842.4,191L855.4,202M851.5,236.7L846,239.6L788.1,251L771.6,253.8L768.4,234.6L763.8,206.6M517.9,193.9L515.1,210.7L517.9,215.2L504.7,207.2L493.8,209.2L486.5,204L438.8,202L401.8,199.3L405.3,157.3L407.2,137.5M551,402.8L558.8,404.5L558.8,404.5L559,415.7L559.5,437.4L569,454.2L564.2,485.8M337.9,431.8L336.8,427.1L399.5,432.9L407,337.9L407.6,338M401.8,199.3L398.2,241.4M320.1,232.7L372,239.1L398.2,241.4L429.6,243.7L428.2,264.9L424.4,328.7L408.5,327.4L344.4,321.5L308.6,316.9L320.1,232.7L289,228.2L292.4,207.2L300.6,155.6L302.2,144.6L368.2,153.7L405.3,157.3M896,177.9L898.8,192.3M873.1,206L870.4,183.4M535.8,268L528.5,255.6L566.8,255.1L592.3,253.5L597.4,258.2L598.9,271.9L609.8,281.9L611.1,288.3L620.1,289.5L617,303.2L631.5,313.3L632,322L638.9,327.9L634.8,338.5L633.7,338.6L632.8,338.7L630.2,349.4L619.4,350.2L622.6,339.3L582.3,341.3L547.9,342.1M788.1,251L789.8,261.8L799.4,251.1L808.6,247.8L817.4,254.2L816.4,258.5L806.9,253.1L807.2,259.5L795.5,277.9L789.4,278.5L782.3,295.7L782.8,299.5L768.6,307.7L761.3,309.6L755.5,303.2L749.8,301.2L742.8,292.2L742.6,286.1L746.9,284.9L749.9,272.1L752.6,275L757.6,262.8L766.7,254.7L768.4,234.6M597.4,258.2L604.1,242.7L602.2,236L613,231.7L615.1,220.4L607.2,212.6L650.9,209.8M655.7,309.2L655.4,316.2L649,318.6L649.8,325.2L642.1,322.5L638.9,327.9M630.2,349.4L631.7,351.7L623.7,362.1L621.9,371.3L618.1,383.6L609.7,394L611.6,397.4L609.4,414.2L559,415.7M93.6,161.2L156.5,179L156.5,179L140.6,240.5L208.7,343M863.5,263.4L853.2,265.5L846,239.6M597.3,192.1L600.6,208.1L607.2,212.6M528.5,255.6L525.8,237L517.9,215.2M704.9,276.4L711,275.5L715.5,281.5L730.6,284L736.8,279.8L742.6,286.1M755.5,303.2L744.4,313.9L738.7,322.7L730.2,326.8L715.8,328.7L660.7,333.6L657.6,336.8L634.8,338.5M633.7,338.6L632.8,338.7M850.7,277L849.9,277.2M862.4,272.9L855.9,276M829.6,266.6L830.4,263.1M828.5,260.4L830.4,263.1L828.5,260.4L817.4,254.2M719.5,218.4L698.7,221.8M649.2,154.8L645,150L645,150L645.4,142.9L640.2,138.1L610.2,131.6L606.6,127.6L606.6,127.6L605.7,127M621.9,371.3L657.7,368.8M642.1,472L635.5,462.3L636.9,455L603.1,456.9L604.6,445.8L614.6,428L610.9,425.3L609.4,414.2M300.6,155.6L282.7,150.6L271.7,151.2L271,144.1L262.1,122.6L256,126.6L254.1,119.5L261,103L253.1,96.1L244.6,82.3L242.4,70L246.9,49.2M882.4,165.7L879.1,148.1L880.3,131.5L886,126.1L884.3,115.4M857.8,122.2L861.2,142.3L866.5,151.7L870.3,168.3M129.1,78.1L137.6,87.1L136.6,93.5L142.9,97.8L154.4,97L158.7,100.8L191.9,100.8L221.4,107.9L226.1,117.3L209.1,141.9L213.2,145.2L209.7,152.4L201.3,189.7L156.5,179M730.2,326.8L763.3,322.4M226.4,303.3L246.6,199.3L292.4,207.2M233.5,46.3L221.5,99.1L221.4,107.9M246.6,199.3L201.3,189.7",pxkm:0.1871};
-const MAP_XY=[[683,421.5],[695.7,421.1],[796.2,328.2],[524.9,349.6],[530,288.2],[588.3,378.2],[829.8,261.1],[725.7,388.3],[869.5,210.6],[546.8,494.3],[98.2,255.3],[706.3,418.8],[724.1,205],[632.5,477.4],[820.1,175.6],[803.5,174.1],[626.1,367.8],[547.7,287],[849.1,297.4],[654.6,222.5],[805.7,397.4],[854.7,232.7],[466.6,279.7],[794,488.1],[627.5,428.2],[684.4,397.8]];
-const MAPQ=MAPQ_RAW.map(([q,a,f],i)=>({q,a,f,x:MAP_XY[i][0],y:MAP_XY[i][1]}));
+const MAP_XY=[[683,421.5],[695.7,421.1],[796.2,328.2],[524.9,349.6],[530,288.2],[588.3,378.2],[829.8,261.1],[725.7,388.3],[869.5,210.6],[546.8,494.3],[98.2,255.3],[706.3,418.8],[724.1,205],[632.5,477.4],[820.1,175.6],[803.5,174.1],[626.1,367.8],[547.7,287],[849.1,297.4],[654.6,222.5],[805.7,397.4],[854.7,232.7],[466.6,279.7],[794,488.1],[627.5,428.2],[684.4,397.8],[616,395.4],[516.5,363.7],[134,307.5],[811.4,327.2],[835,251.3],[525.8,241.4],[691.8,296.1],[798.6,474.7],[817.1,254.2],[709.9,275.9],[905.2,167.8],[143.8,349.4],[791.1,461.4],[735.4,433.4]];
+const MAPQ=MAPQ_RAW.map(([q,a,f,h],i)=>({q,a,f,h:h||a.split(", ").pop(),x:MAP_XY[i][0],y:MAP_XY[i][1]}));
 const TEAM_COLORS=["#f2b632","#ff7a59","#3fd394","#5fb3f5","#c792ff","#ff8fc8","#e9e36b","#7fe3d8"];
 const MAX_SIDES=8;
 let playAs=store.get("japarty.playAs","teams")==="players"?"players":"teams";
@@ -1954,7 +2032,7 @@ function goHome(){CS=null;if(AR.duel){if(!AR.duel.done)duelLeave();else AR.duel=
   $("#gb-players").hidden=true;
   live.role=null;
   dailyRestore();Q=B=TL=MG=null;mode="home";teams.forEach(t=>{t.score=0;t.streak=0;t.last=0});
-  $("#gamebar").hidden=true;$("#gb-remote").hidden=true;show("home");lobbyMusic();renderDaily();renderReportLink();
+  $("#gamebar").hidden=true;$("#gb-remote").hidden=true;$("#gb-back").hidden=true;show("home");lobbyMusic();renderDaily();renderReportLink();
 }
 function askConfirm(msg,cb){$("#confirm-msg").textContent=msg;confirmCb=cb;$("#confirm").hidden=false;$('#confirm [data-act="confirm-yes"]').focus()}
 
@@ -1988,8 +2066,8 @@ function valueBoard(n,off,cls){
 
 /* ---------- Quiz Rush + True/False ---------- */
 function buildItems(kind,n,secs){
-  if(kind==="who"){const items=shuffle(WHOS).map(w=>{const opts=shuffle([w.a,...w.w]);return{cat:"Who am I?",q:"Who am I?",clues:w.c,opts,correct:opts.indexOf(w.a),fact:w.f}});return n>0?items.slice(0,n):items}
-  if(kind==="map"){const items=shuffle(MAPQ).map(m=>({cat:"Map Round",q:m.q,a:m.a,x:m.x,y:m.y,fact:m.f,opts:[]}));return n>0?items.slice(0,n):items}
+  if(kind==="who"){const items=shuffle(WHOS).map(w=>{const opts=shuffle([w.a,...w.w]);return{cat:"Who am I?"+(w.t?" · "+w.t:""),q:"Who am I?",clues:w.c,opts,correct:opts.indexOf(w.a),fact:w.f}});return n>0?items.slice(0,n):items}
+  if(kind==="map"){const items=shuffle(MAPQ).map(m=>({cat:"Map Round",q:m.q,a:m.a,h:m.h,x:m.x,y:m.y,fact:m.f,opts:[]}));return n>0?items.slice(0,n):items}
   if(kind==="tune"){
     const pool=tunePool(),titles=pool.map(t=>t.title.trim());
     const items=shuffle(pool).map(t=>{const title=t.title.trim();let opts=[title,...shuffle(titles.filter(x=>x!==title)).slice(0,3)];
@@ -2045,7 +2123,7 @@ function reveal(){cancelAuto();
     tm.score+=gain;tm.last=gain;
     if(L)$("#pk-"+L.k).insertAdjacentHTML("beforeend",`<i style="--tc:${tm.color}" title="${esc(tm.name)}"></i>`);
     const card=$("#lk-"+t);card.classList.add("locked");
-    card.querySelector(".lock-state").innerHTML=gain?`<span class="gain">+${fmt(gain)}</span>${tm.streak>1?`<span class="streak">${tm.streak} in a row</span>`:""}`:`<span class="gain zero">${L?"Wrong answer":"No answer"}</span>`;
+    card.querySelector(".lock-state").innerHTML=gain?`<span class="gain">+${fmt(gain)}</span>${it.clues&&L?`<span class="streak">on clue ${Math.min(4,1+Math.floor(L.s/WHO_CL))}</span>`:tm.streak>1?`<span class="streak">${tm.streak} in a row</span>`:""}`:`<span class="gain zero">${L?"Wrong answer":"No answer"}</span>`;
   });
   {const nR=teams.filter((_,t)=>Q.locks[t]&&Q.locks[t].k===it.correct).length;Q.qs.push({q:it.clues?it.clues[0]:it.q,c:it.cat,a:it.opts[it.correct],f:it.fact||"",right:nR,n:Object.keys(Q.locks).length,of:teams.length});Q.marks.push(!!(Q.locks[0]&&Q.locks[0].k===it.correct))}
   $$("#q-answers .ans").forEach((el,k)=>el.classList.toggle("right",k===it.correct));$("#q-answers").classList.add("revealed");
@@ -2140,7 +2218,7 @@ function startCash(){
   CS={n,R:CASH[n].s.length,turn:0,results:[]};teams.forEach(t=>{t.score=0;t.last=0});cashTurn();
 }
 function cashTurn(){
-  const tm=teams[CS.turn];Object.assign(CS,{board:shuffle(CASH[CS.n].v),own:null,opened:[],r:0,step:"pick",deal:null,bonus:false,q:null});
+  const tm=teams[CS.turn];Object.assign(CS,{board:shuffle(CASH[CS.n].v),own:null,opened:[],r:0,step:"pick",deal:null,bonus:false,q:null,offers:[]});
   show("cash");progress(`${tm.name} · turn ${CS.turn+1} of ${teams.length}`);renderStrip();renderCash();lobbyMusic();
 }
 function renderCash(){
@@ -2149,6 +2227,7 @@ function renderCash(){
   $("#cs-sub").textContent=CS.step==="pick"?"Pick the case you'll keep. It stays closed until the end."
     :CS.step==="open"?`Round ${CS.r+1} of ${CS.R}: open ${left} more case${left===1?"":"s"}. Low numbers are good news.`
     :CS.step==="done"?"Round over.":"";
+  if(CS.opened.length&&CS.step!=="pick")$("#cs-sub").textContent+=" "+cashMood(n,CS.board,CS.opened);
   $("#cs-own").innerHTML=CS.own==null?"":`<div class="case mine big"><b>${CS.own+1}</b><small>Your case</small></div>`;
   const off=new Set(CS.opened.map(i=>CS.board[i])),half=Math.ceil(n/2),v=[...CASH[n].v];
   const col=a=>a.map(x=>`<span class="${off.has(x)?"off":""}${x>=v[v.length-4]?" hi":""}">${fmt(x)}</span>`).join("");
@@ -2183,8 +2262,10 @@ function cashAnswer(k){
 }
 function cashShowOffer(){
   if(!CS)return;const amt=cashOffer(CS.board,CS.opened,CS.r,CS.R,CS.bonus);CS.amt=amt;CS.step="offer";silence();sfx("ring");
+  const prev=CS.offers.slice();CS.offers.push(amt);const fair=cashFair(CS.board,CS.opened);
   $("#clue").hidden=false;$("#clue-cat").textContent=`Round ${CS.r+1} of ${CS.R}`;$("#clue-val").textContent=teams[CS.turn].name;
-  body(`<p class="center label">The Banker offers</p><div class="dd">${fmt(amt)}</div>${CS.bonus?'<p class="center"><span class="dbl">+10% bonus</span></p>':""}
+  body(`<div class="banker-call" aria-hidden="true"><i></i><i></i><i></i></div><p class="center label">The Banker offers</p><div class="dd">${fmt(amt)}</div>${CS.bonus?'<p class="center"><span class="dbl">+10% bonus</span></p>':""}
+    <p class="center cs-insight">${esc(offerInsight(amt,fair))}</p><p class="center cs-mood">${esc(cashMood(CS.n,CS.board,CS.opened))}</p>${prev.length?offerTrail(prev,amt):""}
     <p class="center muted">Take the cash, or keep playing and open ${CS.r+1<CS.R?CASH[CS.n].s[CS.r+1]+" more case"+(CASH[CS.n].s[CS.r+1]>1?"s":""):"to the final choice"}?</p>
     <div class="row center"><button class="btn" data-act="cs-deal">Take the cash</button><button class="btn ghost" data-act="cs-play">Keep playing</button></div>`);
 }
@@ -2198,8 +2279,9 @@ function cashPlayOn(){
 }
 function cashFinish(kind){
   if(!CS)return;const tm=teams[CS.turn],ownV=CS.board[CS.own];let won,line;
-  if(kind==="deal"){won=CS.amt;line=`Your case #${CS.own+1} held ${fmt(ownV)}. ${won>=ownV?"Good call taking the cash!":"Your case was worth more this time."}`}
-  else{const pick=kind==="swap"?CS.other:CS.own;won=CS.board[pick];const alt=CS.board[kind==="swap"?CS.own:CS.other];line=kind==="swap"?`You swapped. Your old case held ${fmt(alt)}.`:`The other case held ${fmt(alt)}.`}
+  const best=Math.max(0,...CS.offers);
+  if(kind==="deal"){won=CS.amt;line=`Your case #${CS.own+1} held ${fmt(ownV)}. ${won>=ownV?`You beat the Banker by ${fmt(won-ownV)}!`:`Your case was worth ${fmt(ownV-won)} more this time.`}`}
+  else{const pick=kind==="swap"?CS.other:CS.own;won=CS.board[pick];const alt=CS.board[kind==="swap"?CS.own:CS.other];line=(kind==="swap"?`You swapped. Your old case held ${fmt(alt)}.`:`The other case held ${fmt(alt)}.`)+(best?(won>=best?` You beat every offer, up to ${fmt(best)}. Brave!`:` The best offer you turned down was ${fmt(best)}.`):"")}
   tm.score=won;tm.last=won;CS.step="done";renderStrip();sfx(won>=CASH[CS.n].v[Math.floor(CS.n*.75)]?"fanfare":"correct");
   const last=CS.turn+1>=teams.length;
   $("#clue").hidden=false;$("#clue-cat").textContent="Result";$("#clue-val").textContent=tm.name;
@@ -2632,7 +2714,7 @@ function updateCloud(ps){
     if(pend.length){$("#lh-pend-label").textContent=`Waiting for your OK · ${pend.length}`;$("#lh-pend").innerHTML=pend.map(p=>pendChip(p)).join("")}}
 }
 const pendChip=p=>`<span class="nick pend"><span>${esc(nickOf(p))}</span><button data-act="ok-name" data-key="${esc(p.by||p.peer)}" aria-label="Let ${esc(nickOf(p))} in">✓</button><button data-act="kick" data-key="${esc(p.by||p.peer)}" data-name="${esc(nickOf(p))}" aria-label="Remove ${esc(nickOf(p))}">×</button></span>`;
-async function savedHost(){const d=store.get("japarty.host",null);return d&&d.pin&&d.H&&Date.now()-(+d.at||0)<6*3600*1000?d:null}
+function savedHost(){const d=store.get("japarty.host",null);return d&&d.pin&&d.H&&Date.now()-(+d.at||0)<6*3600*1000?d:null}
 function saveHost(){
   if(live.role!=="host"||!live.H||!live.pin)return;
   const{allTO,...H}=live.H;
@@ -2640,7 +2722,7 @@ function saveHost(){
 }
 async function hostResume(){
   const d=savedHost();if(!d)return;
-  live.role="host";mode="live";$("#gamebar").hidden=false;$("#gb-mode").textContent="Live game";renderStrip();show("live");
+  live.role="host";mode="live";$("#gamebar").hidden=false;$("#gb-back").hidden=false;$("#gb-mode").textContent="Live game";renderStrip();show("live");
   $("#lh-body").innerHTML=`<p class="muted center">Reconnecting to game ${esc(d.pin)}…</p>`;
   const g=await connectGame(d.pin);if(!g||live.role!=="host"){$("#lh-body").innerHTML=`<p class="err center">Couldn't reconnect. Try again in a moment.</p>`;return}
   live.rev=+d.rev||0;live.H=d.H;if(d.rcKey)live.rcKey=d.rcKey;live.ok=new Set(Array.isArray(d.ok)?d.ok:[]);live.lastScores=d.lastScores;live.kicked=new Set(d.kicked||[]);live.teamNames=Array.isArray(d.teamNames)?d.teamNames:[];const H=live.H;
@@ -2654,7 +2736,7 @@ async function hostResume(){
   if(/^fj/.test(ph)&&ph!=="fjreveal"&&!H.fjDone)return hostFJWager();
   return hostPodium();
 }
-async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);$("#gb-remote").hidden=!openMode()&&!JOIN_BASE;
+async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);$("#gb-back").hidden=false;$("#gb-remote").hidden=!openMode()&&!JOIN_BASE;
   stopClock();clearTimeout(readyTO);if(live.H)clearTimeout(live.H.allTO);
   const keep=live.role==="host"&&live.pin&&!fresh;
   if(live.role==="host"&&fresh&&live.pin)broadcast({phase:"ended"});
@@ -2772,14 +2854,14 @@ function hostReveal(){cancelAuto();
   const H=live.H;if(!H||H.phase!=="question")return;
   if(H.kind==="map")return hostRevealMap();clearInterval(H.clueIv);
   H.phase="reveal";H.open=false;stopClock();clearTimeout(readyTO);clearTimeout(H.allTO);silence();stopTune();
-  const it=H.items[H.i],c=clsFor(it),counts=it.opts.map(()=>0),done=new Set();let right=0,fast=null;
+  const it=H.items[H.i],c=clsFor(it),counts=it.opts.map(()=>0),done=new Set(),byClue=[0,0,0,0];let right=0,fast=null;
   const prevTop=hostRanking().map(([k])=>k);
   Object.values(H.scores).forEach(e=>e.l=0);
   players().forEach(p=>{
     const key=p.by||p.peer;if(done.has(key))return;done.add(key);
     const e=H.scores[key]||(H.scores[key]={n:"",s:0,st:0,l:0});e.n=nickOf(p);e.t=teamOf(p);const a=p.presence.a;
     if(validAns(a,H)){counts[a.k]++;
-      if(a.k===it.correct){const sec=Math.min(H.T,Math.max(0,(+a.ms||0)/1000));e.st++;e.c=(e.c||0)+1;e.l=(H.kind==="who"?WHO_PTS[Math.min(3,Math.floor(sec/WHO_CL))]:Math.round(1000*(1-(sec/H.T)/2))+Math.min(500,(e.st-1)*100))*(H.curDbl?2:1);e.s+=e.l;right++;
+      if(a.k===it.correct){const sec=Math.min(H.T,Math.max(0,(+a.ms||0)/1000));e.st++;e.c=(e.c||0)+1;e.l=(H.kind==="who"?WHO_PTS[Math.min(3,Math.floor(sec/WHO_CL))]:Math.round(1000*(1-(sec/H.T)/2))+Math.min(500,(e.st-1)*100))*(H.curDbl?2:1);e.s+=e.l;right++;if(H.kind==="who")byClue[Math.min(3,Math.floor(sec/WHO_CL))]++;
         if(!fast||sec<fast.sec)fast={n:e.n,sec}}else e.st=0;
     }else e.st=0;
   });
@@ -2791,6 +2873,7 @@ function hostReveal(){cancelAuto();
   $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">${esc(it.cat)}</div><h2 class="q-text">${esc(it.q)}</h2>${it.clues?`<ol class="clues all">${clueLis(it.clues,4)}</ol>`:""}</div>
     <div class="dist" role="img" aria-label="Answers: ${it.opts.map((o,k)=>c.l[k]+" "+counts[k]).join(", ")}">${it.opts.map((o,k)=>`<div class="${c.c[k]}${k===it.correct?" right":""}"><b>${counts[k]}</b><span class="col"><i style="--h:${counts[k]/max*100}%"></i></span><span class="lt">${c.l[k]}</span></div>`).join("")}</div>
     <div class="answers revealed${it.opts.length===2?" two":""}">${it.opts.map((o,k)=>`<div class="ans ${c.c[k]}${k===it.correct?" right":""}"><b>${c.l[k]}</b><span>${esc(o)}</span></div>`).join("")}</div>
+    ${H.kind==="who"&&right?`<div class="clue-stats" aria-label="When players got it">${byClue.map((n,i)=>`<span><b>${n}</b>on clue ${i+1}<small>${fmt(WHO_PTS[i])} pts</small></span>`).join("")}</div>`:""}
     ${it.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(it.fact)}</span></div>`:""}
     <div class="live-count"><b>${right}</b> of ${done.size} players got it right${fast?` · fastest: ${esc(fast.n)} in ${fast.sec.toFixed(1)}s`:""}</div>
     ${miniBoard(prevTop)}
@@ -2908,13 +2991,15 @@ function cashOfferFor(p,H,r){
   const op=cashFill(cl.op,own,cashNeed(H.n,r),H.n);return{key,board,own,op,amt:cashOffer(board,op,r,H.R,(H.bonus[key]||[]).includes(r))};
 }
 function cashSum(r){
-  const H=live.H;let took=0,still=0;const offers=[];
+  const H=live.H;let took=0,still=0,brave=null,alive=0;const offers=[],topV=CASH[H.n].v[H.n-1];
   players().forEach(p=>{const key=cashKey(p);if(H.deals[key])return;const d=cashD(p,H)||{},o=cashOfferFor(p,H,r);
-    offers.push([nickOf(p),o.amt]);if(d.dl===r){H.deals[key]={r,amt:o.amt};took++}else still++});
+    offers.push([nickOf(p),o.amt]);if(d.dl===r){H.deals[key]={r,amt:o.amt};took++}
+    else{still++;if(d.nd===r&&(!brave||o.amt>brave[1]))brave=[nickOf(p),o.amt];const ti=o.board.indexOf(topV);if(!o.op.includes(ti))alive++}});
   offers.sort((a,b)=>b[1]-a[1]);const top=offers.slice(0,3),dealt=Object.keys(H.deals).length,last=r+1>=H.R;
   progress(`Cash or Case · round ${r+1} done`);lobbyMusic();
   cashStage("csum",{took,still,dealt,top},0,`${clHead(`Round ${r+1} of ${H.R}`,`${took} player${took===1?"":"s"} took the cash`,`${still} still playing · ${dealt} cashed out so far`,0)}
     ${top.length?`<div class="group"><span class="label">Biggest offers this round</span><div class="mini-lb">${top.map(([n,a],i)=>`<div><b>${i+1}</b><span>${esc(n)}</span><em>${fmt(a)}</em></div>`).join("")}</div></div>`:""}
+    ${still?`<div class="cs-stats"><div><b>${alive} of ${still}</b><span>still have the ${fmt(topV)} case in play</span></div>${brave?`<div><b>${esc(brave[0])}</b><span>bravest call: said no to ${fmt(brave[1])}</span></div>`:""}</div>`:""}
     <div class="actions"><button class="btn" data-act="cl-next">${last?"Final choice":"Next round"}</button></div>`,null);
   autoNext(cashAfterSum,last?"Final choice":"Next round",Math.max(5,+prefs.auto||5));
 }
@@ -3155,7 +3240,7 @@ function playerRenderInner(){
   if(s.phase==="reveal"){
     const ok=pk!=null&&pk===s.correct;
     const head=pk==null?`<div class="p-result bad"><h2>Time's up</h2><p>No answer this round.</p></div>`
-      :ok?`<div class="p-result good"><h2>Correct!</h2><span class="p-pts">${me?"+"+fmt(me[2]):"Nice one"}</span>${me&&me[4]>1?`<span class="streak">${me[4]} in a row</span>`:""}</div>`
+      :ok?`<div class="p-result good"><h2>Correct!</h2><span class="p-pts">${me?"+"+fmt(me[2]):"Nice one"}</span>${s.kind==="who"&&live.pick&&live.pick.ms!=null?`<span class="streak">You got it on clue ${Math.min(4,1+Math.floor(live.pick.ms/(WHO_CL*1000)))}</span>`:me&&me[4]>1?`<span class="streak">${me[4]} in a row</span>`:""}</div>`
       :`<div class="p-result bad"><h2>Not this time</h2><p>Your streak resets. Keep going!</p></div>`;
     el.innerHTML=head+`<div class="p-card"><span class="label">Correct answer</span><p class="p-q">${esc(s.opts[s.correct]??"")}</p>${me?`<p>You're in <b>${ordinal(me[3])}</b> place of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:""}${s.fact?`<p class="muted">${esc(String(s.fact))}</p>`:""}</div>`;
     if(live.pendingSfx){live.pendingSfx=false;sfx(ok?"correct":"wrong")}
@@ -3205,7 +3290,7 @@ function playerRenderInner(){
   const histBtn=`<button class="linkish" data-act="open-hof">See your score history</button>`;
   if(s.phase==="podium"&&s.kind==="cash"){const C=live.cash&&live.cash.gid===s.gid?live.cash:null;
     el.innerHTML=`<div class="p-card"><span class="label">Cash or Case · final results</span>${me?`<div class="p-big">${fmt(me[1])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players}.</p>`:"<h2>Game over</h2>"}
-      ${C&&C.own!=null?`<p>Your case #${C.own+1} held <b>${fmt(C.board[C.own])}</b>.${C.dl!=null?` You took the cash at ${fmt(C.amt)}.`:""}</p>`:""}${pbLine}${recLine}${topList(3)}${recapBlock(s)}<p class="muted">Thanks for playing Japarty!</p>${histBtn}</div>`;return}
+      ${C&&C.own!=null?`<p>Your case #${C.own+1} held <b>${fmt(C.board[C.own])}</b>.${C.dl!=null?` You took the cash at ${fmt(C.amt)}.`:""}</p>${cashVerdict(C,me?me[1]:0)}`:""}${pbLine}${recLine}${topList(3)}${recapBlock(s)}<p class="muted">Thanks for playing Japarty!</p>${histBtn}</div>`;return}
   if(s.phase==="podium"){
     el.innerHTML=`<div class="p-card"><span class="label">Final results</span>${me?`<div class="p-big">${ordinal(me[3])}</div><p>You finished ${ordinal(me[3])} of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:"<h2>Game over</h2>"}${teamLine}${pbLine}${recLine}${topList(3)}${recapBlock(s)}<p class="muted">Thanks for playing Japarty!</p>${histBtn}</div>`;
     return;
@@ -3218,7 +3303,7 @@ function lobbySeen(s){
 }
 function cashState(s){
   const key=LIVE.myId||LIVE.myPeer||"";
-  if(!live.cash||live.cash.gid!==s.gid||live.cash.n!==s.n){const seed=s.gid+"|"+key;live.cash={gid:s.gid,n:s.n,seed,board:cashBoard(seed,s.n),own:null,op:[],dl:null,nd:null,f:null,amt:0,ans:{},auto:""}}
+  if(!live.cash||live.cash.gid!==s.gid||live.cash.n!==s.n){const seed=s.gid+"|"+key;live.cash={gid:s.gid,n:s.n,seed,board:cashBoard(seed,s.n),own:null,op:[],dl:null,nd:null,f:null,amt:0,ans:{},auto:"",offers:{}}}
   return live.cash;
 }
 function cashSend(){const C=live.cash;if(!C||!live.g)return;live.g.presence({d:{g:C.gid,c:C.own,op:C.op,dl:C.dl,nd:C.nd,f:C.f}}).catch(()=>{})}
@@ -3259,9 +3344,11 @@ function renderCashPhone(s,el,me){
     el.innerHTML=pk!=null?`<div class="p-result pick ${c.c[pk]}"><span class="p-letter">${c.l[pk]}</span><h2>Locked in</h2><p>${esc(s.opts[pk])}</p><p>The Banker is listening…</p></div>`
       :head("Bonus question","")+`<p class="listen">A right answer raises your next offer 10%</p><p class="p-q">${esc(s.q)}</p><div class="p-answers" id="p-answers">${s.opts.map((o,k)=>`<button class="p-btn ${c.c[k]}" data-act="p-pick" data-k="${k}" disabled><b>${c.l[k]}</b><span>${esc(o)}</span></button>`).join("")}</div>`;
     playerTick();return}
-  if(s.phase==="coffer"){const amt=cashMyOffer(s,C),bonus=C.ans[s.r]!=null&&C.ans[s.r]===s.correct;
+  if(s.phase==="coffer"){const amt=cashMyOffer(s,C),bonus=C.ans[s.r]!=null&&C.ans[s.r]===s.correct;C.offers[s.r]=amt;
+    const opn=cashFill(C.op,C.own==null?cashDefaultOwn(C.seed,s.n):C.own,cashNeed(s.n,s.r),s.n),fair=cashFair(C.board,opn),prev=Object.keys(C.offers).map(Number).filter(r=>r<s.r).sort((a,b)=>a-b).map(r=>C.offers[r]);
     el.innerHTML=C.nd===s.r?`<div class="p-card"><span class="label">You kept playing</span><h2>Good luck!</h2><p>You turned down ${fmt(amt)}.</p></div>`
-      :head(`Offer ${s.r+1} of ${s.R}`,"")+`<div class="p-card"><span class="label">The Banker offers you</span><div class="p-big">${fmt(amt)}</div>${bonus?'<span class="dbl">+10% for your right answer</span>':""}
+      :head(`Offer ${s.r+1} of ${s.R}`,"")+`<div class="p-card"><div class="banker-call" aria-hidden="true"><i></i><i></i><i></i></div><span class="label">The Banker offers you</span><div class="p-big">${fmt(amt)}</div>${bonus?'<span class="dbl">+10% for your right answer</span>':""}
+        <p class="cs-insight">${esc(offerInsight(amt,fair))}</p><p class="cs-mood">${esc(cashMood(s.n,C.board,opn))}</p>${prev.length?offerTrail(prev,amt):""}
         <button class="btn" data-act="c-deal">Take the cash</button><button class="btn ghost" data-act="c-nodeal" style="width:100%">Keep playing</button></div>`+valueBoard(s.n,off,"mini");return}
   if(s.phase==="csum"){el.innerHTML=`<div class="p-card"><span class="label">Round ${s.r+1} of ${s.R}</span><h2>Still playing</h2><p>${+s.took||0} player${+s.took===1?"":"s"} took the cash this round.</p></div>`+valueBoard(s.n,off,"mini");return}
   if(s.phase==="cfinal"){const other=C.board.findIndex((_,i)=>i!==C.own&&!cashFill(C.op,C.own,cashNeed(s.n,s.R-1),s.n).includes(i));
@@ -3278,7 +3365,8 @@ function playerTick(){
   if(s.phase==="break"){const b=$("#p-brk");if(b){const t=mmss(Math.max(0,(+s.until||0)-Date.now()));if(b.textContent!==t)b.textContent=t}return}
   if(s.phase!=="question"&&s.phase!=="cq")return;
   if(s.kind==="map"){const c=$("#p-clock"),now=performance.now();if(c){const t=now<live.openAt?"Get ready…":now<live.closeAt?Math.ceil((live.closeAt-now)/1000)+"s left":"Time's up";if(c.textContent!==t)c.textContent=t}
-    const lb=$("#p-map-lock");if(lb&&now>live.closeAt+1000&&!lb.disabled){lb.disabled=true;lb.textContent="Time's up"}return}
+    const lb=$("#p-map-lock");if(lb&&now>live.closeAt+1000&&!lb.disabled){lb.disabled=true;lb.textContent="Time's up"}
+    const hn=$("#p-map-hint");if(hn&&s.hint&&hn.hidden&&now>=live.openAt+(+s.HT||10)*1000){hn.textContent=`Hint: ${String(s.hint)} · now worth up to ${fmt(MAP_HINT_CAP)}`;hn.hidden=false}return}
   const box=$("#p-answers");if(!box)return;
   const now=performance.now(),open=now>=live.openAt&&now<live.closeAt+1000;
   box.querySelectorAll("button").forEach(b=>{if(b.disabled===open)b.disabled=!open});
@@ -3419,6 +3507,9 @@ const ACT={
     live.rosterList={rid:Date.now().toString(36),names:r.names,teams:r.teams,other:$("#roster-other").checked};store.set("japarty.roster",live.rosterList);$("#roster").hidden=true;afterRosterChange()},
   "roster-clear":()=>{live.rosterList=null;store.del("japarty.roster");$("#roster").hidden=true;afterRosterChange()},
   "lh-end":()=>goHome(),
+  "logo-home":()=>navHome(),
+  "gb-back":()=>hostBack(),
+  "p-back":()=>phoneBack(),
   "open-recap":()=>openRecap(),
   "recap-close":()=>{$("#recap").hidden=true},
   "recap-save":()=>downloadText("japarty-recap.html",recapHTML(RECAP.items,RECAP.title),"text/html",$("#recap-note")),
@@ -3432,6 +3523,10 @@ const ACT={
   "daily-share":(d,b)=>{const t=DAILY.share||"";const done=()=>{b.textContent="Copied";setTimeout(()=>{b.textContent="Copy my result"},1800)};try{navigator.clipboard.writeText(t).then(done,()=>{})}catch(e){}},
   "mg-lock":()=>mgLock(),
   "mg-reveal":()=>mgReveal(),
+  "mg-zoom":()=>mgZoom(),
+  "mg-hint":()=>mgHint(),
+  "p-map-zoom":()=>{const s=live.cur;if(!s||s.phase!=="question"||s.kind!=="map")return;const mp=live.mapPin&&live.mapPin.gid===s.gid&&live.mapPin.seq===s.seq?live.mapPin:null;
+    live.mapZoom=pZoom(s)?null:{gid:s.gid,seq:s.seq,cx:mp?mp.x:480,cy:mp?mp.y:300};sfx("select");playerRender()},
   "mg-next":()=>{if(!MG)return;cancelAuto();MG.i+1>=MG.items.length?podium():leaderboard(mapNext,"Next place")},
   "p-map-lock":()=>{const s=live.cur,mp=live.mapPin;if(!s||s.phase!=="question"||s.kind!=="map"||!mp||mp.gid!==s.gid||mp.seq!==s.seq||myPick(s)!=null)return;const now=performance.now();if(now<live.openAt)return;
     live.pick={gid:s.gid,seq:s.seq,k:-1};if(live.g)live.g.presence({a:{g:s.gid,s:s.seq,k:-1,x:Math.round(mp.x*10)/10,y:Math.round(mp.y*10)/10,ms:Math.round(Math.max(0,now-live.openAt))}}).catch(()=>{});
@@ -3472,7 +3567,7 @@ const ACT={
     const s=live.cur;if(!s||(s.phase!=="question"&&s.phase!=="cq")||myPick(s)!=null)return;
     if(s.phase==="cq"&&live.cash&&live.cash.gid===s.gid)live.cash.ans[s.r]=+d.k;
     const now=performance.now();if(now<live.openAt)return;
-    const k=+d.k;live.pick={gid:s.gid,seq:s.seq,k};
+    const k=+d.k;live.pick={gid:s.gid,seq:s.seq,k,ms:Math.round(Math.max(0,now-live.openAt))};
     if(live.g)live.g.presence({a:{g:s.gid,s:s.seq,k,ms:Math.round(Math.max(0,now-live.openAt))}}).catch(()=>{});
     sfx("lock");try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
     playerRender();
@@ -4607,54 +4702,70 @@ const mapKm=(x,y,it)=>Math.hypot(x-it.x,y-it.y)/MAP.pxkm;
 const mapPts=km=>km<=40?1000:Math.max(0,Math.round(1000*Math.exp(-(km-40)/400)));
 const fmtMi=km=>km*MI<25?"Bullseye!":fmt(km*MI)+" miles away";
 const f1=v=>(Math.round(v*10)/10).toString();
+const MAP_HINT_CAP=600,ZOOM=2.5;
+function zoomVB(z){if(!z)return"0 0 960 600";const w=960/ZOOM,h=600/ZOOM,x=Math.max(0,Math.min(960-w,z.cx-w/2)),y=Math.max(0,Math.min(600-h,z.cy-h/2));return `${f1(x)} ${f1(y)} ${f1(w)} ${f1(h)}`}
 function pinSvg(x,y,c,sc){sc=sc||1.4;return `<g class="mpin" transform="translate(${f1(x)} ${f1(y)}) scale(${sc})" style="--tc:${c}"><path d="M0 0C-5-8-10-12-10-19a10 10 0 1 1 20 0C10-12 5-8 0 0Z"/><circle cy="-19" r="3.8"/></g>`}
-function targetSvg(x,y,sc){sc=sc||1.4;return `<g class="target" transform="translate(${f1(x)} ${f1(y)}) scale(${sc})"><circle class="ring" r="16"/><circle class="core" r="6.5"/></g>`}
-function mapSvg(id,tap,marks,label){return `<svg class="usmap${tap?" tap":""}" id="${id}" viewBox="0 0 960 600" role="img" aria-label="${esc(label||(tap?"Map of the United States. Tap to drop your pin.":"Map of the United States"))}"><path class="nation" d="${MAP.N}"/><path class="borders" d="${MAP.S}"/><g class="marks">${marks||""}</g></svg>`}
+const svgAnchor=x=>x>800?"end":x<160?"start":"middle";
+function svgLabel(x,y,t,cls){return `<text class="${cls}" x="${f1(x)}" y="${f1(y)}" text-anchor="${svgAnchor(x)}">${esc(t)}</text>`}
+function targetSvg(x,y,sc,label){
+  sc=sc||1.4;const r1=161*MAP.pxkm,r3=483*MAP.pxkm;
+  return `<circle class="mring" cx="${f1(x)}" cy="${f1(y)}" r="${f1(r3)}"/><circle class="mring" cx="${f1(x)}" cy="${f1(y)}" r="${f1(r1)}"/><g class="target" transform="translate(${f1(x)} ${f1(y)}) scale(${sc})"><circle class="ring" r="16"/><circle class="core" r="6.5"/></g>${label?svgLabel(x,y-16*sc-6,label,"tlabel"):""}`;
+}
+function mapSvg(id,tap,marks,label,vb){return `<svg class="usmap${tap?" tap":""}" id="${id}" viewBox="${vb||"0 0 960 600"}" role="img" aria-label="${esc(label||(tap?"Map of the United States. Tap to drop your pin.":"Map of the United States"))}"><path class="nation" d="${MAP.N}"/><path class="borders" d="${MAP.S}"/><g class="marks">${marks||""}</g></svg>`}
 function mapAt(svg,e){let x,y;
   try{const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());x=q.x;y=q.y}
-  catch(err){const r=svg.getBoundingClientRect();x=(e.clientX-r.left)/Math.max(1,r.width)*960;y=(e.clientY-r.top)/Math.max(1,r.height)*600}
+  catch(err){const r=svg.getBoundingClientRect(),vb=(svg.getAttribute("viewBox")||"0 0 960 600").split(" ").map(Number);x=vb[0]+(e.clientX-r.left)/Math.max(1,r.width)*vb[2];y=vb[1]+(e.clientY-r.top)/Math.max(1,r.height)*vb[3]}
   return[Math.max(0,Math.min(960,x)),Math.max(0,Math.min(600,y))]}
 document.addEventListener("click",e=>{const svg=e.target.closest&&e.target.closest("svg.usmap.tap");if(!svg)return;audioInit();const[x,y]=mapAt(svg,e);if(svg.id==="mg-svg")mgTap(x,y);else if(svg.id==="p-map")playerMapTap(x,y)});
+const placeShort=a=>String(a||"").split(",")[0];
 
 /* one screen: players take turns dropping a pin, then everyone sees the answer */
 let MG=null;
 function startMap(){MG={items:buildItems("map",+$("#map-count").value),i:-1,qs:[]};mapNext()}
 function mapNext(){cancelAuto();MG.i++;if(MG.i>=MG.items.length)return podium();
-  MG.turn=0;MG.pins=teams.map(()=>null);MG.phase="place";MG.cur=null;show("mapgame");progress(`Place ${MG.i+1} of ${MG.items.length}`);renderMG();thinkMusic();sfx("whoosh")}
+  MG.turn=0;MG.pins=teams.map(()=>null);MG.hint=new Set();MG.phase="place";MG.cur=null;MG.zoom=null;show("mapgame");progress(`Place ${MG.i+1} of ${MG.items.length}`);renderMG();thinkMusic();sfx("whoosh")}
+const mgMarks=()=>MG.cur?pinSvg(MG.cur.x,MG.cur.y,teams[MG.turn].color,MG.zoom?.55:1.2):"";
 function renderMG(){
-  const it=MG.items[MG.i],t=teams[MG.turn],many=teams.length>1,done=MG.pins.filter(Boolean).length;
+  const it=MG.items[MG.i],t=teams[MG.turn],many=teams.length>1,done=MG.pins.filter(Boolean).length,hint=MG.hint.has(MG.turn);
   $("#mg-q").textContent=it.q;$("#mg-fact").hidden=true;$("#mg-res").innerHTML="";$("#mg-next").hidden=true;
-  $("#mg-turn").innerHTML=`<span class="swatch" style="--tc:${t.color}"></span><span><b>${esc(t.name)}</b>, tap the map to drop your pin.${many?` <span class="muted">${done} of ${teams.length} placed. Pins stay hidden until everyone is in.</span>`:""}</span>`;
-  $("#mg-map").innerHTML=mapSvg("mg-svg",true,MG.cur?pinSvg(MG.cur.x,MG.cur.y,t.color,1.2):"");
+  $("#mg-turn").innerHTML=`<span class="swatch" style="--tc:${t.color}"></span><span><b>${esc(t.name)}</b>, tap the map to drop your pin.${many?` <span class="muted">${done} of ${teams.length} placed. Pins stay hidden until everyone is in.</span>`:""}</span>${hint?`<p class="map-hint">Hint: ${esc(it.h)} · now worth up to ${fmt(MAP_HINT_CAP)}</p>`:""}`;
+  $("#mg-map").innerHTML=mapSvg("mg-svg",true,mgMarks(),"",zoomVB(MG.zoom));$("#mg-map").classList.toggle("zoomed",!!MG.zoom);
   const lk=$("#mg-lock");lk.hidden=false;lk.disabled=!MG.cur;lk.textContent=many?`Lock in for ${t.name}`:"Lock in";$("#mg-skip").hidden=false;
+  const zb=$("#mg-zoom");zb.hidden=false;zb.textContent=MG.zoom?"Zoom out":"Zoom in";$("#mg-hint").hidden=hint;
 }
-function mgTap(x,y){if(!MG||MG.phase!=="place"||mode!=="map")return;MG.cur={x,y};sfx("select");const g=$("#mg-svg .marks");if(g)g.innerHTML=pinSvg(x,y,teams[MG.turn].color,1.2);$("#mg-lock").disabled=false}
-function mgLock(){if(!MG||MG.phase!=="place"||!MG.cur)return;MG.pins[MG.turn]=MG.cur;MG.cur=null;sfx("lock");const nx=MG.pins.findIndex(p=>!p);if(nx<0)return mgReveal();MG.turn=nx;renderMG()}
-function mgReveal(){cancelAuto();if(!MG||MG.phase!=="place")return;MG.phase="reveal";silence();
+function mgTap(x,y){if(!MG||MG.phase!=="place"||mode!=="map")return;MG.cur={x,y};sfx("select");const g=$("#mg-svg .marks");if(g)g.innerHTML=mgMarks();$("#mg-lock").disabled=false}
+function mgZoom(){if(!MG||MG.phase!=="place")return;MG.zoom=MG.zoom?null:{cx:MG.cur?MG.cur.x:480,cy:MG.cur?MG.cur.y:300};sfx("select");renderMG()}
+function mgHint(){if(!MG||MG.phase!=="place"||MG.hint.has(MG.turn))return;MG.hint.add(MG.turn);sfx("select");renderMG()}
+function mgLock(){if(!MG||MG.phase!=="place"||!MG.cur)return;MG.pins[MG.turn]=MG.cur;MG.cur=null;MG.zoom=null;sfx("lock");const nx=MG.pins.findIndex(p=>!p);if(nx<0)return mgReveal();MG.turn=nx;renderMG()}
+function mgReveal(){cancelAuto();if(!MG||MG.phase!=="place")return;MG.phase="reveal";MG.zoom=null;silence();
   const it=MG.items[MG.i];prevRank=ranked();let close=0;
-  const res=teams.map((tm,i)=>{const p=MG.pins[i];if(!p){tm.last=0;tm.streak=0;return null}const km=mapKm(p.x,p.y,it),g=mapPts(km);tm.score+=g;tm.last=g;if(km<300){close++;tm.streak++}else tm.streak=0;return{km,g}});
+  const res=teams.map((tm,i)=>{const p=MG.pins[i];if(!p){tm.last=0;tm.streak=0;return null}const km=mapKm(p.x,p.y,it);let g=mapPts(km);if(MG.hint.has(i))g=Math.min(g,MAP_HINT_CAP);tm.score+=g;tm.last=g;if(km<300){close++;tm.streak++}else tm.streak=0;return{km,g,h:MG.hint.has(i)}});
   MG.qs.push({q:it.q,c:"Map Round",a:it.a,f:it.fact||"",map:1,right:close,n:res.filter(Boolean).length,of:teams.length});
-  const marks=teams.map((tm,i)=>MG.pins[i]?`<line class="miss" x1="${f1(MG.pins[i].x)}" y1="${f1(MG.pins[i].y)}" x2="${it.x}" y2="${it.y}" style="--tc:${tm.color}"/>`:"").join("")+teams.map((tm,i)=>MG.pins[i]?pinSvg(MG.pins[i].x,MG.pins[i].y,tm.color,1.2):"").join("")+targetSvg(it.x,it.y,1.3);
-  $("#mg-map").innerHTML=mapSvg("mg-svg",false,marks,"The answer: "+it.a);
+  const marks=teams.map((tm,i)=>MG.pins[i]?`<line class="miss" x1="${f1(MG.pins[i].x)}" y1="${f1(MG.pins[i].y)}" x2="${it.x}" y2="${it.y}" style="--tc:${tm.color}"/>`:"").join("")+targetSvg(it.x,it.y,1.3,placeShort(it.a))
+    +teams.map((tm,i)=>MG.pins[i]?pinSvg(MG.pins[i].x,MG.pins[i].y,tm.color,1.2)+(teams.length>1?svgLabel(MG.pins[i].x,MG.pins[i].y+26,tm.name,"plabel"):""):"").join("");
+  $("#mg-map").innerHTML=mapSvg("mg-svg",false,marks,"The answer: "+it.a);$("#mg-map").classList.remove("zoomed");
   $("#mg-turn").innerHTML=`<span class="label" style="color:var(--gold)">The answer</span><b class="mg-place">${esc(it.a)}</b>`;
-  $("#mg-res").innerHTML=teams.map((tm,i)=>`<div class="mg-row" style="--tc:${tm.color}"><i></i><span>${esc(tm.name)}</span><span class="muted">${res[i]?fmtMi(res[i].km):"No pin"}</span><b>${res[i]?"+"+fmt(res[i].g):"0"}</b></div>`).join("");
+  const best=res.reduce((b,r,i)=>r&&(b<0||r.km<res[b].km)?i:b,-1);
+  $("#mg-res").innerHTML=teams.map((tm,i)=>`<div class="mg-row${i===best&&teams.length>1?" best":""}" style="--tc:${tm.color}"><i></i><span>${esc(tm.name)}${i===best&&teams.length>1?' <small class="dbl">Closest</small>':""}</span><span class="muted">${res[i]?fmtMi(res[i].km)+(res[i].h?" · used a hint":""):"No pin"}</span><b>${res[i]?"+"+fmt(res[i].g):"0"}</b></div>`).join("");
   if(it.fact){$("#mg-fact").innerHTML=`<span class="label">Did you know</span><span>${esc(it.fact)}</span>`;$("#mg-fact").hidden=false}
-  $("#mg-lock").hidden=true;$("#mg-skip").hidden=true;const last=MG.i+1>=MG.items.length,nb=$("#mg-next");nb.hidden=false;nb.textContent=last?"See final results":"Leaderboard";nb.focus();
+  $("#mg-lock").hidden=true;$("#mg-skip").hidden=true;$("#mg-zoom").hidden=true;$("#mg-hint").hidden=true;
+  const last=MG.i+1>=MG.items.length,nb=$("#mg-next");nb.hidden=false;nb.textContent=last?"See final results":"Leaderboard";nb.focus();
   sfx(close?"correct":"wrong");renderStrip();autoNext(ACT["mg-next"],last?"Final results":"Leaderboard");
 }
 
 /* live: everyone drops a pin on their own phone */
 function hostNextMap(H){
-  const it=H.items[H.i];H.seq++;H.phase="question";H.open=false;clearTimeout(H.allTO);H.allTO=null;
-  progress(`Place ${H.i+1} of ${H.items.length}`);
-  broadcast({phase:"question",gid:H.gid,seq:H.seq,kind:"map",i:H.i,total:H.items.length,cat:"Map Round",q:it.q,opts:[],T:H.T,readyMs:READY_MS,dbl:H.curDbl});
-  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">Map Round${H.curDbl?'<span class="dbl">Double points</span>':""}</div><div class="timer" id="lq-timer"><span>${H.T}</span></div><h2 class="q-text">${esc(it.q)}</h2><div class="ready" id="lq-ready"><span>Read the question</span><div class="bar"><i></i></div></div></div>
+  const it=H.items[H.i];H.seq++;H.phase="question";H.open=false;clearTimeout(H.allTO);H.allTO=null;clearTimeout(H.hintTO);
+  progress(`Place ${H.i+1} of ${H.items.length}`);const HT=Math.round(H.T/2);
+  broadcast({phase:"question",gid:H.gid,seq:H.seq,kind:"map",i:H.i,total:H.items.length,cat:"Map Round",q:it.q,opts:[],T:H.T,readyMs:READY_MS,dbl:H.curDbl,hint:it.h,HT});
+  $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">Map Round${H.curDbl?'<span class="dbl">Double points</span>':""}</div><div class="timer" id="lq-timer"><span>${H.T}</span></div><h2 class="q-text">${esc(it.q)}</h2><p class="map-hint" id="lm-hint" hidden></p><div class="ready" id="lq-ready"><span>Read the question</span><div class="bar"><i></i></div></div></div>
     <div class="map-wrap big">${mapSvg("lm-map",false,"")}</div>
-    <div class="live-count"><b id="lq-count">0</b> of <span id="lq-total">${players().length}</span> players dropped a pin</div>
+    <div class="live-count"><b id="lq-count">0</b> of <span id="lq-total">${players().length}</span> players dropped a pin · a hint appears halfway, and pins after the hint score up to ${fmt(MAP_HINT_CAP)}</div>
     <div class="actions"><button class="btn ghost" data-act="lh-reveal" id="lh-reveal" hidden>Reveal answer now</button></div>`;
   silence();sfx("whoosh");
   clearTimeout(readyTO);readyTO=setTimeout(()=>{
     if(live.H!==H||H.phase!=="question")return;H.open=true;$("#lq-ready").hidden=true;$("#lh-reveal").hidden=false;botsMap(H);thinkMusic();
+    H.hintTO=setTimeout(()=>{if(live.H!==H||H.phase!=="question")return;const h=$("#lm-hint");if(h){h.textContent=`Hint: ${it.h} · pins now score up to ${fmt(MAP_HINT_CAP)}`;h.hidden=false;sfx("select")}},HT*1000);
     startClock(H.T,$("#lq-timer"),()=>{sfx("timesup");clearTimeout(H.allTO);H.allTO=setTimeout(hostReveal,800)});hostLiveUpdate();
   },reduced?900:READY_MS);
 }
@@ -4663,20 +4774,22 @@ function botsMap(H){const it=H.items[H.i];
     const r=(1-b.skill)*480*Math.random(),a=Math.random()*6.283;
     b.presence={...b.presence,a:{g:H.gid,s:H.seq,k:-1,x:Math.max(0,Math.min(960,it.x+Math.cos(a)*r)),y:Math.max(0,Math.min(600,it.y+Math.sin(a)*r)),ms}};hostLiveUpdate()},ms)})}
 function hostRevealMap(){
-  const H=live.H,it=H.items[H.i];H.phase="reveal";H.open=false;stopClock();clearTimeout(readyTO);clearTimeout(H.allTO);silence();
+  const H=live.H,it=H.items[H.i];H.phase="reveal";H.open=false;stopClock();clearTimeout(readyTO);clearTimeout(H.allTO);clearTimeout(H.hintTO);silence();
   const prevTop=hostRanking().map(([k])=>k),done=new Set(),pins=[];let close=0,sum=0,cnt=0;
   Object.values(H.scores).forEach(e=>e.l=0);
   players().forEach(p=>{const key=p.by||p.peer;if(done.has(key))return;done.add(key);
     const e=H.scores[key]||(H.scores[key]={n:"",s:0,st:0,l:0});e.n=nickOf(p);e.t=teamOf(p);const a=p.presence.a;
-    if(validAns(a,H)){const km=mapKm(a.x,a.y,it),pt=mapPts(km)*(H.curDbl?2:1);e.l=pt;e.s+=pt;if(km<300){e.c=(e.c||0)+1;e.st++;close++}else e.st=0;sum+=km;cnt++;pins.push([a.x,a.y,e.n,km])}else e.st=0});
+    if(validAns(a,H)){const km=mapKm(a.x,a.y,it);let pt=mapPts(km);if((+a.ms||0)>H.T*500)pt=Math.min(pt,MAP_HINT_CAP);pt*=H.curDbl?2:1;
+      e.l=pt;e.s+=pt;if(km<300){e.c=(e.c||0)+1;e.st++;close++}else e.st=0;sum+=km;cnt++;pins.push([a.x,a.y,e.n,km])}else e.st=0});
   const list=hostRanking().map(([k,e],r)=>[k,e.s,e.l,r+1,e.st]);
   live.lastScores={pin:live.pin,gid:H.gid,seq:H.seq,players:list.length,list};sendScoreChunks(live.lastScores);dbWrite("scores/"+live.pin,live.lastScores);
   const near=pins.slice().sort((a,b)=>a[3]-b[3]).slice(0,3),avg=cnt?sum/cnt:0;
   (H.qs||(H.qs=[])).push({q:it.q,c:"Map Round",a:it.a,f:it.fact||"",map:1,right:close,n:cnt,of:done.size,avg:Math.round(avg*MI)});
   broadcast({phase:"reveal",gid:H.gid,seq:H.seq,kind:"map",i:H.i,total:H.items.length,cat:"Map Round",q:it.q,opts:[],tx:it.x,ty:it.y,place:it.a,fact:it.fact||"",near:near.map(p=>[p[2],Math.round(p[3]*MI)]),players:done.size,right:close});
   const last=H.i+1>=H.items.length,dots=pins.slice(0,200).map(p=>`<circle class="dot" cx="${f1(p[0])}" cy="${f1(p[1])}" r="6"/>`).join("");
+  const nearMarks=near.map((p,i)=>`<line class="miss" x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${it.x}" y2="${it.y}" style="--tc:${TEAM_COLORS[i]}"/>`+pinSvg(p[0],p[1],TEAM_COLORS[i],1.1)+(i===0?svgLabel(p[0],p[1]+22,`Closest: ${p[2]}`,"plabel"):"")).join("");
   $("#lh-body").innerHTML=`<div class="q-card"><div class="eyebrow">Map Round · the answer</div><h2 class="q-text">${esc(it.a)}</h2><p class="muted">${esc(it.q)}</p></div>
-    <div class="map-wrap big">${mapSvg("lm-map",false,dots+targetSvg(it.x,it.y,1.5),"The answer: "+it.a)}</div>
+    <div class="map-wrap big">${mapSvg("lm-map",false,dots+targetSvg(it.x,it.y,1.5,placeShort(it.a))+nearMarks,"The answer: "+it.a)}</div>
     ${it.fact?`<div class="fact"><span class="label">Did you know</span><span>${esc(it.fact)}</span></div>`:""}
     <div class="live-count"><b>${close}</b> of ${done.size} players landed within about 200 miles${cnt?` · average ${fmt(avg*MI)} miles away`:""}</div>
     ${near.length?`<div class="group"><span class="label">Closest pins</span><div class="mini-lb">${near.map((p,i)=>`<div><b>${i+1}</b><span>${esc(p[2])}</span><em>${esc(fmtMi(p[3]))}</em></div>`).join("")}</div></div>`:""}
@@ -4685,23 +4798,28 @@ function hostRevealMap(){
   sfx(close?"correct":"wrong");
   autoNext(ACT["lh-next"],last?(H.fj?"Final Japarty":"Final results"):"Leaderboard");
 }
+const pZoom=s=>live.mapZoom&&live.mapZoom.gid===s.gid&&live.mapZoom.seq===s.seq?live.mapZoom:null;
 function playerMapTap(x,y){
   const s=live.cur;if(live.role!=="player"||!s||s.phase!=="question"||s.kind!=="map"||myPick(s)!=null)return;
   const now=performance.now();if(now<live.openAt||now>live.closeAt+1000)return;
-  live.mapPin={gid:s.gid,seq:s.seq,x,y};sfx("select");const g=$("#p-map .marks");if(g)g.innerHTML=pinSvg(x,y,"var(--gold)",2.4);const b=$("#p-map-lock");if(b)b.disabled=false;
+  live.mapPin={gid:s.gid,seq:s.seq,x,y};sfx("select");try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+  const g=$("#p-map .marks");if(g)g.innerHTML=pinSvg(x,y,"var(--gold)",pZoom(s)?1:2.4);const b=$("#p-map-lock");if(b)b.disabled=false;
 }
 function renderMapPhone(s,el,pk,me){
   const mp=live.mapPin&&live.mapPin.gid===s.gid&&live.mapPin.seq===s.seq?live.mapPin:null;
   if(s.phase==="question"){
     if(pk!=null){el.innerHTML=`<div class="p-meta"><span>Place ${s.i+1} of ${s.total}</span></div><div class="p-result pick c3"><h2>Pin locked</h2><p>Waiting for everyone else…</p></div><div class="map-wrap phone">${mapSvg("p-map-v",false,mp?pinSvg(mp.x,mp.y,"var(--gold)",2.4):"")}</div>`;return}
-    el.innerHTML=`<div class="p-meta"><span>Place ${s.i+1} of ${s.total}${s.dbl?'<span class="dbl">Double points</span>':""}</span><span id="p-clock"></span></div><p class="p-q">${esc(s.q)}</p>
-      <div class="map-wrap phone">${mapSvg("p-map",true,mp?pinSvg(mp.x,mp.y,"var(--gold)",2.4):"")}</div>
-      <button class="btn" data-act="p-map-lock" id="p-map-lock" ${mp?"":"disabled"}>Lock in my pin</button><p class="muted center" style="font-size:13px">Tap the map to drop your pin. Tap again to move it.</p>`;
+    const z=pZoom(s);
+    el.innerHTML=`<div class="p-meta"><span>Place ${s.i+1} of ${s.total}${s.dbl?'<span class="dbl">Double points</span>':""}</span><span id="p-clock"></span></div><p class="p-q">${esc(s.q)}</p><p class="map-hint" id="p-map-hint" hidden></p>
+      <div class="map-wrap phone${z?" zoomed":""}">${mapSvg("p-map",true,mp?pinSvg(mp.x,mp.y,"var(--gold)",z?1:2.4):"","",zoomVB(z))}</div>
+      <div class="p-map-btns"><button class="btn ghost" data-act="p-map-zoom">${z?"Zoom out":"Zoom in"}</button><button class="btn" data-act="p-map-lock" id="p-map-lock" ${mp?"":"disabled"}>Lock in my pin</button></div>
+      <p class="muted center" style="font-size:13px">Tap the map to drop your pin. Zoom in to place it exactly.</p>`;
     playerTick();return}
   const locked=pk!=null&&!!mp,km=locked?Math.hypot(mp.x-s.tx,mp.y-s.ty)/MAP.pxkm:null,good=km!=null&&km<300;
   const head=!locked?`<div class="p-result bad"><h2>Time's up</h2><p>No pin this round.</p></div>`:`<div class="p-result ${good?"good":"bad"}"><h2>${esc(fmtMi(km))}</h2><span class="p-pts">${me?"+"+fmt(me[2]):""}</span></div>`;
-  el.innerHTML=head+`<div class="p-card"><span class="label">The answer</span><p class="p-q">${esc(String(s.place||""))}</p><div class="map-wrap phone">${mapSvg("p-map-v",false,(locked?pinSvg(mp.x,mp.y,"var(--gold)",2.2):"")+(Number.isFinite(s.tx)&&Number.isFinite(s.ty)?targetSvg(s.tx,s.ty,2):""))}</div>
-    ${me?`<p>You're in <b>${ordinal(me[3])}</b> place of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:""}${s.fact?`<p class="muted">${esc(String(s.fact))}</p>`:""}</div>`;
+  const near=Array.isArray(s.near)?s.near.filter(n=>Array.isArray(n)&&typeof n[0]==="string").slice(0,3):[];
+  el.innerHTML=head+`<div class="p-card"><span class="label">The answer</span><p class="p-q">${esc(String(s.place||""))}</p><div class="map-wrap phone">${mapSvg("p-map-v",false,(locked?`<line class="miss" x1="${f1(mp.x)}" y1="${f1(mp.y)}" x2="${f1(+s.tx)}" y2="${f1(+s.ty)}" style="--tc:var(--gold)"/>`+pinSvg(mp.x,mp.y,"var(--gold)",2.2):"")+(Number.isFinite(s.tx)&&Number.isFinite(s.ty)?targetSvg(s.tx,s.ty,2,placeShort(s.place)):""))}</div>
+    ${me?`<p>You're in <b>${ordinal(me[3])}</b> place of ${live.sc.players} with <b>${fmt(me[1])}</b> points.</p>`:""}${near.length?`<p class="muted" style="font-size:14px">Closest: ${near.map(([n,mi])=>`${esc(n)} (${mi<25?"bullseye":fmt(+mi||0)+" mi"})`).join(", ")}</p>`:""}${s.fact?`<p class="muted">${esc(String(s.fact))}</p>`:""}</div>`;
   if(live.pendingSfx){live.pendingSfx=false;sfx(good?"correct":"wrong")}
 }
 
@@ -5110,11 +5228,59 @@ function dailyPodium(){
     <div class="row center"><button class="btn ghost small" data-act="daily-share">Copy my result</button></div>`;
 }
 
+
+/* ---------- Cash or Case: offer insight, the Banker's mood and how the deal turned out ---------- */
+function cashFair(board,opened){const left=board.filter((_,i)=>!opened.includes(i));return left.reduce((a,b)=>a+b,0)/Math.max(1,left.length)}
+function cashMood(n,board,opened){
+  const top=CASH[n].v.slice(-4),gone=new Set(opened.map(i=>board[i])),alive=top.filter(x=>!gone.has(x)).length;
+  return["The Banker is laughing. Every big case is gone.","The Banker is relaxed. Only one big case is left.","The Banker is calm. Two big cases are left.","The Banker is pacing. Three big cases are still out there.","The Banker sounds nervous. All four big cases are still out there."][alive];
+}
+const offerInsight=(amt,fair)=>`The cases still closed average ${fmt(fair)}. This offer is ${Math.round(amt/Math.max(1,fair)*100)}% of that.`;
+function offerTrail(prev,amt){const all=[...prev,amt],mx=Math.max(...all,1);
+  return `<div class="offer-trail" aria-label="Offers so far"><span class="label">Offers so far</span><div>${all.map((a,i)=>`<span class="${i===all.length-1?"now":""}" style="--h:${Math.max(6,a/mx*100)}%"><i></i><b>${fmt(a)}</b></span>`).join("")}</div></div>`}
+function cashVerdict(C,won){
+  if(C.dl!=null){const d=C.amt-C.board[C.own];return d>=0?`<p class="cs-verdict good">You beat the Banker by ${fmt(d)}!</p>`:`<p class="cs-verdict bad">Your case was worth ${fmt(-d)} more. The Banker won this one.</p>`}
+  const best=Math.max(0,...Object.values(C.offers||{}));if(!best)return"";
+  return won>=best?`<p class="cs-verdict good">You beat every offer, up to ${fmt(best)}. Brave!</p>`:`<p class="cs-verdict bad">You turned down offers up to ${fmt(best)}.</p>`;
+}
+
+/* ---------- getting around: the logo goes home, Back steps back ---------- */
+function hostPark(){
+  if(live.role!=="host")return;cancelAuto();stopClock();clearTimeout(readyTO);stopTune();
+  if(live.H){clearTimeout(live.H.allTO);clearTimeout(live.H.hintTO);clearInterval(live.H.clueIv)}clearInterval(SHOW.brIv);SHOW.on=false;
+  saveHost();["#clue","#draw","#polled","#recap","#report","#rcpop","#approve","#ltest"].forEach(x=>{const e=$(x);if(e)e.hidden=true});
+  disconnectGame();live.bots=[];live.role=null;live.H=null;live.hs=null;live.lastScores=null;
+  ["#gb-players","#gb-pend","#gb-back","#gb-remote"].forEach(x=>$(x).hidden=true);
+  Q=B=TL=MG=null;mode="home";$("#gamebar").hidden=true;show("home");lobbyMusic();renderLiveCard();renderDaily();renderReportLink();
+}
+function navHome(){
+  if(mode==="home")return;
+  if(mode==="hof"){closeHof();return navHome()}
+  if(live.role==="host")return askConfirm(`Go to the home screen? Game ${live.pin} stays open and players stay connected. Choose Resume game on the home screen to come back.`,hostPark);
+  if(live.role==="player"&&live.joined)return askConfirm(`Leave game ${live.pin} and go to the home screen?`,()=>{clearSeat();goHome()});
+  if(mode==="arena"&&AR.duel&&!AR.duel.done)return ACT["arena-back"]();
+  if(["quiz","board","timeline","cash","map","leader","daily"].includes(mode)||(mode!=="podium"&&!$("#gamebar").hidden))return askConfirm("Leave this game and go to the home screen? Scores for this game will be cleared.",goHome);
+  goHome();
+}
+function hostBack(){
+  if(live.role!=="host")return;const ph=live.H&&live.H.phase;
+  if(!$("#draw").hidden){closeDraw();return}
+  if(!ph||ph==="lobby")return askConfirm(`Leave the lobby and go to the home screen? Players stay connected, and Resume game brings you back to game ${live.pin}.`,hostPark);
+  askConfirm(SHOW.on?"Stop the show and go back to the lobby? Players stay connected with the same PIN.":"Stop this round and go back to the lobby? Players stay connected with the same PIN.",()=>{SHOW.on=false;cancelAuto();stopTune();hostLobby()});
+}
+function phoneBack(){
+  if(live.role==="remote")return goHome();
+  if(live.role!=="player")return goHome();
+  if(live.joined)return askConfirm(`Leave game ${live.pin}? You can join again with the PIN.`,()=>{clearSeat();ACT["p-other-pin"]()});
+  if(live.stage==="name"){disconnectGame();live.stage="pin";live.pinErr="";live.nickErr="";playerRender();return}
+  clearSeat();goHome();
+}
+
 /* ---------- boot ---------- */
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in 3.0: Who Am I?, Map Round, live polls, a run of show, a prize wheel, a phone remote, a daily warm-up, recaps and an event report.";
+{const WHATS_NEW="New in 3.1: Tap JAPARTY! to go home, and Back steps back in live games. Who Am I? and Map Round have more people and places, Map Round adds zoom and hints, and Cash or Case shows how good each offer is.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
