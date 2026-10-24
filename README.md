@@ -13,6 +13,8 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 
 Press **Play** on any one-screen game and a **Who's playing?** box asks for your name. Add a box for each person playing on the same screen (up to 8), or choose **Play as teams instead**. Solo play works too.
 - **Timeline Shuffle**: drag four events into order (one shared screen).
+- **Word Tiles**: take turns placing letter tiles on an 11x11 board to build crossing words, with double and triple letter and word squares. Each player or team has a rack of 7 tiles. Using all 7 tiles adds 35, and Legacy words such as FREEDOM, HARLEM and JUSTICE add 10. A privacy screen hides each rack until that player is ready. Words are checked against a built-in English word list, and the host can accept a word the list doesn't know. In live games everyone races to build the best word from the same 7 letters on their phone, and the big screen shows the best possible word.
+- **Crossword**: a new Black History crossword every game, built from more than 50 clues. Players or teams take turns choosing a clue and typing the answer. A right answer keeps the turn, a wrong one passes it. Longer words score more, and you can reveal a letter for a small cost. In live games everyone races to fill the same puzzle on their own phone, and the first person to solve each word gets 50 extra points.
 
 ## Daily warm-up
 Five questions a day, the same for everyone, from the home screen. Play once a day to build a streak, then copy your result to share it.
@@ -48,7 +50,7 @@ Everyone who has the site open shows up as online, with a count on the home scre
 **Quick match** posts an open challenge that the first available person can take. You can search the online list, show only available people, switch off challenges, send quick reactions during a duel, and track your wins, streaks, best scores and recent duels. Records are kept on each device.
 
 ## Party playlist
-Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Songs stay on the host computer until the page is closed. Only play music you have the right to play at your event.
+Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Approved songs, and any music you add for Guess the Song or the background, are saved in this browser on this computer, so they are still there the next time you open the site. Remove a song to delete it. Only play music you have the right to play at your event.
 
 ## Poster
 In the live lobby, choose **Make a poster** for a printable sign with the QR code, PIN and steps. To print ahead of time, set your own PIN under **More settings** and use **Play again with the same PIN** for every game.
