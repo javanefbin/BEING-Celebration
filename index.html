@@ -1675,7 +1675,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.4.1";
+const APP_VERSION="3.4.2";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -5720,6 +5720,8 @@ async function libRefresh(){
     libApplySongs(Array.isArray(songs)?songs:[]);
     HIST.shared=(Array.isArray(games)?games:[]).map(r=>histClean(r&&r.data)).filter(Boolean);HIST.sharedOn=true;HIST.sharedSrc="lib";
     renderChampion();renderHof();
+    /* the first time this device reaches the library, share the games it already has */
+    if(store.get("japarty.libMerged","")!==LIB.cfg.url){const ob=new Set(Array.isArray(store.get(LIB_OUT,[]))?store.get(LIB_OUT,[]):[]);HIST.local.forEach(g=>ob.add(g.id));store.set(LIB_OUT,[...ob].slice(-300));store.set("japarty.libMerged",LIB.cfg.url)}
     libFlushGames();libSyncUp();
   }catch(e){
     LIB.err=e.message||"";
