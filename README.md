@@ -50,7 +50,16 @@ Everyone who has the site open shows up as online, with a count on the home scre
 **Quick match** posts an open challenge that the first available person can take. You can search the online list, show only available people, switch off challenges, send quick reactions during a duel, and track your wins, streaks, best scores and recent duels. Records are kept on each device.
 
 ## Party playlist
-Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Approved songs, and any music you add for Guess the Song or the background, are saved in this browser on this computer, so they are still there the next time you open the site. Remove a song to delete it. Only play music you have the right to play at your event.
+Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Only play music you have the right to play at your event.
+
+## Shared songs and scores
+The site keeps a shared library online, so everyone who uses it gets the same party playlist and the same score history, on any computer:
+- Every song added to the playlist, from the host computer or an approved player request, is saved to the shared playlist (up to 25 MB per song). Anyone who opens the playlist on another computer gets the same songs.
+- Every finished game is added to the shared score history, so the leaderboard, records and recent games are the same for everyone.
+- Anyone can add songs and record games. Removing a song from the shared playlist or clearing the shared scores needs the **library code**. You're asked for it once on each computer.
+- If the connection drops, new songs and scores are saved on that computer and shared when it's back.
+
+The library is a free [Supabase](https://supabase.com) project with the setup script from **Shared songs and scores → Set up a shared library** (open it from the playlist or score history). Its URL and publishable key are in the `SHARED_LIBRARY` line near the top of `index.html`. The free plan stores 1 GB of song files, about 200 songs. Free projects pause after a week without use, so open the Supabase dashboard the day before an event.
 
 ## Poster
 In the live lobby, choose **Make a poster** for a printable sign with the QR code, PIN and steps. To print ahead of time, set your own PIN under **More settings** and use **Play again with the same PIN** for every game.
