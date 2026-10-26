@@ -59,6 +59,8 @@ The site keeps a shared library online, so everyone who uses it gets the same pa
 - Anyone can add songs and record games. Removing a song from the shared playlist or clearing the shared scores needs the **library code**. You're asked for it once on each computer.
 - If the connection drops, new songs and scores are saved on that computer and shared when it's back.
 
+**Shared songs on the home screen.** Under **Lobby music**, anyone can press **+ Add a song for everyone**, give it a title and their name, and share it. Everyone sees the list, 6 songs at a time with **Prev** and **Next**, and can press play to listen. **Play all** plays them in the lobby as the Party playlist. Press **Admin** and enter the library code to show a remove button on each song. **Admin · sign out** turns it off on that device.
+
 The library is a free [Supabase](https://supabase.com) project with the setup script from **Shared songs and scores → Set up a shared library** (open it from the playlist or score history). Its URL and publishable key are in the `SHARED_LIBRARY` line near the top of `index.html`. The free plan stores 1 GB of song files, about 200 songs. Free projects pause after a week without use, so open the Supabase dashboard the day before an event.
 
 ## Poster
