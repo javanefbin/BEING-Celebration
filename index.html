@@ -1094,7 +1094,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
         <button class="btn" data-act="live-host" id="live-host-btn" disabled>Host a live game</button>
         <button class="btn ghost" data-act="live-join" id="live-join-btn" disabled>Join as a player</button>
         <button class="btn ghost" data-act="live-resume" id="live-resume" hidden>Resume game</button>
-        <button class="linkish" data-act="open-server" style="color:var(--ink)">Let anyone join</button>
+        <button class="linkish" data-act="open-server" id="open-server-btn" style="color:var(--ink)">Let anyone join</button>
       </div>
     </article>
     <article class="arena-card">
@@ -1748,7 +1748,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.6";
+const APP_VERSION="3.6.1";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -3109,7 +3109,7 @@ function disconnectGame(){
 
 async function initLive(){return initSupa()}
 async function initSupa(){
-  ensurePid();const cfg=sbConfig();
+  ensurePid();store.del("japarty.server");const cfg=null;
   if(cfg){try{await sbInit(cfg);LIVE.mode="supa";LIVE.status="on";LIVE.canHost=true;LIVE.myPeer=SB.pid;renderLiveCard();arenaInit();
     if((live.hashPin||live.remote)&&mode==="home")bootJoin();return}catch(e){}}
   return initFree();
@@ -3124,6 +3124,7 @@ async function initFree(){
   if((live.hashPin||live.remote)&&mode==="home")bootJoin();
 }
 function renderLiveCard(){
+  {const ob=$("#open-server-btn");if(ob)ob.hidden=!inHost()}
   const res=$("#live-resume"),sv=savedHost();
   res.hidden=!(sv&&LIVE.status==="on"&&LIVE.canHost&&sv.mode===LIVE.mode);if(!res.hidden)res.textContent="Resume game "+sv.pin;
   const note=$("#live-note"),h=$("#live-host-btn"),j=$("#live-join-btn");
@@ -5270,7 +5271,7 @@ async function runLtest(){
     const poor=res.join.got<N*.9||res.ans.got<N*.9||res.push.got<res.push.exp*.8;
     const v=$("#lt-verdict");v.className="lt-verdict "+(good?"ok":poor?"bad":"warn");
     v.innerHTML=good?"<b>Ready for 100 phones.</b> Everything arrived quickly. Run the test again on the event Wi-Fi to be sure."
-      :poor?`<b>The live server struggled.</b> Some traffic didn't arrive. Try again in a few minutes, try phone data instead of this Wi-Fi, or connect your own free Supabase server under Let anyone join on the home screen.`
+      :poor?`<b>The live server struggled.</b> Some traffic didn't arrive. Try again in a few minutes, or try phone data instead of this Wi-Fi. If it keeps happening, reload the page: Japarty switches to the backup live server when the main one can't be reached.`
       :"<b>Mostly fine.</b> Everything arrived, a little slowly. Answers may take a moment to show, so leave the answer timer at 20 seconds or more.";
     v.hidden=false;LT.res=res;
   }catch(e){if(!$("#lt-steps").textContent)ltStep(0,"The test couldn't run. Check the connection and try again.","bad")}

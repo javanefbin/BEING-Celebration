@@ -80,9 +80,5 @@ Live games work with no setup. Open the site on the big screen, choose **Host a 
 
 The site connects through a free public live server (with a second one as a backup). Game details such as nicknames and answers pass through that shared server. If your Wi-Fi blocks it, players can switch to phone data.
 
-### Optional: your own private live server
-1. Create a free [Supabase](https://supabase.com) project.
-2. In **Project Settings → API Keys**, copy the Project URL and the anon or publishable key.
-3. Open the site, choose **Let anyone join** and paste them, or put them in the `LIVE_SERVER` line near the top of `index.html`.
-
-The free Supabase plan handles about 200 phones at once. Free projects pause after a week without use, so open the Supabase dashboard the day before an event.
+### Free for 100+ players
+Live games always run on the free public live servers, with no account, no setup and no cost, so 100 or more phones can play at once. If the main server can't be reached, Japarty switches to the backup. Run **Test with 100 phones** (in the live lobby, or from the event check) on the event Wi-Fi to confirm. Supabase is used only for the shared songs and scores, never for live games.
