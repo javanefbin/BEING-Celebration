@@ -1675,7 +1675,7 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.4";
+const APP_VERSION="3.4.1";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -5708,7 +5708,7 @@ async function libInit(){
   if(!LIB.cfg){LIB.state="off";renderLibUI();return}
   LIB.state="checking";renderLibUI();
   await libRefresh();
-  LIB.timer=setInterval(()=>{if(document.visibilityState!=="hidden"&&!libQuiet())libRefresh()},45000);
+  LIB.timer=setInterval(()=>{if(document.visibilityState!=="hidden"&&!libQuiet()&&(!LIB.on||Date.now()-LIB.at>40000))libRefresh()},15000);
 }
 async function libRefresh(){
   if(!LIB.cfg||LIB.refreshing)return;LIB.refreshing=true;
@@ -5828,6 +5828,11 @@ function libOpen(){
   if(!$("#lib-newcode").value)$("#lib-newcode").value=Array.from({length:8},(_,i)=>(i===4?"-":"")+PIN_CHARS[Math.random()*PIN_CHARS.length|0]).join("");
   $("#library").hidden=false;$("#lib-err").hidden=true;$("#lib-sql").hidden=true;renderLibUI();$("#library-title").focus();
 }
+/* look for new songs and scores whenever someone opens the playlist or score history, or comes back to the page */
+const libSoon=()=>{if(LIB.cfg&&!libQuiet()&&Date.now()-LIB.at>4000)libRefresh()};
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")libSoon()});
+window.addEventListener("focus",libSoon);
+{const op=ACT["open-party"];ACT["open-party"]=d=>{op(d);libSoon()};const oh=openHof;openHof=function(){const r=oh.apply(this,arguments);libSoon();return r}}
 Object.assign(ACT,{
   "lib-open":()=>libOpen(),
   "lib-close":()=>{$("#library").hidden=true},
