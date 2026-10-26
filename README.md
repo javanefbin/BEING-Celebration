@@ -16,6 +16,9 @@ Press **Play** on any one-screen game and a **Who's playing?** box asks for your
 - **Word Tiles**: take turns placing letter tiles on an 11x11 board to build crossing words, with double and triple letter and word squares. Each player or team has a rack of 7 tiles. Using all 7 tiles adds 35, and Legacy words such as FREEDOM, HARLEM and JUSTICE add 10. A privacy screen hides each rack until that player is ready. Words are checked against a built-in English word list, and the host can accept a word the list doesn't know. In live games everyone races to build the best word from the same 7 letters on their phone, and the big screen shows the best possible word.
 - **Crossword**: a new Black History crossword every game, built from more than 50 clues. Players or teams take turns choosing a clue and typing the answer. A right answer keeps the turn, a wrong one passes it. Longer words score more, and you can reveal a letter for a small cost. In live games everyone races to fill the same puzzle on their own phone, and the first person to solve each word gets 50 extra points.
 
+## Questions
+More than 200 multiple-choice questions, 114 true-or-false statements, 56 Who Am I? figures, 40 map places and 96 crossword clues, all written for Japarty and checked against sources such as the Library of Congress, the Smithsonian, the National Park Service and Britannica. Each computer remembers which questions it has shown recently and serves new ones first, so you can play about 20 rounds of Quiz Rush before a question repeats.
+
 ## Daily warm-up
 Five questions a day, the same for everyone, from the home screen. Play once a day to build a streak, then copy your result to share it.
 
@@ -31,6 +34,9 @@ Tap **JAPARTY!** at the top of any screen to go home. In a live game, **Back** t
 - **Test with 100 phones**: under "Before your event", a 30-second network test sends the traffic of 100 phones through the live server in a practice room.
 - **Recap**: at the end of a game players see "What we learned" on their phones, and the big screen shows a QR code so anyone can keep the questions, answers and facts.
 - **Event report**: games, winners, the hardest and easiest questions, poll results and prize winners, downloadable as a web page or CSV.
+
+## Event check
+In the live lobby, press **Run the event check** on the big-screen computer at the venue. In about 10 seconds it checks the version, the live server and its backup, the shared library, song playback, sound, screen size and admin sign-in, and tells you what to fix.
 
 ## Score history
 Every finished game is saved: one-screen games, live games and Arena duels. Open **Score history** from the home screen (it shows the reigning champion) or from any results screen:
@@ -59,7 +65,7 @@ The site keeps a shared library online, so everyone who uses it gets the same pa
 - Anyone can add songs and record games. Removing a song from the shared playlist or clearing the shared scores needs the **library code**. You're asked for it once on each computer.
 - If the connection drops, new songs and scores are saved on that computer and shared when it's back.
 
-**Shared songs on the home screen.** Under **Lobby music**, anyone can press **+ Add a song for everyone**, give it a title and their name, and share it. Everyone sees the list, 6 songs at a time with **Prev** and **Next**, and can press play to listen. **Play all** plays them in the lobby as the Party playlist. Press **Admin** and enter the library code to show a remove button on each song. **Admin · sign out** turns it off on that device.
+**Shared songs on the home screen.** Under **Lobby music**, anyone can press **+ Add a song for everyone**, give it a title and their name, and send it in. New songs wait for an admin to approve them before anyone else can hear them. Everyone sees the list, 6 songs at a time with **Prev** and **Next**, and can press play to listen. **Play all** plays them in the lobby as the Party playlist. Press **Admin** and enter the library code to see **Waiting for your approval**, where you can play, approve or reject each new song, and a remove button on every shared song. Admins can also remove a junk game from **Score history → Recent games**. **Admin · sign out** turns it off on that device.
 
 The library is a free [Supabase](https://supabase.com) project with the setup script from **Shared songs and scores → Set up a shared library** (open it from the playlist or score history). Its URL and publishable key are in the `SHARED_LIBRARY` line near the top of `index.html`. The free plan stores 1 GB of song files, about 200 songs. Free projects pause after a week without use, so open the Supabase dashboard the day before an event.
 
