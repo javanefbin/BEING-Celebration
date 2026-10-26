@@ -1748,7 +1748,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.6.1";
+const APP_VERSION="3.6.2";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2935,6 +2935,19 @@ function mqConnect(bi){
     setTimeout(()=>{if(!done){try{c.end(true)}catch(e){}fin(null)}},9000);
   });
 }
+/* The free public live server drops anything over about 10 messages a second from one connection
+   (measured on broker.emqx.io), so every message this page sends goes through one paced queue.
+   Snapshots such as the game state replace an older copy still waiting in the queue. */
+const MQQ={q:[],tokens:8,at:0,timer:null,RATE:8,BURST:8};
+function mqSend(c,topic,payload,opts,key){return new Promise(res=>{
+  if(!c){res();return}
+  if(key){const ex=MQQ.q.find(x=>x.key===key&&x.c===c);if(ex){ex.payload=payload;ex.opts=opts;ex.res.push(res);return}}
+  MQQ.q.push({c,topic,payload,opts,key,res:[res]});mqPump()})}
+function mqPump(){
+  const now=Date.now();MQQ.tokens=Math.min(MQQ.BURST,MQQ.tokens+(MQQ.at?(now-MQQ.at)/1000*MQQ.RATE:0));MQQ.at=now;
+  while(MQQ.q.length&&MQQ.tokens>=1){const m=MQQ.q.shift();MQQ.tokens-=1;const done=()=>m.res.forEach(r=>r());try{m.c.publish(m.topic,m.payload,m.opts,done)}catch(e){done()}}
+  clearTimeout(MQQ.timer);if(MQQ.q.length)MQQ.timer=setTimeout(mqPump,Math.ceil(1000/MQQ.RATE));
+}
 async function mqSwitch(bi){
   const c=await mqConnect(bi);if(!c)return false;
   try{MQ.client&&MQ.client.end(true)}catch(e){}
@@ -2948,7 +2961,8 @@ function mqttRoom(pin,role){
   const fire=(joined,left,updated)=>{snap=Object.freeze([...peers.values()]);const ch={peers:snap,joined,left,updated};peerCbs.forEach(f=>{try{f(ch)}catch(e){}})};
   const sub=(t,f)=>{const full=base+"/"+t;let set=MQ.handlers.get(full);if(!set){set=new Set();MQ.handlers.set(full,set);c.subscribe(full,{qos:1})}set.add(f);
     return()=>{set.delete(f);if(!set.size){MQ.handlers.delete(full);try{c.unsubscribe(full)}catch(e){}}}};
-  const pub=(t,d,retain)=>new Promise(r=>{try{c.publish(base+"/"+t,JSON.stringify(d),{qos:1,retain:!!retain},()=>r())}catch(e){r()}});
+  const SNAP={state:1,roster:1,party:1,rc:1,in:1};
+  const pub=(t,d,retain)=>mqSend(c,base+"/"+t,JSON.stringify(d),{qos:1,retain:!!retain},SNAP[t]?base+"/"+t:null);
   const hello=()=>role==="player"?pub("in",{pid:SB.pid,pres}):Promise.resolve();
   const upCbs=new Set();
   if(role==="host")unsubs.push(sub("up",d=>upCbs.forEach(f=>{try{f(d)}catch(e){}})));
@@ -4611,7 +4625,7 @@ async function sendSong(file){
   if(file.size>P_MAX){ent.local="big";return renderPlayerParty()}
   renderPlayerParty();
   try{
-    const buf=new Uint8Array(await file.arrayBuffer()),CH=LIVE.mode==="supa"?16384:24576,n=Math.ceil(buf.length/CH);
+    const buf=new Uint8Array(await file.arrayBuffer()),CH=LIVE.mode==="supa"?16384:65536,n=Math.ceil(buf.length/CH);
     await g.sendUp({t:"m",u:ent.u,pid:SB.pid||LIVE.myPeer||"",nick:live.nick,name:nm,size:buf.length,type:file.type||"audio/mpeg",n,ch:CH});
     for(let i=0;i<n;i++){
       if(live.g!==g)throw new Error("left");
@@ -4644,7 +4658,7 @@ function arPresence(){const st=arStatus(),o=AR.open&&st==="a"?{id:AR.open.id,mod
   return{k:arKey(),n:arName()||"Guest "+String(arKey()||"0000").slice(-4).toUpperCase(),g:!arName(),s:st,w:AR.rec.w|0,l:AR.rec.l|0,vs:st==="d"&&AR.duel?AR.duel.opp.n.slice(0,20):"",o,v:APP_VERSION,at:Date.now()}}
 function mqSub(topic,f,qos){const c=MQ.client;if(!c)return()=>{};let set=MQ.handlers.get(topic);if(!set){set=new Set();MQ.handlers.set(topic,set);c.subscribe(topic,{qos:qos||0})}set.add(f);
   return()=>{set.delete(f);if(!set.size){MQ.handlers.delete(topic);try{c.unsubscribe(topic)}catch(e){}}}}
-function mqPub(topic,d,qos){try{MQ.client&&MQ.client.publish(topic,JSON.stringify(d),{qos:qos||0})}catch(e){}}
+function mqPub(topic,d,qos){if(MQ.client)mqSend(MQ.client,topic,JSON.stringify(d),{qos:qos||0},null)}
 async function arenaInit(){
   if(AR.on||LIVE.status!=="on")return;const key=arKey();if(!key){setTimeout(arenaInit,2000);return}
   if(LIVE.mode==="mqtt"&&MQ.client){AR.kind="mqtt";arenaBindMqtt()}
@@ -5223,9 +5237,9 @@ function ltStep(i,txt,st){const box=$("#lt-steps");let el=box.querySelector(`[da
 const ltSleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function ltTesters(T,N){
   if(LIVE.mode==="mqtt"){
-    const K=4,cs=[];for(let k=0;k<K;k++){const c=await new Promise(res=>{let done=false;const fin=v=>{if(!done){done=true;res(v)}};let cl;
+    const K=Math.min(25,N),cs=[];await Promise.all(Array.from({length:K},async()=>{const c=await new Promise(res=>{let done=false;const fin=v=>{if(!done){done=true;res(v)}};let cl;
         try{cl=mqtt.connect(MQTT_BROKERS[MQ.bi],{clientId:"jplt"+Math.random().toString(36).slice(2,12),clean:true,keepalive:30,reconnectPeriod:0,connectTimeout:8000,protocolVersion:4})}catch(e){return fin(null)}
-        cl.on("connect",()=>fin(cl));cl.on("error",()=>{});setTimeout(()=>{if(!done){try{cl.end(true)}catch(e){}fin(null)}},9000)});if(c)cs.push(c)}
+        cl.on("connect",()=>fin(cl));cl.on("error",()=>{});setTimeout(()=>{if(!done){try{cl.end(true)}catch(e){}fin(null)}},9000)});if(c)cs.push(c)}));
     if(!cs.length)return null;const base="jp/v1/"+T,got=[];
     cs.forEach((c,ci)=>{c.subscribe(base+"/state",{qos:1});c.on("message",(t,buf)=>{if(t!==base+"/state")return;try{const d=JSON.parse(typeof buf==="string"?buf:new TextDecoder().decode(buf));if(d&&typeof d.lt==="number")got.push({c:ci,lt:d.lt,ms:Date.now()-d.at})}catch(e){}})});
     const send=(i,pres)=>new Promise(r=>{try{cs[i%cs.length].publish(base+"/in",JSON.stringify({pid:"lt"+T.toLowerCase()+i,pres}),{qos:1},()=>r())}catch(e){r()}});
