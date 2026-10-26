@@ -56,6 +56,8 @@ Everyone who has the site open shows up as online, with a count on the home scre
 **Quick match** posts an open challenge that the first available person can take. You can search the online list, show only available people, switch off challenges, send quick reactions during a duel, and track your wins, streaks, best scores and recent duels. Records are kept on each device.
 
 ## Party playlist
+MP4 music videos work anywhere you add music: on the home screen, in the Party playlist, from phones, for Guess the Song and for your own lobby music. Japarty keeps just the sound and turns it into a small MP3 in the browser, so nothing large is uploaded.
+
 Open **Playlist** on the big screen to play songs one after another during the lobby and leaderboards. While a live game is open, players can add a music file from their phone (up to 12 MB, 3 waiting per player). You approve each song before it plays, and the playlist plays quietly or pauses while players answer. Only play music you have the right to play at your event.
 
 ## Shared songs and scores

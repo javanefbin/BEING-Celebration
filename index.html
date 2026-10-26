@@ -1137,7 +1137,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
             <div class="hs-list" id="hs-list"></div>
             <div class="hs-pager" id="hs-pager" hidden></div>
             <button class="btn small" data-act="hs-add" id="hs-add-btn" style="justify-self:start">+ Add a song for everyone</button>
-            <input type="file" id="hs-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm" hidden>
+            <input type="file" id="hs-file" accept="audio/*,video/mp4,video/quicktime,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm,.mp4,.m4v,.mov" hidden>
             <div class="hs-form" id="hs-form" hidden>
               <label class="label" for="hs-title">Song title</label><input id="hs-title" maxlength="80" autocomplete="off">
               <label class="label" for="hs-by">Your name <span class="muted">(optional)</span></label><input id="hs-by" maxlength="30" autocomplete="off">
@@ -1374,7 +1374,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
     </div>
     <div class="p-body" id="p-body" aria-live="polite"></div>
     <div class="p-party" id="p-party" hidden></div>
-    <input type="file" id="p-song-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm" hidden>
+    <input type="file" id="p-song-file" accept="audio/*,video/mp4,video/quicktime,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm,.mp4,.m4v,.mov" hidden>
     <div class="center"><button class="linkish" data-act="p-leave" id="p-leave">Leave and open the one-screen games</button></div>
     <p class="center ver">Japarty v<span class="ver-n"></span></p>
   </section>
@@ -1457,7 +1457,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
       <button class="btn" data-act="party-play" id="pa-play">Play</button>
       <button class="btn ghost" data-act="party-skip" id="pa-skip">Skip song</button>
       <button class="btn ghost" data-act="party-add">+ Add songs from this computer</button>
-      <input type="file" id="party-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm" multiple hidden>
+      <input type="file" id="party-file" accept="audio/*,video/mp4,video/quicktime,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm,.mp4,.m4v,.mov" multiple hidden>
       <span class="muted" id="pa-status" style="font-size:14px"></span>
     </div>
     <div class="group" id="pa-pend-wrap" hidden><span class="label" id="pa-pend-label">Requests from players</span><div class="group" id="pa-pend"></div></div>
@@ -1555,7 +1555,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
     <p class="muted">Add song files from this computer, then check each title. Players pick the right title from four choices, so short, clear titles work best. Songs are saved in this browser on this computer only, so set them up on the computer that runs the big screen. Only use music you have the right to play at your event.</p>
     <div class="group" id="tn-list"></div>
     <div class="row"><button class="btn" data-act="tunes-add">+ Add song files</button><span class="muted" id="tn-status" style="font-size:14px"></span></div>
-    <input type="file" id="tune-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
+    <input type="file" id="tune-file" accept="audio/*,video/mp4,video/quicktime,.mp3,.m4a,.aac,.wav,.ogg,.flac,.mp4,.m4v,.mov" multiple hidden>
     <label class="check" for="tn-random"><input type="checkbox" id="tn-random"><span>Start each clip at a random spot instead of its start time</span></label>
     <label class="check" for="tn-starters"><input type="checkbox" id="tn-starters"><span>Include the two starter tunes (public-domain melodies Japarty plays itself)</span></label>
     <p class="tn-count" id="tn-count"></p>
@@ -1571,7 +1571,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
     <div class="group"><span class="label">Party playlist</span><p class="muted" style="font-size:14px">Plays songs one after another, and players can add songs from their phones.</p><button class="btn ghost small" data-act="open-party" style="justify-self:start">Open the party playlist</button></div>
     <div class="group"><span class="label">Your music</span><div class="group" id="mx-list"></div>
       <div class="row"><button class="btn ghost small" data-act="music-add">+ Add music files</button><span class="muted" id="mx-status" style="font-size:14px"></span></div>
-      <input type="file" id="music-file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple hidden>
+      <input type="file" id="music-file" accept="audio/*,video/mp4,video/quicktime,.mp3,.m4a,.aac,.wav,.ogg,.flac,.mp4,.m4v,.mov" multiple hidden>
       <p class="muted" style="font-size:14px">MP3, M4A, WAV or OGG. Tracks loop and play from this screen only. They're saved in this browser on this computer, so they're still here next time. They aren't uploaded anywhere. Use music you have the right to play at your event.</p></div>
     <div class="group"><label class="label" for="mx-vol">Music volume</label><input type="range" id="mx-vol" min="0" max="100" step="5"></div>
     <div class="row">
@@ -1748,7 +1748,7 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.6.2";
+const APP_VERSION="3.7";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -4300,28 +4300,28 @@ document.addEventListener("change",async e=>{
     const files=[...e.target.files];e.target.value="";if(!files.length)return;
     if(!audioInit()){$("#tn-status").textContent="This browser can't play audio here.";return}
     const st=$("#tn-status"),bad=[];let saveFail=false,added=0;
-    for(const f of files){
+    for(let f of files){
       st.textContent="Loading "+f.name+"…";
-      try{const data=await f.arrayBuffer(),buf=await M.ctx.decodeAudioData(data.slice(0));
+      try{if(isVideo(f))f=await toAudioFile(f,p=>{st.textContent=`Getting the sound from ${f.name}… ${p}%`});const data=await f.arrayBuffer(),buf=await M.ctx.decodeAudioData(data.slice(0));
         const r={id:"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:f.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").slice(0,80),artist:"",start:0,data,buf};
         TUNES.push(r);added++;try{await IDB.put(tuneRecord(r))}catch(err){saveFail=true}}
       catch(err){bad.push(f.name)}
     }
-    st.textContent=(added?`Added ${added} song${added===1?"":"s"}. Check the titles below.`:"")+(bad.length?` Couldn't play ${bad.join(", ")}. Try an MP3 or WAV file.`:"")+(saveFail?" This browser couldn't save them, so they'll be gone after a reload.":"");
+    st.textContent=(added?`Added ${added} song${added===1?"":"s"}. Check the titles below.`:"")+(bad.length?` Couldn't play ${bad.join(", ")}. Try an MP3, MP4 or WAV file.`:"")+(saveFail?" This browser couldn't save them, so they'll be gone after a reload.":"");
     renderTuneUI();return;
   }
   if(e.target.id!=="music-file")return;
   const files=[...e.target.files];e.target.value="";if(!files.length)return;
   if(!audioInit()){$("#mx-status").textContent="This browser can't play audio here.";return}
   const st=$("#mx-status"),bad=[];let first=null;
-  for(const f of files){
+  for(let f of files){
     st.textContent="Loading "+f.name+"…";
-    try{const data=await f.arrayBuffer(),buf=await M.ctx.decodeAudioData(data.slice(0)),id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    try{if(isVideo(f))f=await toAudioFile(f,p=>{st.textContent=`Getting the sound from ${f.name}… ${p}%`});const data=await f.arrayBuffer(),buf=await M.ctx.decodeAudioData(data.slice(0)),id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
       const rec={id,name:f.name.replace(/\.[^.]+$/,"").slice(0,40)||"My track",buf,data,type:f.type||"audio/mpeg",at:Date.now()};CUSTOM.push(rec);first=first||id;
       if(!(await saveMusic(rec)))st.dataset.nosave="1"}
     catch(err){bad.push(f.name)}
   }
-  st.textContent=(bad.length?`Couldn't play ${bad.join(", ")}. Try an MP3 or WAV file.`:first?"Added and saved on this computer. Now playing in the lobby.":"")+(st.dataset.nosave?" This browser couldn't save it for next time, so you'll need to add it again after a reload.":"");delete st.dataset.nosave;
+  st.textContent=(bad.length?`Couldn't play ${bad.join(", ")}. Try an MP3, MP4 or WAV file.`:first?"Added and saved on this computer. Now playing in the lobby.":"")+(st.dataset.nosave?" This browser couldn't save it for next time, so you'll need to add it again after a reload.":"");delete st.dataset.nosave;
   if(first){prefs.lobby=first;if(!prefs.music){prefs.music=true;setMusicGain()}if(M.kind==="lobby")lobbyMusic()}
   renderMusicUI();
 });
@@ -4427,6 +4427,37 @@ setInterval(()=>{
 
 /* save a file through the host app when there is one; null means use a normal browser download */
 async function hostSave(){return null}
+/* ---------- MP4 and other video files: keep only the sound, as an MP3 ----------
+   Music videos are far bigger than the song itself, so the audio is decoded in the browser and re-encoded as MP3
+   (LAME MP3 encoder, lamejs, LGPL), at a bitrate that keeps a song under 11 MB. */
+const VIDEO_MAX=400*1024*1024;
+const isVideo=f=>!!f&&(/^video\//.test(f.type||"")||(!/^audio\//.test(f.type||"")&&/\.(mp4|m4v|mov|3gp)$/i.test(f.name||"")));
+const isMusicFile=f=>!!f&&(/^audio\//.test(f.type||"")||isVideo(f)||/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm)$/i.test(f.name||""));
+let lameP=null;
+const loadLame=()=>lameP||(lameP=(window.lamejs?Promise.resolve():loadScript("https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js")).catch(e=>{lameP=null;throw e}));
+async function videoToMp3(file,prog,mono){
+  if(file.size>VIDEO_MAX)throw new Error("big");
+  await loadLame();if(!window.lamejs)throw new Error("encoder");
+  const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!OAC)throw new Error("audio");
+  const ctx=new OAC(2,44100,44100),data=await file.arrayBuffer();
+  const buf=await new Promise((res,rej)=>{let p;try{p=ctx.decodeAudioData(data,res,rej)}catch(e){rej(e)}if(p&&p.then)p.then(res,rej)}).catch(()=>{throw new Error("nosound")});
+  if(!buf||!buf.length)throw new Error("nosound");
+  const L=buf.getChannelData(0),R=buf.numberOfChannels>1?buf.getChannelData(1):L,rate=buf.sampleRate;
+  const kbps=Math.max(48,Math.min(mono?96:128,Math.floor(11e6*8/Math.max(1,buf.duration)/1000/16)*16));
+  const enc=new lamejs.Mp3Encoder(mono?1:2,rate,kbps),out=[],B=1152*16,l16=new Int16Array(B),r16=new Int16Array(B);
+  const to16=v=>v<-1?-32768:v>1?32767:Math.round(v*32767);
+  for(let i=0,step=0;i<L.length;i+=B,step++){
+    const n=Math.min(B,L.length-i);
+    if(mono)for(let k=0;k<n;k++)l16[k]=to16((L[i+k]+R[i+k])/2);else for(let k=0;k<n;k++){l16[k]=to16(L[i+k]);r16[k]=to16(R[i+k])}
+    const mp=mono?enc.encodeBuffer(l16.subarray(0,n)):enc.encodeBuffer(l16.subarray(0,n),r16.subarray(0,n));if(mp.length)out.push(new Uint8Array(mp));
+    if(step%24===0){if(prog)prog(Math.min(99,Math.round(i/L.length*100)));await new Promise(r=>setTimeout(r,0))}
+  }
+  const end=enc.flush();if(end.length)out.push(new Uint8Array(end));if(prog)prog(100);
+  return new File(out,(file.name||"Song").replace(/\.[^.]+$/,"")+".mp3",{type:"audio/mpeg"});
+}
+const toAudioFile=(f,prog,mono)=>isVideo(f)?videoToMp3(f,prog,mono):Promise.resolve(f);
+const videoErr=(e,name)=>e&&e.message==="big"?`${name} is over 400 MB.`:e&&e.message==="nosound"?`${name} has no sound we can use.`:`Couldn't get the sound out of ${name}. Try an MP3.`;
+
 /* ---------- party playlist: a queue on the big screen; players add songs from their phones ---------- */
 const P_MAX=12*1024*1024,P_MAX_SONGS=300,P_PER_PLAYER=3;
 const PARTY={queue:[],pending:[],idx:-1,want:false,hold:false,el:null,gain:null,level:0,st:{},ups:{},prev:null,bto:null};
@@ -4572,7 +4603,8 @@ function partyPreview(id){
 }
 async function partyAddFiles(files){
   const st=$("#pa-status");let added=0;const bad=[];audioInit();
-  for(const f of files){
+  for(let f of files){
+    if(isVideo(f)){try{f=await toAudioFile(f,p=>{st.textContent=`Getting the sound from ${f.name}… ${p}%`})}catch(e){bad.push(f.name);continue}}
     if(f.size>200*1024*1024){bad.push(f.name);continue}
     st.textContent="Loading "+f.name+"…";
     const url=URL.createObjectURL(f),dur=await probeAudio(url);
@@ -4594,6 +4626,9 @@ const PP_TEXT={off:"The DJ turned off song requests.",busy:"The DJ is busy. Try 
 function ppStatus(x){
   const st=live.party&&live.party.st&&Array.isArray(live.party.st[x.u])?live.party.st[x.u]:null;
   if(x.local==="sending")return[`Sending… ${x.pct}%`,""];
+  if(x.local==="converting")return[`Getting the sound from your video… ${x.pct}%`,""];
+  if(x.local==="novideo")return["Couldn't get the sound out of that video. Try an MP3.","bad"];
+  if(x.local==="vbig")return["That video is over 400 MB.","bad"];
   if(x.local==="badtype")return["That isn't a music file.","bad"];
   if(x.local==="big")return["Over 12 MB. Try a shorter song.","bad"];
   if(x.local==="failed")return["Couldn't send. Check your connection and try again.","bad"];
@@ -4621,7 +4656,10 @@ async function sendSong(file){
   const nm=file.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim().slice(0,80)||"My song";
   const ent={u:Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4),pin:live.pin,name:nm,local:"sending",pct:0};
   live.myUps.unshift(ent);if(live.myUps.length>12)live.myUps.length=12;
-  if(!(/^audio\//.test(file.type)||/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm)$/i.test(file.name))){ent.local="badtype";return renderPlayerParty()}
+  if(!isMusicFile(file)){ent.local="badtype";return renderPlayerParty()}
+  if(isVideo(file)){ent.local="converting";renderPlayerParty();
+    try{file=await toAudioFile(file,p=>{if(p!==ent.pct){ent.pct=p;if(p%5===0)renderPlayerParty()}},true)}catch(e){ent.local=e&&e.message==="big"?"vbig":"novideo";return renderPlayerParty()}
+    ent.local="sending";ent.pct=0}
   if(file.size>P_MAX){ent.local="big";return renderPlayerParty()}
   renderPlayerParty();
   try{
@@ -6242,11 +6280,14 @@ function renderHomeSongs(){
   $("#hs-pager").hidden=pages<2;
   $("#hs-pager").innerHTML=pages<2?"":`<button class="btn ghost small" data-act="hs-page" data-d="-1"${HS.page?"":" disabled"} aria-label="Previous songs">‹ Prev</button><span>${from+1}–${Math.min(n,from+HS_PER)} of ${n}</span><button class="btn ghost small" data-act="hs-page" data-d="1"${HS.page<pages-1?"":" disabled"} aria-label="More songs">Next ›</button>`;
   $("#hs-add-btn").hidden=!!HS.file||!LIB.on;$("#hs-form").hidden=!HS.file;
-  $("#hs-note").textContent=HS.msg||"Songs added here are shared with everyone who uses Japarty and play in the Party playlist. Only add music you have the right to play at your event.";
+  $("#hs-note").textContent=HS.msg||"Songs added here are shared with everyone who uses Japarty and play in the Party playlist. MP3, MP4 and most music files work. Only add music you have the right to play at your event.";
 }
 async function hsPicked(f){
   HS.msg="";if(!f)return;
-  if(!/^audio\//.test(f.type||"")&&!/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm)$/i.test(f.name)){HS.msg="That isn't a music file. Try an MP3.";renderHomeSongs();return}
+  if(!isMusicFile(f)){HS.msg="That isn't a music file. Try an MP3 or MP4.";renderHomeSongs();return}
+  if(isVideo(f)){const nm=f.name;HS.busy=true;$("#hs-add-btn").disabled=true;
+    try{f=await toAudioFile(f,p=>{$("#hs-note").textContent=`Getting the sound from ${nm}… ${p}%`})}catch(e){HS.busy=false;$("#hs-add-btn").disabled=false;HS.msg=videoErr(e,nm);renderHomeSongs();return}
+    HS.busy=false;$("#hs-add-btn").disabled=false;HS.msg="Got the sound from the video. Check the title, then share it."}
   if(f.size>LIB_MAX){HS.msg="That file is over 25 MB. Try a shorter song or a smaller MP3.";renderHomeSongs();return}
   HS.file=f;$("#hs-title").value=f.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim().slice(0,80);
   $("#hs-by").value=String(store.get("japarty.songBy","")||store.get("japarty.nick","")||"").slice(0,30);
@@ -6806,7 +6847,7 @@ function renderCrossPhone(s,el,me){
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in 3.6: twice as many questions, checked against sources, and games no longer repeat questions you saw recently. Shared songs now wait for an admin to approve them, live results are cleaner, and there is a one-button event check.";
+{const WHATS_NEW="New in 3.7: add MP4 music videos anywhere you add music. Japarty keeps just the sound, as a small MP3.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
