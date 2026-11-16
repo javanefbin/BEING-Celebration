@@ -997,18 +997,19 @@ body:has(#auto:not([hidden])) #app{padding-bottom:calc(104px + env(safe-area-ins
 /* v3.6: keep the auto-advance bar from covering the buttons at the bottom of the page */
 body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 /* v3.8: Spotify player */
-.spot{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:25;width:min(360px,calc(100vw - 32px));background:var(--stage2);border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 16px 40px rgba(8,6,18,.5);display:grid;gap:8px}
-.spot-head{display:flex;align-items:center;gap:8px;font-size:14px}
+.spot{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:25;width:min(760px,calc(100vw - 16px));background:var(--stage2);border:1px solid var(--line);border-radius:16px;padding:8px;box-shadow:0 12px 32px rgba(8,6,18,.5);display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 12px}
+.spot .spot-tip{grid-column:1/-1}
+@media(max-width:600px){.spot{grid-template-columns:minmax(0,1fr)}}
+.spot-head{display:flex;align-items:center;gap:8px;font-size:14px;padding-left:6px;max-width:220px}
 .spot-dot{width:10px;height:10px;border-radius:50%;background:#1ed760;flex:none}
 .spot-st{flex:1;min-width:0;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spot-head .btn{padding:4px 10px;font-size:13px}
-.spot-frame{border-radius:12px;overflow:hidden;min-height:152px}
+.spot-frame{border-radius:12px;overflow:hidden;min-height:80px}
 .spot-frame iframe{display:block;border:0}
 .spot-tip{margin:0;font-size:13px;color:var(--muted);line-height:1.4}.spot-tip:empty{display:none}
-.spot.min{width:auto;padding:6px 8px 6px 12px}
-.spot.min .spot-frame{position:fixed;left:-10000px;top:0;width:320px}
-.spot.min .spot-tip{display:none}
+body:has(#spot:not([hidden])){padding-bottom:116px}
 body:has(#auto:not([hidden])) .spot{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:200px}
 #spot-msg.bad{color:var(--clay)}
 .spot-set{display:grid;gap:6px}
 /* v3.6: event check */
@@ -1147,7 +1148,7 @@ body:has(#auto:not([hidden])) .spot{bottom:calc(92px + env(safe-area-inset-botto
           <div class="spot-set" id="spot-set" hidden>
             <label class="label" for="spot-url">Spotify playlist link</label>
             <div class="lib-code-row"><input id="spot-url" class="sv-input" autocomplete="off" spellcheck="false" placeholder="https://open.spotify.com/playlist/…"><button class="btn small" data-act="spot-use">Use this playlist</button></div>
-            <p class="muted" id="spot-msg" style="font-size:13px;margin:0">Sign in to Spotify in this browser first, or you'll only hear 30-second previews. Then press play in the Spotify player at the bottom of the screen. Japarty pauses it while players answer and plays it again on the leaderboard, during breaks and in the lobby.</p>
+            <p class="muted" id="spot-msg" style="font-size:13px;margin:0">Sign in to Spotify in this browser first, or you'll only hear 30-second previews. Then press play in the Spotify player at the bottom left. You start, pause and skip it yourself with its own buttons; Japarty's own music stays quiet while Spotify is chosen.</p>
           </div>
           <button class="btn ghost small" data-act="open-party" style="justify-self:start">Party playlist: players add songs</button>
           <div class="now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="now-playing">Starts when you tap anything</span></div>
@@ -1723,7 +1724,7 @@ body:has(#auto:not([hidden])) .spot{bottom:calc(92px + env(safe-area-inset-botto
 
 <!-- Spotify player (big screen only) -->
 <aside class="spot" id="spot" hidden aria-label="Spotify player">
-  <div class="spot-head"><span class="spot-dot" aria-hidden="true"></span><b>Spotify</b><span class="spot-st" id="spot-st" role="status"></span><button class="btn ghost small" id="spot-min" data-act="spot-min" aria-expanded="true">Hide</button></div>
+  <div class="spot-head"><span class="spot-dot" aria-hidden="true"></span><b>Spotify</b><span class="spot-st" id="spot-st" role="status"></span></div>
   <div class="spot-frame" id="spot-frame"></div>
   <p class="spot-tip" id="spot-tip"></p>
 </aside>
@@ -1775,7 +1776,7 @@ body:has(#auto:not([hidden])) .spot{bottom:calc(92px + env(safe-area-inset-botto
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.8";
+const APP_VERSION="3.8.1";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2461,7 +2462,7 @@ function schedule(){
 }
 function setTrack(name){M.track=name;M.step=0;if(M.ctx)M.next=M.ctx.currentTime+.06;playCustom();updateNowPlaying();partySync()}
 function lobbyMusic(){M.kind="lobby";setTrack(prefs.lobby==="spotify"?"none":prefs.lobby!=="party"?prefs.lobby:partyActive()?"party":PARTY.queue.length?"none":"groove")}
-function thinkMusic(){M.kind="think";setTrack(partyActive()&&prefs.partyQ!=="pause"?"none":prefs.think)}
+function thinkMusic(){M.kind="think";setTrack(prefs.lobby==="spotify"&&!inHost()||partyActive()&&prefs.partyQ!=="pause"?"none":prefs.think)}
 function silence(){M.kind="none";setTrack("none")}
 function playCustom(){
   const c=isCustom(M.track)?CUSTOM.find(x=>x.id===M.track):null;
@@ -2473,7 +2474,7 @@ const trackName=t=>t==="party"||(t==="none"&&partyActive())?partyNowText():isCus
 const setMusicGain=()=>{if(M.musicBus)M.musicBus.gain.setTargetAtTime(musicLevel(),M.ctx.currentTime,.05)};
 function updateNowPlaying(){
   const el=$("#now-playing");if(!el)return;
-  el.textContent=!M.ctx?"Starts when you tap anything":!prefs.music?"Music is off":spotOn()&&M.kind==="lobby"?(SPOT.paused?"Spotify playlist · press play in the Spotify player":"Spotify playlist"):(trackName(M.track)||"");
+  el.textContent=!M.ctx?"Starts when you tap anything":!prefs.music?"Music is off":spotOn()?(SPOT.paused?"Spotify playlist · use the player at the bottom left":"Spotify playlist"):(trackName(M.track)||"");
 }
 function sfx(name){
   if(!audioInit()||!prefs.sfx)return;
@@ -6416,6 +6417,9 @@ Object.assign(ACT,{
    Uses Spotify's own embedded player (iFrame API). It plays in the lobby and between questions,
    and pauses while players answer. Full songs need the big-screen browser signed in to Spotify. */
 const SPOT_DEFAULT="spotify:playlist:6W7NAaHOMFBXXBgZ5PelvN";
+/* Spotify's Embeds Terms don't allow Spotify content in game functionality without Spotify's written approval,
+   so the player is a plain player the host starts and stops. Set to true only with that approval. */
+const SPOT_AUTO=false;
 const SPOT={loading:null,ctl:null,uri:"",ready:false,paused:true,started:false,ourPause:false,min:!!store.get("japarty.spotMin",false),err:"",pos:0,dur:0};
 function spotUri(v){v=String(v||"").trim();let m=v.match(/^spotify:(playlist|album|track|artist):([A-Za-z0-9]{10,40})$/);if(m)return`spotify:${m[1]}:${m[2]}`;
   m=v.match(/open\.spotify\.com\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(?:embed\/)?(playlist|album|track|artist)\/([A-Za-z0-9]{10,40})/i);return m?`spotify:${m[1]}:${m[2]}`:""}
@@ -6438,7 +6442,7 @@ async function spotEnsure(){
   if(SPOT.creating)return null;SPOT.creating=true;SPOT.err="";renderSpot();
   let api;try{api=await spotLoad()}catch(e){SPOT.creating=false;SPOT.err="Couldn't reach Spotify. Check the internet connection, or your network may block Spotify.";renderSpot();return null}
   const host=$("#spot-frame");host.innerHTML='<div id="spot-el"></div>';
-  return new Promise(res=>{try{api.createController($("#spot-el"),{uri,width:"100%",height:152},ctl=>{
+  return new Promise(res=>{try{api.createController($("#spot-el"),{uri,width:"100%",height:80},ctl=>{
     SPOT.ctl=ctl;SPOT.uri=uri;SPOT.creating=false;
     ctl.addListener("ready",()=>{SPOT.ready=true;renderSpot();spotSync()});
     ctl.addListener("playback_update",e=>{const d=(e&&e.data)||{};const was=SPOT.paused;SPOT.paused=!!d.isPaused;SPOT.pos=+d.position||0;SPOT.dur=+d.duration||0;
@@ -6446,13 +6450,14 @@ async function spotEnsure(){
       if(was!==SPOT.paused){renderSpot();updateNowPlaying()}});
     res(ctl)})}catch(e){SPOT.creating=false;SPOT.err="The Spotify player didn't load. Refresh the page and try again.";renderSpot();res(null)}});
 }
-/* called whenever the music changes: plays in the lobby and between questions, pauses while players answer */
+/* called whenever the music changes. With SPOT_AUTO off it only shows or hides the player; Japarty never starts or stops it. */
 function spotSync(){
   const box=$("#spot");if(!box)return;
   const on=spotOn();box.hidden=!on;
   if(!on){if(SPOT.ctl&&!SPOT.paused){SPOT.ourPause=true;try{SPOT.ctl.pause()}catch(e){}}return}
   if(!SPOT.ctl){spotEnsure();return}
   if(SPOT.uri!==spotCur()){spotEnsure();return}
+  if(!SPOT_AUTO){renderSpot();return}
   const want=spotWant();
   if(want&&SPOT.paused&&(SPOT.ourPause||!SPOT.started)){SPOT.ourPause=false;try{SPOT.started?SPOT.ctl.resume():SPOT.ctl.play()}catch(e){}}
   else if(!want&&!SPOT.paused){SPOT.ourPause=true;SPOT.peek=false;try{SPOT.ctl.pause()}catch(e){}}
@@ -6461,16 +6466,16 @@ function spotSync(){
 function renderSpot(){
   const box=$("#spot");if(!box)return;
   /* while players answer it shrinks to a small bar so it never covers an answer */
-  const small=SPOT.min||(SPOT.started&&!spotWant()&&!SPOT.peek);box.classList.toggle("min",small);$("#spot-min").setAttribute("aria-expanded",String(!small));$("#spot-min").textContent=small?"Show":"Hide";
-  $("#spot-st").textContent=SPOT.err?"Not available":!SPOT.ctl||!SPOT.ready?"Loading…":!SPOT.paused?"Playing":spotWant()?"Press play to start":"Paused while players answer";
-  $("#spot-tip").textContent=SPOT.err||(SPOT.ready&&!SPOT.started?"Press play in the player once. After that, Japarty pauses it while players answer and plays it again on the leaderboard.":"");
+  /* Spotify's terms don't allow hiding or covering its player, so it always shows in Spotify's compact size */
+  $("#spot-st").textContent=SPOT.err?"Not available":!SPOT.ctl||!SPOT.ready?"Loading…":!SPOT.paused?"Playing":SPOT_AUTO&&!spotWant()?"Paused while players answer":"Paused";
+  $("#spot-tip").textContent=SPOT.err||(SPOT.ready&&!SPOT.started?(SPOT_AUTO?"Press play in the player once. After that, Japarty pauses it while players answer and plays it again on the leaderboard.":"Use the player's own buttons to play, pause and skip. Japarty doesn't start or stop it."):"");
   const set=$("#spot-set");if(set){set.hidden=!spotOn();const inp=$("#spot-url");if(inp&&!inp.matches(":focus"))inp.value=spotLink(spotCur())}
 }
 Object.assign(ACT,{
   "spot-min":()=>{const small=$("#spot").classList.contains("min");SPOT.min=!small;SPOT.peek=small;store.set("japarty.spotMin",SPOT.min);renderSpot()},
   "spot-use":()=>{const v=$("#spot-url").value,u=spotUri(v),m=$("#spot-msg");
     if(!u){m.textContent="That doesn't look like a Spotify link. In Spotify, open the playlist, choose Share, then Copy link to playlist, and paste it here.";m.classList.add("bad");return}
-    m.classList.remove("bad");store.set("japarty.spotify",u);m.textContent="Playlist loaded. If it doesn't start on its own, press play in the Spotify player at the bottom left.";spotSync()},
+    m.classList.remove("bad");store.set("japarty.spotify",u);m.textContent="Playlist loaded. Press play in the Spotify player at the bottom left.";spotSync()},
 });
 
 
@@ -6936,7 +6941,7 @@ function renderCrossPhone(s,el,me){
 if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in 3.8: play a Spotify playlist in the lobby. Choose Spotify playlist under Lobby music on the big screen.";
+{const WHATS_NEW="New in 3.8: play a Spotify playlist on the big screen. Choose Spotify playlist under Lobby music, then start and stop it with its own buttons.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
