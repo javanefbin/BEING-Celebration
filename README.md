@@ -55,6 +55,9 @@ Everyone who has the site open shows up as online, with a count on the home scre
 
 **Quick match** posts an open challenge that the first available person can take. You can search the online list, show only available people, switch off challenges, send quick reactions during a duel, and track your wins, streaks, best scores and recent duels. Records are kept on each device.
 
+## Spotify playlist
+On the big screen, under **Lobby music**, choose **Spotify playlist**, paste a Spotify playlist link and press **Use this playlist**. A Spotify player appears at the bottom left. Press play once; after that Japarty pauses it while players answer and plays it again on the leaderboard, during breaks and in the lobby. Sign in to Spotify in that browser first, or you'll only hear 30-second previews. Spotify's player can't be turned down by Japarty, so it pauses instead of playing quietly under questions. It works on the website only.
+
 ## Party playlist
 MP4 music videos work anywhere you add music: on the home screen, in the Party playlist, from phones, for Guess the Song and for your own lobby music. Japarty keeps just the sound and turns it into a small MP3 in the browser, so nothing large is uploaded.
 
