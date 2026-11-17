@@ -5,7 +5,8 @@ A Black History party quiz for the BEING Celebration. Open `index.html` on the b
 ## Games
 - **Quiz Rush**: timed multiple choice, faster answers score more.
 - **True or False Blitz**: 10-second rounds.
-- **Guess the Song**: add your own song clips, plus two public-domain starter tunes.
+- **Guess the Song**: add your own song files (one at a time or a whole folder), and Japarty reads each title from the file and starts the clip at the loudest, catchiest part of the song. It can also use the songs shared in Lobby music, so the same playlist works on any computer. Two public-domain starter tunes are included. Players pick the right title from 4 or 6 choices.
+- **Year Guess**: a moment in Black history appears and everyone types the year it happened. The exact year scores 1,000, every year off costs 25, and the closest guess earns 250 more. On one screen each player or team types a guess; in live games everyone guesses on their phone.
 - **Cash or Case**: pick a closed case, open the others, and decide whether to take the Banker's offer. A Black History question before each offer raises it 10% for a right answer. Each offer shows how it compares with the average of the cases still closed, how nervous the Banker is, and every offer so far. At the end you see whether you beat the Banker. Choose 16, 24, 32 or 40 cases. In live games everyone plays their own case on their phone.
 - **Who Am I?**: four clues about one of 41 famous figures appear one at a time, hardest first. Lock in early for 1,000 points, or wait for an easier clue and earn less. The reveal shows how many people got it on each clue.
 - **Map Round**: drop a pin where it happened on a map of the United States, with 40 places. The closer you are, the more points. Zoom in to place your pin exactly. Halfway through, a hint names the state, and pins after the hint score up to 600. On one screen players take turns; in live games everyone taps their own phone.
@@ -17,7 +18,9 @@ Press **Play** on any one-screen game and a **Who's playing?** box asks for your
 - **Crossword**: a new Black History crossword every game, built from more than 50 clues. Players or teams take turns choosing a clue and typing the answer. A right answer keeps the turn, a wrong one passes it. Longer words score more, and you can reveal a letter for a small cost. In live games everyone races to fill the same puzzle on their own phone, and the first person to solve each word gets 50 extra points.
 
 ## Questions
-More than 200 multiple-choice questions, 114 true-or-false statements, 56 Who Am I? figures, 40 map places and 96 crossword clues, all written for Japarty and checked against sources such as the Library of Congress, the Smithsonian, the National Park Service and Britannica. Each computer remembers which questions it has shown recently and serves new ones first, so you can play about 20 rounds of Quiz Rush before a question repeats.
+More than 250 multiple-choice questions (most with 6 answer choices), 50 Year Guess moments, 114 true-or-false statements, 56 Who Am I? figures, 40 map places and 96 crossword clues, all written for Japarty and checked against sources such as the Library of Congress, the Smithsonian, the National Park Service and Britannica. Each computer remembers which questions it has shown recently and serves new ones first, so you can play about 25 rounds of Quiz Rush before a question repeats.
+
+Under **Question pack** on the home screen (and in the live lobby) you can choose 4 or 6 answer choices, a difficulty (Easy, Medium, Hard or Any) and which topics to include. These apply to Quiz Rush, Year Guess and Guess the Song.
 
 ## Daily warm-up
 Five questions a day, the same for everyone, from the home screen. Play once a day to build a streak, then copy your result to share it.
