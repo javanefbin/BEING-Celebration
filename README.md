@@ -28,8 +28,17 @@ Five questions a day, the same for everyone, from the home screen. Play once a d
 ## Getting around
 Tap **JAPARTY!** at the top of any screen to go home. In a live game, **Back** takes the big screen from a game back to the lobby, with the same PIN and players. From the lobby it goes home, and **Resume game** brings you back. On phones, **Back** leaves the game and returns to the PIN screen.
 
+## Running a live game
+- **The lobby is three steps**: tap a game tile, pick the options (questions, timer, answer choices, double points, our questions), then press **Start the game**. Test players, the event check, PIN, teams and other setup are under **Set up and test**.
+- **Host control bar**: during a game, the next step (Reveal, Leaderboard, Next question, See the winners) is always in the bar at the bottom of the big screen. The Space bar does the same thing. Between questions you can press **Make the next question double**.
+- **Double points**: choose Off, Final question, Last 3 or Every 5th. A big "Double points!" banner shows on the big screen and every phone, so players who are behind know they can catch up.
+- **Our questions**: under Question pack (home screen) or Options (lobby), choose **Write our questions** to add multiple-choice or true-or-false trivia about your organization and the people in the room. **Mix in** adds about one in three to Quiz Rush; **Only ours** plays a whole round of them. They're saved on that computer; use **Move questions to another computer** to copy them to the event laptop.
+- **Winners slide**: after any game, press **Winners slide** for a full-screen, photo-ready podium with the event name and date. Tap the name or date to change them. The buttons fade after a few seconds, so the photo is clean. Esc closes it.
+- **Event mode**: in the lobby (During the event) or the Menu, turn on **Event mode** to hide the menu, Back, Quit and setup controls on the big screen. To unlock, press and hold the lock button in the bottom-left corner for 2 seconds.
+- **One-screen games**: tap an answer tile (or press A–F, or T/F) to lock in. With several players or teams, each tap locks in the next one still to answer; each team's own buttons still work too.
+
 ## Hosting tools
-- **Neon background**: a neon beach-city sunset with palm trees, a city skyline and a moving grid. It's on by default; turn it off under **Menu → Neon background** for the classic look. Printed posters always use a plain background.
+- **Neon background**: a neon beach-city sunset with palm trees, a city skyline and a moving grid. It's on by default; turn it off under **Menu → Neon background** for the classic look. All game tools (music, sound, bigger text, full screen, quit) are in the **Menu** button at the top right. Printed posters always use a plain background.
 - **Phone remote**: in the live lobby, choose **Phone remote** and scan the code with your own phone to run the big screen from anywhere: next, reveal, pause, skip and music.
 - **Run of show**: line up games, live polls, music breaks and a prize drawing, then press **Start the show**. Japarty runs them in order and keeps an overall show leaderboard (10 points for 1st in a game, 8 for 2nd, 6 for 3rd, and so on).
 - **Live polls**: word clouds or multiple choice, answered on phones and shown live on the big screen. Polls don't score points.
