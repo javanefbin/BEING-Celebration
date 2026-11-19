@@ -29,6 +29,7 @@ Five questions a day, the same for everyone, from the home screen. Play once a d
 Tap **JAPARTY!** at the top of any screen to go home. In a live game, **Back** takes the big screen from a game back to the lobby, with the same PIN and players. From the lobby it goes home, and **Resume game** brings you back. On phones, **Back** leaves the game and returns to the PIN screen.
 
 ## Hosting tools
+- **Neon background**: a neon beach-city sunset with palm trees, a city skyline and a moving grid. It's on by default; turn it off under **Menu → Neon background** for the classic look. Printed posters always use a plain background.
 - **Phone remote**: in the live lobby, choose **Phone remote** and scan the code with your own phone to run the big screen from anywhere: next, reveal, pause, skip and music.
 - **Run of show**: line up games, live polls, music breaks and a prize drawing, then press **Start the show**. Japarty runs them in order and keeps an overall show leaderboard (10 points for 1st in a game, 8 for 2nd, 6 for 3rd, and so on).
 - **Live polls**: word clouds or multiple choice, answered on phones and shown live on the big screen. Polls don't score points.
