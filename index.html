@@ -1170,22 +1170,31 @@ body:has(#auto:not([hidden])){padding-bottom:calc(84px + env(safe-area-inset-bot
 .qs-chips .chip{border:1px solid var(--line);background:var(--stage);color:var(--muted);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .qs-chips .chip[aria-pressed="true"]{background:var(--gold);color:var(--ink);border-color:var(--gold)}
 .qs-note{font-size:13px;margin:0}
-/* v3.8: Spotify player */
-.spot{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:25;width:min(760px,calc(100vw - 16px));background:var(--stage2);border:1px solid var(--line);border-radius:16px;padding:8px;box-shadow:0 12px 32px rgba(8,6,18,.5);display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 12px}
-.spot .spot-tip{grid-column:1/-1}
-@media(max-width:600px){.spot{grid-template-columns:minmax(0,1fr)}}
-.spot-head{display:flex;align-items:center;gap:8px;font-size:14px;padding-left:6px;max-width:220px}
-.spot-dot{width:10px;height:10px;border-radius:50%;background:#1ed760;flex:none}
-.spot-st{flex:1;min-width:0;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.spot-head .btn{padding:4px 10px;font-size:13px}
+/* Spotify player: a tidy bar at the bottom of the screen (always visible, at Spotify's compact size) */
+.spot{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:25;width:min(720px,calc(100vw - 24px));background:color-mix(in srgb,var(--stage2) 96%,transparent);border:1px solid var(--line);border-radius:20px;padding:10px 10px 10px 18px;box-shadow:0 16px 40px rgba(6,4,16,.55);display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px 16px;backdrop-filter:blur(6px)}
+.spot .spot-tip{grid-column:2;padding-left:2px}
+.spot-head{display:flex;align-items:center;gap:10px;min-width:96px}
+.spot-hl{display:grid;gap:1px;line-height:1.2}.spot-hl b{font-size:15px}
+.spot-dot{width:10px;height:10px;border-radius:50%;background:#1ed760;flex:none;box-shadow:0 0 0 3px rgba(30,215,96,.18)}
+.spot-st{color:var(--muted);font-weight:700;font-size:12.5px;white-space:nowrap}
 .spot-frame{border-radius:12px;overflow:hidden;min-height:80px}
 .spot-frame iframe{display:block;border:0}
-.spot-tip{margin:0;font-size:13px;color:var(--muted);line-height:1.4}.spot-tip:empty{display:none}
-body:has(#spot:not([hidden])){padding-bottom:116px}
-body:has(#auto:not([hidden])) .spot{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
-body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:200px}
-#spot-msg.bad{color:var(--clay)}
-.spot-set{display:grid;gap:6px}
+.spot-tip{margin:0;font-size:12.5px;color:var(--muted);line-height:1.4}.spot-tip:empty{display:none}
+@media(max-width:600px){.spot{grid-template-columns:minmax(0,1fr);padding:10px;gap:8px;bottom:calc(10px + env(safe-area-inset-bottom,0px))}.spot .spot-tip{grid-column:1}.spot-head{padding-left:4px}.spot-hl{display:flex;gap:8px;align-items:baseline}}
+body:has(#spot:not([hidden])){padding-bottom:140px}
+body:has(#auto:not([hidden])) .spot{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:220px}
+body.hdock-on .spot{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+body.hdock-on:has(#spot:not([hidden])) #app{padding-bottom:230px}
+/* Spotify settings on the home screen */
+.spot-set{display:grid;gap:10px;background:var(--stage);border:1px solid var(--line);border-radius:14px;padding:14px 16px 16px}
+.spot-set-head{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px}
+.spot-input{width:100%;min-width:0;background:var(--stage2);color:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:14px;text-overflow:ellipsis}
+.spot-input:focus{outline:none;border-color:#1ed760}
+.spot-set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.spot-open{font-size:14px}
+.spot-msg{margin:0;font-size:13.5px;font-weight:700;color:#1ed760}.spot-msg.bad{color:var(--clay)}
+.spot-steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:13px;color:var(--muted);line-height:1.45}
 /* v3.6: event check */
 .ec-sum{font-weight:800;font-size:18px;margin:0}
 .ec-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -1231,6 +1240,38 @@ body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:200px}
 .lib-newcode{display:inline-block;width:11em;max-width:100%;padding:6px 10px;margin:2px 4px}
 .lib-sql{width:100%;min-height:160px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
 .hof-scope .linkish{color:var(--gold);font-size:14px}
+
+/* v3.10.1: more breathing room everywhere */
+body{line-height:1.5}
+#app{max-width:1240px;padding-block:clamp(18px,3vw,30px) clamp(48px,6vw,72px)}
+.screen{gap:clamp(20px,2.6vw,32px)}
+.hero{gap:clamp(16px,2vw,22px);padding-block:clamp(18px,3vw,34px) clamp(4px,1vw,10px)}
+.gamebar{gap:14px;padding-block:6px 18px;margin-bottom:clamp(20px,2.6vw,30px)}
+.row{gap:12px}
+.seg{gap:8px}.seg button{padding:8px 15px}
+.lobby{gap:clamp(18px,2.6vw,32px);grid-template-columns:minmax(0,360px) minmax(0,1fr)}
+@media(max-width:880px){.lobby{grid-template-columns:minmax(0,1fr)}}
+.panel{padding:clamp(18px,2.2vw,28px);gap:clamp(20px,2.4vw,28px)}
+.group{gap:12px}
+.modes{gap:clamp(16px,2.2vw,26px)}
+.mode-top{padding:clamp(16px,2vw,22px) clamp(18px,2.2vw,24px)}
+.mode-body{padding:clamp(16px,2vw,22px) clamp(18px,2.2vw,24px) clamp(18px,2.2vw,24px);gap:16px}
+.opts{gap:14px}
+.join{gap:clamp(18px,2.6vw,32px)}
+.join-card{gap:16px;padding:clamp(22px,3vw,36px)}
+details.more summary{padding:14px 16px}
+.more-body{gap:14px;padding:2px 16px 18px}
+.modal{gap:24px}
+.qset{gap:16px}.qs-row{gap:8px}
+.answers{gap:14px}
+.hs{gap:12px;padding:16px}
+.lh-panel{gap:16px}
+.lh-step{margin-top:10px}
+.gpick{gap:10px}
+.lh-extras{gap:12px;padding-top:16px;margin-top:8px}
+.ou-list,.ou-form{gap:10px}
+.p-body{gap:16px}
+@media(max-width:600px){#app{padding-block:14px 40px}.panel{padding:16px}.mode-body,.mode-top{padding-inline:16px}}
 </style>
 </head>
 <body>
@@ -1324,9 +1365,15 @@ body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:200px}
           <div class="seg" role="group" aria-label="Lobby music" id="home-music">
           </div>
           <div class="spot-set" id="spot-set" hidden>
-            <label class="label" for="spot-url">Spotify playlist link</label>
-            <div class="lib-code-row"><input id="spot-url" class="sv-input" autocomplete="off" spellcheck="false" placeholder="https://open.spotify.com/playlist/…"><button class="btn small" data-act="spot-use">Use this playlist</button></div>
-            <p class="muted" id="spot-msg" style="font-size:13px;margin:0">Sign in to Spotify in this browser first, or you'll only hear 30-second previews. Then press play in the Spotify player at the bottom left. You start, pause and skip it yourself with its own buttons; Japarty's own music stays quiet while Spotify is chosen.</p>
+            <div class="spot-set-head"><span class="spot-dot" aria-hidden="true"></span><label for="spot-url">Spotify playlist</label></div>
+            <input id="spot-url" class="spot-input" autocomplete="off" spellcheck="false" placeholder="Paste a Spotify playlist link">
+            <div class="spot-set-row"><button class="btn small" data-act="spot-use">Use this playlist</button><a class="linkish spot-open" id="spot-open" target="_blank" rel="noopener">Open in Spotify</a></div>
+            <p class="spot-msg" id="spot-msg" role="status" hidden></p>
+            <ol class="spot-steps">
+              <li>Sign in to Spotify in this browser, or you'll only hear 30-second previews.</li>
+              <li>Press play in the Spotify player at the bottom of the screen.</li>
+              <li>Pause and skip with its own buttons. Japarty's music stays off while Spotify is chosen.</li>
+            </ol>
           </div>
           <button class="btn ghost small" data-act="open-party" style="justify-self:start">Party playlist: players add songs</button>
           <div class="now"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="now-playing">Starts when you tap anything</span></div>
@@ -1924,7 +1971,7 @@ body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:200px}
 
 <!-- Spotify player (big screen only) -->
 <aside class="spot" id="spot" hidden aria-label="Spotify player">
-  <div class="spot-head"><span class="spot-dot" aria-hidden="true"></span><b>Spotify</b><span class="spot-st" id="spot-st" role="status"></span></div>
+  <div class="spot-head"><span class="spot-dot" aria-hidden="true"></span><span class="spot-hl"><b>Spotify</b><span class="spot-st" id="spot-st" role="status"></span></span></div>
   <div class="spot-frame" id="spot-frame"></div>
   <p class="spot-tip" id="spot-tip"></p>
 </aside>
@@ -2024,7 +2071,7 @@ body:has(#auto:not([hidden])):has(#spot:not([hidden])){padding-bottom:200px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.10";
+const APP_VERSION="3.10.1";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2830,7 +2877,7 @@ const trackName=t=>t==="party"||(t==="none"&&partyActive())?partyNowText():isCus
 const setMusicGain=()=>{if(M.musicBus)M.musicBus.gain.setTargetAtTime(musicLevel(),M.ctx.currentTime,.05)};
 function updateNowPlaying(){
   const el=$("#now-playing");if(!el)return;
-  el.textContent=!M.ctx?"Starts when you tap anything":!prefs.music?"Music is off":spotOn()?(SPOT.paused?"Spotify playlist · use the player at the bottom left":"Spotify playlist"):(trackName(M.track)||"");
+  el.textContent=!M.ctx?"Starts when you tap anything":!prefs.music?"Music is off":spotOn()?(SPOT.paused?"Spotify · press play in the player below":"Spotify playlist"):(trackName(M.track)||"");
 }
 function sfx(name){
   if(!audioInit()||!prefs.sfx)return;
@@ -6861,14 +6908,15 @@ function renderSpot(){
   /* while players answer it shrinks to a small bar so it never covers an answer */
   /* Spotify's terms don't allow hiding or covering its player, so it always shows in Spotify's compact size */
   $("#spot-st").textContent=SPOT.err?"Not available":!SPOT.ctl||!SPOT.ready?"Loading…":!SPOT.paused?"Playing":SPOT_AUTO&&!spotWant()?"Paused while players answer":"Paused";
-  $("#spot-tip").textContent=SPOT.err||(SPOT.ready&&!SPOT.started?(SPOT_AUTO?"Press play in the player once. After that, Japarty pauses it while players answer and plays it again on the leaderboard.":"Use the player's own buttons to play, pause and skip. Japarty doesn't start or stop it."):"");
-  const set=$("#spot-set");if(set){set.hidden=!spotOn();const inp=$("#spot-url");if(inp&&!inp.matches(":focus"))inp.value=spotLink(spotCur())}
+  $("#spot-tip").textContent=SPOT.err||(SPOT.ready&&!SPOT.started?(SPOT_AUTO?"Press play in the player once. After that, Japarty pauses it while players answer and plays it again on the leaderboard.":"Press play to start. Use the player's own buttons to pause and skip."):"");
+  const set=$("#spot-set");if(set){set.hidden=!spotOn();const inp=$("#spot-url");if(inp&&!inp.matches(":focus"))inp.value=spotLink(spotCur());const op=$("#spot-open");if(op)op.href=spotLink(spotCur())}
 }
 Object.assign(ACT,{
   "spot-min":()=>{const small=$("#spot").classList.contains("min");SPOT.min=!small;SPOT.peek=small;store.set("japarty.spotMin",SPOT.min);renderSpot()},
   "spot-use":()=>{const v=$("#spot-url").value,u=spotUri(v),m=$("#spot-msg");
+    m.hidden=false;
     if(!u){m.textContent="That doesn't look like a Spotify link. In Spotify, open the playlist, choose Share, then Copy link to playlist, and paste it here.";m.classList.add("bad");return}
-    m.classList.remove("bad");store.set("japarty.spotify",u);m.textContent="Playlist loaded. Press play in the Spotify player at the bottom left.";spotSync()},
+    m.classList.remove("bad");store.set("japarty.spotify",u);m.textContent="Playlist loaded. Press play in the player at the bottom of the screen.";spotSync();renderSpot()},
 });
 
 /* ---------- question settings: answer choices, topics and difficulty ---------- */
@@ -7740,7 +7788,7 @@ if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 evApply();{const nn=prefs.bg!=="classic";document.body.classList.toggle("nn",nn);$("#nn-btn").setAttribute("aria-pressed",String(nn))}
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in 3.10: an easier live lobby with a host control bar, a winners slide for photos, your own questions about your organization, double-points prize rounds and event mode.";
+{const WHATS_NEW="New in 3.10.1: a cleaner Spotify player and settings, and more spacing throughout.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
