@@ -1272,6 +1272,21 @@ details.more summary{padding:14px 16px}
 .ou-list,.ou-form{gap:10px}
 .p-body{gap:16px}
 @media(max-width:600px){#app{padding-block:14px 40px}.panel{padding:16px}.mode-body,.mode-top{padding-inline:16px}}
+
+/* v3.11: line up several games */
+.lh-sub{font-size:13.5px;margin:-6px 0 0}
+.gp{position:relative}
+.gp-n{position:absolute;top:-8px;right:-6px;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--gold);color:var(--ink);font-style:normal;font-weight:800;font-size:13px;display:grid;place-items:center;box-shadow:0 0 0 3px var(--stage2)}
+.lineup{display:grid;gap:10px;background:var(--stage);border:1px solid var(--line);border-radius:14px;padding:14px}
+.lu-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.lu-head .label{margin:0;color:var(--paper)}
+.lu-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:10px;align-items:center;background:var(--stage2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.lu-row .n{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--stage3);font-weight:800;font-size:13px}
+.lu-row .t{font-weight:800}
+.lu-row select{max-width:190px;padding:6px 8px;font-size:13.5px}
+.lu-btns{display:flex;gap:4px}.lu-btns .icon-btn{width:32px;height:32px}
+.lineup.single .lu-btns [data-act="show-up"],.lineup.single .lu-btns [data-act="show-down"]{display:none}
+.lu-extras{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.lu-extras .muted{font-size:13px}
+@media(max-width:600px){.lu-row{grid-template-columns:auto minmax(0,1fr) auto}.lu-row select{grid-column:2/4;max-width:none}.lu-btns{grid-row:1;grid-column:3}}
 </style>
 </head>
 <body>
@@ -2071,7 +2086,7 @@ details.more summary{padding:14px 16px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const APP_VERSION="3.10.1";
+const APP_VERSION="3.11";
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -3679,7 +3694,7 @@ function updateCloud(ps){
   const cloud=$("#lh-cloud");if(!cloud)return;
   $("#lh-count").textContent=ps.length;$("#lh-start").disabled=!ps.length;$("#lh-empty").hidden=ps.length>0;
   {const sn=$("#lh-start-note");if(sn)sn.textContent=ps.length?`${ps.length} ${ps.length===1?"player is":"players are"} in. Press Start (or the Space bar) when everyone has joined.`:"Start unlocks when the first player joins."}
-  {const ss=$("#show-start");if(ss)ss.disabled=!ps.length||!SHOW.plan.length}
+  {const ss=$("#show-start");if(ss)ss.disabled=!ps.length||!SHOW.plan.length}luStartUI();
   const wg=$("#lh-wait-group");
   if(rosterOn()){const N=live.rosterList.names,tk=new Set(computeTaken()),wait=N.filter((n,i)=>!tk.has(i));
     $("#lh-count-label").textContent=`of ${N.length} joined`;wg.hidden=!wait.length;$("#lh-wait-label").textContent=`Not joined yet · ${wait.length}`;
@@ -3738,26 +3753,26 @@ async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);
       ${link?`<div class="linkbox"><input id="lh-link" readonly value="${esc(link)}" aria-label="Join link"><button class="btn small" data-act="copy-link">Copy link</button><button class="btn small ghost-ink" data-act="poster">Make a poster</button><button class="btn small ghost-ink" data-act="open-remote">Phone remote</button></div>`:""}
       <div class="row" style="align-items:baseline;gap:14px"><span class="big-count" id="lh-count">0</span><span style="font-weight:800;font-size:18px" id="lh-count-label">players in the lobby</span><button class="linkish" data-act="new-pin" style="margin-left:auto">New PIN</button></div></div>
     <div class="panel lh-panel">
-      <div class="lh-step"><span class="lh-num" aria-hidden="true">1</span><span class="label">Choose a game</span></div>
-      <div class="gpick" id="lh-gpick" role="group" aria-label="Choose a game"></div>
+      <div class="lh-step"><span class="lh-num" aria-hidden="true">1</span><span class="label">Choose games</span></div>
+      <p class="muted lh-sub">Tap one game to play it, or tap several to line up a whole event. Tap a game again to take it out.</p>
+      <div class="gpick" id="lh-gpick" role="group" aria-label="Choose games"></div>
+      <div class="lineup" id="lh-lineup">
+        <div class="lu-head"><span class="label" id="lu-title">Your event</span><button class="linkish ev-hide" data-act="show-clear">Clear</button></div>
+        <div class="show-list" id="show-list"></div>
+        <div class="lu-extras ev-hide"><span class="muted">Add:</span><button class="btn ghost small" data-act="lu-add" data-t="break">Break with music</button><button class="btn ghost small" data-act="lu-add" data-t="poll">Live poll</button><button class="btn ghost small" data-act="lu-add" data-t="draw">Prize drawing</button><button class="btn ghost small" data-act="show-suggest">Suggested event</button></div>
+      </div>
       <label class="vh" for="lh-kind">Game</label><select id="lh-kind" class="vh" tabindex="-1"><option value="quiz">Quiz Rush · multiple choice</option><option value="tf">True or False Blitz · 10 seconds each</option><option value="tune">Guess the Song · song clips</option><option value="cash">Cash or Case · everyone plays their own case</option><option value="board">Japarty Board · pick clues, everyone answers</option><option value="year">Year Guess · closest year wins</option><option value="tiles">Word Tiles · best word from the same 7 letters</option><option value="cross">Crossword · race to fill the same puzzle</option><option value="who">Who Am I? · clue by clue</option><option value="map">Map Round · drop a pin on the map</option></select>
       <div class="lh-step"><span class="lh-num" aria-hidden="true">2</span><span class="label">Options</span></div>
-      <div class="opts"><label for="lh-cases" id="lh-cases-wrap" hidden>Cases<select id="lh-cases"><option value="16" selected>16 · about 8 minutes</option><option value="24">24 · about 11 minutes</option><option value="32">32 · about 13 minutes</option><option value="40">40 · about 14 minutes</option></select></label><label for="lh-n" id="lh-n-wrap">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label><label for="lh-t" id="lh-t-wrap">Timer<select id="lh-t"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select></label></div>
+      <div class="opts"><label for="lh-cases" id="lh-cases-wrap" class="vh" hidden>Cases<select id="lh-cases"><option value="16" selected>16 · about 8 minutes</option><option value="24">24 · about 11 minutes</option><option value="32">32 · about 13 minutes</option><option value="40">40 · about 14 minutes</option></select></label><label for="lh-n" id="lh-n-wrap" class="vh">Questions<select id="lh-n"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">All</option></select></label><label for="lh-t" id="lh-t-wrap">Timer<select id="lh-t"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select></label></div>
       <div class="qset lh-qmain" data-part="main">${qsetHTML("main")}</div>
       <details class="more qs-more"><summary>Topics and difficulty</summary><div class="qset more-body" data-part="more">${qsetHTML("more")}</div></details>
       <div class="lh-step"><span class="lh-num" aria-hidden="true">3</span><span class="label">Start</span></div>
       <button class="btn lh-go" data-act="lh-start" id="lh-start" disabled>Start the game</button>
+      <button class="vh" data-act="show-start" id="show-start" tabindex="-1" aria-hidden="true">Start the show</button>
       <p class="muted lh-note" id="lh-start-note">Start unlocks when the first player joins.</p>
       <div class="lh-extras"><span class="label">During the event</span>
         <div class="row"><button class="btn ghost small win-btn" data-act="open-wins"${WIN&&WIN.top.length?"":" hidden"}>Winners slide</button><button class="btn ghost small" data-act="open-poll">Live poll</button><button class="btn ghost small" data-act="open-draw">Prize drawing</button><button class="btn ghost small" data-act="open-report">Event report</button><button class="btn ghost small ev-toggle ev-hide" data-act="ev-on" aria-pressed="false"><span class="tlabel">Event mode</span></button></div>
       </div>
-      <details class="more ev-hide" id="lh-show"${SHOW.plan.length?" open":""}><summary>Run of show · line up the whole event</summary><div class="more-body">
-        <p class="muted" style="font-size:13px">Line up games, polls, breaks and a prize drawing. Japarty runs them in order with music in between and keeps an overall show leaderboard.</p>
-        <div class="show-list" id="show-list"></div>
-        <div class="show-add"><select id="show-add-k" aria-label="What to add">${SHOW_KINDS.map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select><select id="show-add-n" aria-label="How many"></select><button class="btn ghost small" data-act="show-add">Add</button></div>
-        <div class="row"><button class="btn ghost small" data-act="show-suggest">Use a suggested show</button><button class="btn ghost small" data-act="show-clear">Clear the list</button></div>
-        <button class="btn" data-act="show-start" id="show-start" disabled>Start the show</button>
-      </div></details>
       <details class="more lh-setup ev-hide"><summary>Set up and test</summary><div class="more-body">
         <div class="row"><button class="btn ghost small" data-act="lh-bots">Add 8 test players</button><button class="btn ghost small" data-act="lh-bots-clear" id="lh-bots-clear" hidden>Remove test players</button><button class="btn ghost small" data-act="open-echeck">Run the event check</button></div>
         <div class="group"><span class="label">Event name and date</span><p class="muted" style="font-size:13px">Shown on the winners slide.</p>
@@ -3790,7 +3805,7 @@ async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);
   <div class="group" id="lh-pend-group" hidden><span class="label" id="lh-pend-label">Waiting for your OK</span><div class="nick-cloud" id="lh-pend"></div><button class="btn ghost small" data-act="ok-all" style="justify-self:start">Let everyone in</button></div>
   <div class="group"><span class="label">In the lobby · tap a name to remove it</span><div class="nick-cloud" id="lh-cloud"></div><p class="muted" id="lh-empty">Nobody yet. Names show up here the moment people join.</p></div>
   <div class="group" id="lh-wait-group" hidden><span class="label" id="lh-wait-label">Not joined yet</span><div class="nick-cloud" id="lh-wait"></div></div>`;
-  $("#lh-bots-clear").hidden=!live.bots.length;lhGpick();lhKindUI();evApply();
+  $("#lh-bots-clear").hidden=!live.bots.length;renderShowEd();evApply();
   $("#lh-ev-name").value=prefs.eventName||"";$("#lh-ev-date").value=prefs.eventDate||"";$("#lh-ev-date").placeholder=todayLong();
   renderRosterHost();if(live.teamNames.length&&$("#lh-teams").value==="0")$("#lh-teams").value=String(live.teamNames.length);renderAutoSel();renderShowEd();
   broadcast({phase:"lobby"});sendRoster();partyBroadcast(true);updateCloud(players());lobbyMusic();keepAwake();
@@ -3798,14 +3813,14 @@ async function hostLobby(fresh,forcePin){SHOW.on=false;clearInterval(SHOW.brIv);
 }
 const GP_ICON={quiz:"?",tf:"T/F",tune:"♪",cash:"$",board:"▦",year:"1865",tiles:"A",cross:"#",who:"!",map:"◎"};
 function lhGpick(){const sel=$("#lh-kind"),g=$("#lh-gpick");if(!sel||!g)return;
-  g.innerHTML=[...sel.options].map(o=>{const[n,sub]=o.textContent.split(" · ");return`<button class="gp" data-act="lh-kind" data-v="${o.value}" aria-pressed="${o.value===sel.value}"><i aria-hidden="true">${GP_ICON[o.value]||"★"}</i><b>${esc(n)}</b><small>${esc(sub||"")}</small></button>`}).join("")}
-function lhKindUI(){const sel=$("#lh-kind");if(!sel)return;const k=sel.value;
+  g.innerHTML=[...sel.options].map(o=>{const[n,sub]=o.textContent.split(" · ");const pos=SHOW.plan.map((x,i)=>x.t==="game"&&x.k===o.value?i+1:0).filter(Boolean);
+    return`<button class="gp" data-act="lh-kind" data-v="${o.value}" aria-pressed="${pos.length>0}"${pos.length?` aria-label="${esc(n)}, number ${pos.join(" and ")} in your lineup"`:""}><i aria-hidden="true">${GP_ICON[o.value]||"★"}</i><b>${esc(n)}</b><small>${esc(sub||"")}</small>${pos.length?`<em class="gp-n" aria-hidden="true">${pos.join(",")}</em>`:""}</button>`}).join("")}
+function lhKindUI(){const sel=$("#lh-kind");if(!sel)return;const k=sel.value;const ks=SHOW.plan.length>1?luGames().map(x=>x.k):[k];const any=a=>ks.some(x=>a.includes(x));
   const b=$("#lh-songs");if(b)b.hidden=k!=="tune";const c=k==="cash";$("#lh-cases-wrap").hidden=!c;
-  $("#lh-n-wrap").hidden=c||k==="tiles"||k==="cross";const tw=$("#lh-t-wrap");if(tw)tw.hidden=!["quiz","tune","board","map"].includes(k);
-  $$(".lh-qmain .qs-ours-row").forEach(r=>r.hidden=k!=="quiz");$$(".lh-qmain .qs-prize-row").forEach(r=>r.hidden=!["quiz","tf","tune","who","map"].includes(k));
-  $$(".lh-qmain .qs-choices-row").forEach(r=>r.hidden=!["quiz","tune","board"].includes(k));
-  const qm=$(".qs-more");if(qm&&qm.closest("#lh-body"))qm.hidden=!["quiz","year","board"].includes(k);
-  $$("#lh-gpick .gp").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.v===k)))}
+  $("#lh-n-wrap").hidden=c||k==="tiles"||k==="cross";const tw=$("#lh-t-wrap");if(tw)tw.hidden=!any(["quiz","tune","board","map"]);
+  $$(".lh-qmain .qs-ours-row").forEach(r=>r.hidden=!any(["quiz"]));$$(".lh-qmain .qs-prize-row").forEach(r=>r.hidden=!any(["quiz","tf","tune","who","map"]));
+  $$(".lh-qmain .qs-choices-row").forEach(r=>r.hidden=!any(["quiz","tune","board"]));
+  const qm=$$(".qs-more").find(x=>x.closest("#lh-body"));if(qm)qm.hidden=!any(["quiz","year","board"])}
 function lobbySeg(){return{t:"game",k:$("#lh-kind").value,n:+$("#lh-n").value,c:+$("#lh-cases").value}}
 const liveModeLabel=n=>SHOW.on?`Show ${SHOW.i+1} of ${SHOW.plan.length} · ${n}`:"Live · "+n;
 function hostStart(seg){
@@ -4455,7 +4470,7 @@ const ACT={
   "quit":()=>askConfirm(live.role==="host"?"End the live game for everyone and go back to the Japarty lobby?":"Leave this game and go back to the lobby? Scores for this game will be cleared.",goHome),
   "live-host":()=>{if(LIVE.canHost&&LIVE.status==="on")hostLobby()},
   "live-join":()=>{if(LIVE.status==="on")enterPlayer()},
-  "lh-start":()=>{if(players().length)hostStart()},
+  "lh-start":()=>{if(!players().length||!SHOW.plan.length)return;if(luIsEvent())return showStart();hostStart()},
   "lh-reveal":()=>hostReveal(),
   "lh-next":()=>live.H&&(live.H.kind==="board"?(lbLeft(live.H)?lbPick():live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):live.H.i+1>=live.H.items.length?(live.H.fj&&!live.H.fjDone?hostFJWager():hostPodium()):hostBoard()),
   "fj-clue":()=>hostFJClue(),
@@ -4749,7 +4764,7 @@ document.addEventListener("change",async e=>{
   if(e.target.id==="draw-src"){drawFill();return}
   if(e.target.id==="draw-once"||e.target.id==="draw-extra"){drawEntries();return}
   if(e.target.id==="lh-appr"){prefs.approveNames=e.target.checked;savePrefs();if(prefs.approveNames)allPeers().forEach(p=>live.ok.add(p.by||p.peer));rebroadcast();hostLiveUpdate();updateCloud(players());return}
-  if(e.target.id==="lh-kind"){lhKindUI();return}
+  if(e.target.id==="lh-kind"){const k=e.target.value;SHOW.plan=[k==="cash"?{t:"game",k,c:16}:{t:"game",k,n:luDefN(k)}];saveShow();renderShowEd();return}
   if(e.target.id==="lh-ev-name"){prefs.eventName=e.target.value.trim().slice(0,60);savePrefs();return}
   if(e.target.id==="lh-ev-date"){prefs.eventDate=e.target.value.trim().slice(0,60);savePrefs();return}
   if(e.target.id==="lh-teams"){const n=+e.target.value;live.teamNames=e.target.value==="roster"?rosterTeams():n?Array.from({length:n},(_,k)=>(playAs==="teams"&&teams[k]&&teams[k].name)||"Team "+(k+1)):[];
@@ -6014,12 +6029,37 @@ function segLabel(x){
 }
 const segShort=x=>x.t==="game"?MODE_NAMES[x.k]:x.t==="poll"?"Live poll":x.t==="break"?"Break":"Prize drawing";
 const SHOW_SUGGEST=()=>[{t:"game",k:"tf",n:10},{t:"game",k:"quiz",n:10},{t:"poll",p:POLLS[0]},{t:"game",k:"who",n:8},{t:"break",m:3},{t:"game",k:"map",n:8},{t:"game",k:"cash",c:16},{t:"draw"}];
+const luDefN=k=>k==="map"||k==="who"?8:k==="year"?15:k==="tf"?10:15;
+const luGames=()=>SHOW.plan.filter(x=>x.t==="game");
+const luIsEvent=()=>SHOW.plan.length>1||(SHOW.plan.length===1&&SHOW.plan[0].t!=="game");
+function luOpts(x){
+  if(x.t==="break")return[[1,"1 minute"],[2,"2 minutes"],[3,"3 minutes"],[5,"5 minutes"],[10,"10 minutes"]];
+  if(x.t==="poll")return POLLS.map((p,i)=>[i,p.q.length>46?p.q.slice(0,44)+"…":p.q]);
+  if(x.t==="draw")return[];
+  if(x.k==="cash")return[[16,"16 cases"],[24,"24 cases"],[32,"32 cases"],[40,"40 cases"]];
+  const unit=x.k==="map"?"places":x.k==="who"?"people":x.k==="board"?"clues":x.k==="tiles"?"rounds":x.k==="cross"?"words":x.k==="year"?"years":x.k==="tf"?"statements":x.k==="tune"?"songs":"questions";
+  if(x.k==="tiles"||x.k==="cross"||x.k==="board"||x.k==="year")return[[10,"Short"],[15,"Medium"],[20,"Long"]];
+  return[[5,"5 "+unit],[8,"8 "+unit],[10,"10 "+unit],[15,"15 "+unit],[20,"20 "+unit],[0,"All "+unit]];
+}
+function luVal(x){return x.t==="poll"?Math.max(0,POLLS.indexOf(x.p)):x.t==="break"?x.m:x.k==="cash"?x.c:x.n}
+function luName(x){return x.t==="game"?MODE_NAMES[x.k]:x.t==="poll"?"Live poll":x.t==="break"?"Break with music":"Prize drawing"}
 function renderShowEd(){
   const L=$("#show-list");if(!L)return;
-  L.innerHTML=SHOW.plan.length?SHOW.plan.map((x,i)=>`<div class="show-row"><span class="n">${i+1}</span><span class="t">${esc(segLabel(x))}</span><button class="icon-btn" data-act="show-up" data-i="${i}" aria-label="Move up" ${i?"":"disabled"}>↑</button><button class="icon-btn" data-act="show-rm" data-i="${i}" aria-label="Remove ${esc(segLabel(x))}">×</button></div>`).join("")
-    :'<p class="muted" style="font-size:14px">Nothing lined up yet. Add games below, or use the suggested show.</p>';
-  const st=$("#show-start");if(st)st.disabled=!SHOW.plan.length||!players().length;
-  renderShowAddN();
+  const ev=luIsEvent();
+  L.innerHTML=SHOW.plan.map((x,i)=>{const o=luOpts(x),v=luVal(x),hasV=o.some(([a])=>a===v);
+    return`<div class="show-row lu-row"><span class="n">${i+1}</span><span class="t">${esc(luName(x))}</span>${o.length?`<select class="lu-n" data-i="${i}" aria-label="${esc(luName(x))} length">${o.map(([a,l])=>`<option value="${a}"${a===v||(!hasV&&o[0][0]===a)?" selected":""}>${esc(l)}</option>`).join("")}</select>`:'<span></span>'}<span class="lu-btns ev-hide"><button class="icon-btn" data-act="show-up" data-i="${i}" aria-label="Move up" ${i?"":"disabled"}>↑</button><button class="icon-btn" data-act="show-down" data-i="${i}" aria-label="Move down" ${i<SHOW.plan.length-1?"":"disabled"}>↓</button><button class="icon-btn" data-act="show-rm" data-i="${i}" aria-label="Remove ${esc(luName(x))}">×</button></span></div>`}).join("")
+    ||'';
+  const g=luGames();$("#lu-title").textContent=ev?`Your event · ${SHOW.plan.length} part${SHOW.plan.length===1?"":"s"}`:"Your game";
+  $("#lh-lineup").classList.toggle("single",!ev);$("#lh-lineup").hidden=!SHOW.plan.length;
+  /* one game: keep the classic single-game controls in step with the lineup */
+  if(g.length&&!ev){const f=g[0],sel=$("#lh-kind");if(sel){sel.value=f.k;if(f.k==="cash")$("#lh-cases").value=String(f.c||16);else{const n=$("#lh-n");if(![...n.options].some(o=>+o.value===f.n))n.insertAdjacentHTML("beforeend",`<option value="${+f.n}">${+f.n}</option>`);n.value=String(f.n)}}}
+  lhGpick();lhKindUI();luStartUI();
+}
+function luStartUI(){
+  const b=$("#lh-start");if(!b)return;const ps=players().length,ev=luIsEvent(),g=luGames();
+  b.textContent=!SHOW.plan.length?"Choose a game above":ev?`Start the event · ${SHOW.plan.length} parts`:`Start ${MODE_NAMES[$("#lh-kind").value]||"the game"}`;
+  b.disabled=!ps||!SHOW.plan.length;
+  const sn=$("#lh-start-note");if(sn)sn.textContent=!SHOW.plan.length?(ps?`${ps} ${ps===1?"player is":"players are"} in. Tap a game above to start.`:"Tap a game above. Start unlocks when the first player joins."):!ps?"Start unlocks when the first player joins.":ev?`${ps} ${ps===1?"player is":"players are"} in. Japarty runs each part in order, with music and an event leaderboard in between.`:`${ps} ${ps===1?"player is":"players are"} in. Press Start (or the Space bar) when everyone has joined.`;
 }
 function renderShowAddN(){
   const ks=$("#show-add-k"),n=$("#show-add-n");if(!ks||!n)return;const k=ks.value;
@@ -7304,7 +7344,14 @@ Object.assign(ACT,{
 });
 setInterval(hostDock,350);
 
-ACT["lh-kind"]=d=>{const sel=$("#lh-kind");if(!sel)return;sel.value=d.v;lhKindUI();sfx("select")};
+ACT["lh-kind"]=d=>{const k=d.v;if(!SHOW_KINDS.some(([x])=>x===k))return;
+  let idx=-1;SHOW.plan.forEach((x,i)=>{if(x.t==="game"&&x.k===k)idx=i});
+  if(idx>=0)SHOW.plan.splice(idx,1);else{if(SHOW.plan.length>=30)return;SHOW.plan.push(k==="cash"?{t:"game",k,c:16}:{t:"game",k,n:luDefN(k)})}
+  saveShow();renderShowEd();sfx("select")};
+ACT["lu-add"]=d=>{if(SHOW.plan.length>=30)return;const t=d.t;SHOW.plan.push(t==="poll"?{t:"poll",p:POLLS[0]}:t==="break"?{t:"break",m:3}:{t:"draw"});saveShow();renderShowEd();sfx("select")};
+ACT["show-down"]=d=>{const i=+d.i;if(i>=SHOW.plan.length-1)return;const x=SHOW.plan.splice(i,1)[0];SHOW.plan.splice(i+1,0,x);saveShow();renderShowEd()};
+document.addEventListener("change",e=>{const el=e.target;if(!el.classList||!el.classList.contains("lu-n"))return;const x=SHOW.plan[+el.dataset.i];if(!x)return;const v=+el.value;
+  if(x.t==="poll")x.p=POLLS[v]||POLLS[0];else if(x.t==="break")x.m=v||3;else if(x.k==="cash")x.c=v||16;else x.n=v;saveShow();renderShowEd()});
 
 /* one screen: tap an answer tile (or press A-F / 1-6) to lock in for the next player or team still to answer */
 function qNextTeam(){if(!Q||Q.phase!=="answer")return -1;for(let t=0;t<teams.length;t++)if(!Q.locks[t])return t;return -1}
@@ -7788,7 +7835,7 @@ if(!document.fullscreenEnabled)$("#fs-btn").hidden=true;
 evApply();{const nn=prefs.bg!=="classic";document.body.classList.toggle("nn",nn);$("#nn-btn").setAttribute("aria-pressed",String(nn))}
 if(prefs.big){document.body.classList.add("bigtext");$("#bigtext-btn").setAttribute("aria-pressed","true")}
 $$(".ver-n").forEach(e=>e.textContent=APP_VERSION);
-{const WHATS_NEW="New in 3.10.1: a cleaner Spotify player and settings, and more spacing throughout.";
+{const WHATS_NEW="New in 3.11: tap several games in the live lobby to line up a whole event.";
   const seen=store.get("japarty.seenVer","");store.set("japarty.seenVer",APP_VERSION);
   if(seen&&seen!==APP_VERSION){$("#update-msg").textContent=`Updated to Japarty v${APP_VERSION}. ${WHATS_NEW}`;$("#update").hidden=false;$("#update").dataset.v=APP_VERSION;$('#update [data-act="update-now"]').hidden=true;$('#update [data-act="update-later"]').textContent="Got it";setTimeout(()=>{$("#update").hidden=true},12000)}}
 renderChampion();
